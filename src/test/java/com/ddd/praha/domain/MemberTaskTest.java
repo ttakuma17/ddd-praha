@@ -1,0 +1,124 @@
+package com.ddd.praha.domain;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class MemberTaskTest {
+
+  private Member owner;
+  private Task task1;
+  private Task task2;
+  private List<Task> tasks;
+
+  @BeforeEach
+  void setUp() {
+    owner = new Member(
+        new MemberName("山田太郎"),
+        new Email("yamada@example.com"),
+        EnrollmentStatus.在籍中
+    );
+    task1 = new Task(new TaskName("課題1"));
+    task2 = new Task(new TaskName("課題2"));
+    tasks = Arrays.asList(task1, task2);
+  }
+
+  @Nested
+  @DisplayName("メンバータスク作成のテスト")
+  class CreateMemberTaskTest {
+
+    @Test
+    @DisplayName("有効なメンバーとタスクリストでメンバータスクを作成できる")
+    void createMemberTaskWithValidValues() {
+      MemberTask memberTask = new MemberTask(owner, tasks);
+
+      assertEquals(owner, memberTask.owner);
+      assertEquals(TaskStatus.未着手, memberTask.getTaskStatus(task1));
+      assertEquals(TaskStatus.未着手, memberTask.getTaskStatus(task2));
+    }
+  }
+
+  @Nested
+  @DisplayName("タスクステータス更新のテスト")
+  class UpdateTaskStatusTest {
+
+    private MemberTask memberTask;
+
+    @BeforeEach
+    void setUp() {
+      memberTask = new MemberTask(owner, tasks);
+    }
+
+    @Test
+    @DisplayName("タスク所有者は進捗ステータスを更新できる")
+    void ownerCanUpdateTaskStatus() {
+      memberTask.updateTaskStatus(owner, task1, TaskStatus.取組中);
+
+      assertEquals(TaskStatus.取組中, memberTask.getTaskStatus(task1));
+    }
+
+    @Test
+    @DisplayName("タスク所有者以外は進捗ステータスを更新できない")
+    void nonOwnerCannotUpdateTaskStatus() {
+      Member otherMember = new Member(
+          new MemberName("佐藤花子"),
+          new Email("sato@example.com"),
+          EnrollmentStatus.在籍中
+      );
+
+      Exception exception = assertThrows(RuntimeException.class, () -> {
+        memberTask.updateTaskStatus(otherMember, task1, TaskStatus.取組中);
+      });
+      assertEquals("進捗ステータスを変更できるのは、課題の所有者だけです", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("有効なステータス遷移の場合は更新できる")
+    void updateStatusWithValidTransition() {
+      // 未着手 -> 取組中 (有効な遷移)
+      memberTask.updateTaskStatus(owner, task1, TaskStatus.取組中);
+      assertEquals(TaskStatus.取組中, memberTask.getTaskStatus(task1));
+
+      // 取組中 -> レビュー待ち (有効な遷移)
+      memberTask.updateTaskStatus(owner, task1, TaskStatus.レビュー待ち);
+      assertEquals(TaskStatus.レビュー待ち, memberTask.getTaskStatus(task1));
+    }
+
+    @Test
+    @DisplayName("無効なステータス遷移の場合は例外がスローされる")
+    void throwExceptionForInvalidTransition() {
+      // 未着手 -> レビュー待ち (無効な遷移)
+      Exception exception = assertThrows(IllegalStateException.class, () -> {
+        memberTask.updateTaskStatus(owner, task1, TaskStatus.レビュー待ち);
+      });
+      assertEquals("このステータス変更は許可されていません", exception.getMessage());
+    }
+  }
+
+  @Nested
+  @DisplayName("タスクステータス取得のテスト")
+  class GetTaskStatusTest {
+
+    private MemberTask memberTask;
+
+    @BeforeEach
+    void setUp() {
+      memberTask = new MemberTask(owner, tasks);
+    }
+
+    @Test
+    @DisplayName("タスクのステータスを正しく取得できる")
+    void getCorrectTaskStatus() {
+      assertEquals(TaskStatus.未着手, memberTask.getTaskStatus(task1));
+
+      memberTask.updateTaskStatus(owner, task1, TaskStatus.取組中);
+      assertEquals(TaskStatus.取組中, memberTask.getTaskStatus(task1));
+    }
+  }
+}
