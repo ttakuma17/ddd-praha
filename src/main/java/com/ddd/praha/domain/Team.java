@@ -11,6 +11,18 @@ public class Team {
   TeamName name;
   List<Member> list;
 
+  public TeamId getId() {
+    return id;
+  }
+
+  public TeamName getName() {
+    return name;
+  }
+
+  public List<Member> getMembers() {
+    return new ArrayList<>(list);
+  }
+
   public Team(TeamName name, List<Member> list) {
     validateMembers(list);
     this.id = TeamId.generate();

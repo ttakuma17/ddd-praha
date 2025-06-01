@@ -18,6 +18,22 @@ public class Member {
     this.status = Objects.requireNonNull(status, "受講ステータスは必須です");
   }
 
+  public MemberId getId() {
+    return id;
+  }
+
+  public MemberName getName() {
+    return name;
+  }
+
+  public Email getEmail() {
+    return email;
+  }
+
+  public EnrollmentStatus getStatus() {
+    return status;
+  }
+
   public boolean canJoin() {
     return status == EnrollmentStatus.在籍中;
   }

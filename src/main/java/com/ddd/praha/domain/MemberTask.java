@@ -5,11 +5,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * 参加者課題エンティティ
  */
 public class MemberTask {
   Member owner;
   Map<Task, TaskStatus> map = new HashMap<>();
+
+  public Member getOwner() {
+    return owner;
+  }
 
   public MemberTask(Member Member, List<Task> list) {
     this.owner = Member;
