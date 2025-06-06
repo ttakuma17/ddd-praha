@@ -1,9 +1,8 @@
-package com.ddd.praha.infrastructure.persistence;
+package com.ddd.praha.infrastructure;
 
 import com.ddd.praha.domain.Task;
 import com.ddd.praha.domain.TaskId;
 import com.ddd.praha.application.repository.TaskRepository;
-import com.ddd.praha.infrastructure.persistence.mapper.TaskMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

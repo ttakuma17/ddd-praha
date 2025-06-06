@@ -18,6 +18,13 @@ public class Member {
     this.status = Objects.requireNonNull(status, "受講ステータスは必須です");
   }
 
+  public Member(MemberId id, MemberName name, Email email, EnrollmentStatus status) {
+    this.id = Objects.requireNonNull(id, "メンバーIDは必須です");
+    this.name = Objects.requireNonNull(name, "名前は必須です");
+    this.email = Objects.requireNonNull(email, "メールアドレスは必須です");
+    this.status = Objects.requireNonNull(status, "受講ステータスは必須です");
+  }
+
   public MemberId getId() {
     return id;
   }

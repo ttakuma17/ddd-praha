@@ -1,4 +1,4 @@
-package com.ddd.praha.infrastructure.persistence;
+package com.ddd.praha.infrastructure;
 
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberTask;
@@ -6,7 +6,6 @@ import com.ddd.praha.domain.Task;
 import com.ddd.praha.domain.TaskStatus;
 import com.ddd.praha.application.repository.MemberTaskRepository;
 import com.ddd.praha.application.repository.TaskRepository;
-import com.ddd.praha.infrastructure.persistence.mapper.MemberTaskMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 

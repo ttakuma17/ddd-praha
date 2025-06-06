@@ -1,15 +1,9 @@
-package com.ddd.praha.infrastructure.persistence.mapper;
+package com.ddd.praha.infrastructure;
 
 import com.ddd.praha.domain.Member;
-import com.ddd.praha.domain.MemberId;
-import com.ddd.praha.domain.MemberName;
-import com.ddd.praha.domain.Email;
-import com.ddd.praha.domain.EnrollmentStatus;
-import com.ddd.praha.infrastructure.persistence.typehandler.MemberIdTypeHandler;
-import com.ddd.praha.infrastructure.persistence.typehandler.MemberNameTypeHandler;
-import com.ddd.praha.infrastructure.persistence.typehandler.EmailTypeHandler;
-import com.ddd.praha.infrastructure.persistence.typehandler.EnrollmentStatusTypeHandler;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Arg;
+import org.apache.ibatis.annotations.ConstructorArgs;
 
 import java.util.List;
 
@@ -25,12 +19,28 @@ public interface MemberMapper {
      */
     @Select("SELECT id, name, email, status FROM members")
     @Results({
-        @Result(property = "id", column = "id", javaType = MemberId.class, typeHandler = MemberIdTypeHandler.class),
-        @Result(property = "name", column = "name", javaType = MemberName.class, typeHandler = MemberNameTypeHandler.class),
-        @Result(property = "email", column = "email", javaType = Email.class, typeHandler = EmailTypeHandler.class),
-        @Result(property = "status", column = "status", javaType = EnrollmentStatus.class, typeHandler = EnrollmentStatusTypeHandler.class)
+        @Result(column = "id", javaType = String.class),
+        @Result(column = "name", javaType = String.class),
+        @Result(column = "email", javaType = String.class),
+        @Result(column = "status", javaType = String.class)
     })
-    List<Member> findAll();
+    @ConstructorArgs({
+        @Arg(column = "id", javaType = String.class),
+        @Arg(column = "name", javaType = String.class),
+        @Arg(column = "email", javaType = String.class),
+        @Arg(column = "status", javaType = String.class)
+    })
+    List<MemberRecord> findAllRecords();
+
+    /**
+     * 全てのメンバーを取得する
+     * @return メンバーのリスト
+     */
+    default List<Member> findAll() {
+        return findAllRecords().stream()
+            .map(MemberRecord::toMember)
+            .toList();
+    }
 
     /**
      * IDでメンバーを検索する
@@ -39,12 +49,28 @@ public interface MemberMapper {
      */
     @Select("SELECT id, name, email, status FROM members WHERE id = #{id}")
     @Results({
-        @Result(property = "id", column = "id", javaType = MemberId.class, typeHandler = MemberIdTypeHandler.class),
-        @Result(property = "name", column = "name", javaType = MemberName.class, typeHandler = MemberNameTypeHandler.class),
-        @Result(property = "email", column = "email", javaType = Email.class, typeHandler = EmailTypeHandler.class),
-        @Result(property = "status", column = "status", javaType = EnrollmentStatus.class, typeHandler = EnrollmentStatusTypeHandler.class)
+        @Result(column = "id", javaType = String.class),
+        @Result(column = "name", javaType = String.class),
+        @Result(column = "email", javaType = String.class),
+        @Result(column = "status", javaType = String.class)
     })
-    Member findById(@Param("id") String id);
+    @ConstructorArgs({
+        @Arg(column = "id", javaType = String.class),
+        @Arg(column = "name", javaType = String.class),
+        @Arg(column = "email", javaType = String.class),
+        @Arg(column = "status", javaType = String.class)
+    })
+    MemberRecord findByIdRecord(@Param("id") String id);
+
+    /**
+     * IDでメンバーを検索する
+     * @param id メンバーID
+     * @return メンバー
+     */
+    default Member findById(@Param("id") String id) {
+        MemberRecord record = findByIdRecord(id);
+        return record != null ? record.toMember() : null;
+    }
 
     /**
      * メンバーを保存する（新規追加）

@@ -16,4 +16,9 @@ public class Task {
     this.id = TaskId.generate();
     this.name = name;
   }
+
+  public Task(TaskId id, TaskName name) {
+    this.id = id;
+    this.name = name;
+  }
 }

@@ -1,10 +1,9 @@
-package com.ddd.praha.infrastructure.persistence;
+package com.ddd.praha.infrastructure;
 
 import com.ddd.praha.domain.Team;
 import com.ddd.praha.domain.TeamId;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.application.repository.TeamRepository;
-import com.ddd.praha.infrastructure.persistence.mapper.TeamMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

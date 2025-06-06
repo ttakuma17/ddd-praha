@@ -1,9 +1,8 @@
-package com.ddd.praha.infrastructure.persistence;
+package com.ddd.praha.infrastructure;
 
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberId;
 import com.ddd.praha.application.repository.MemberRepository;
-import com.ddd.praha.infrastructure.persistence.mapper.MemberMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
