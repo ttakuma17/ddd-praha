@@ -1,7 +1,9 @@
 package com.ddd.praha.presentation.api;
 
+import com.ddd.praha.presentation.request.TaskCreateRequest;
 import com.ddd.praha.presentation.request.TaskStatusUpdateRequest;
 import com.ddd.praha.presentation.response.MemberTaskResponse;
+import com.ddd.praha.presentation.response.TaskResponse;
 import com.ddd.praha.application.service.MemberService;
 import com.ddd.praha.application.service.MemberTaskService;
 import com.ddd.praha.application.service.TaskService;
@@ -10,11 +12,14 @@ import com.ddd.praha.domain.MemberId;
 import com.ddd.praha.domain.MemberTask;
 import com.ddd.praha.domain.Task;
 import com.ddd.praha.domain.TaskId;
+import com.ddd.praha.domain.TaskName;
 import com.ddd.praha.domain.TaskStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,6 +37,36 @@ public class TaskController {
         this.taskService = taskService;
         this.memberService = memberService;
         this.memberTaskService = memberTaskService;
+    }
+    
+    /**
+     * 全ての課題を取得する
+     * @return 課題のリスト
+     */
+    @GetMapping
+    public ResponseEntity<List<TaskResponse>> getAllTasks() {
+        List<Task> tasks = taskService.getAllTasks();
+        List<TaskResponse> response = tasks.stream()
+                .map(TaskResponse::fromDomain)
+                .toList();
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * 新しい課題を作成する
+     * @param request 課題作成リクエスト
+     * @return 作成された課題情報
+     */
+    @PostMapping
+    public ResponseEntity<TaskResponse> createTask(@RequestBody TaskCreateRequest request) {
+        try {
+            TaskName taskName = new TaskName(request.name());
+            Task createdTask = taskService.addTask(taskName);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(TaskResponse.fromDomain(createdTask));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
     
     /**

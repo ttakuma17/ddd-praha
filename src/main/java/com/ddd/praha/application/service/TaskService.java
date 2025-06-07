@@ -46,4 +46,14 @@ public class TaskService {
         Task newTask = new Task(name);
         return taskRepository.save(newTask);
     }
+    
+    /**
+     * 新しい課題を追加する（管理者用API向け）
+     * @param name 課題名
+     * @return 作成された課題
+     */
+    public Task addTask(TaskName name) {
+        Task newTask = new Task(name);
+        return taskRepository.save(newTask);
+    }
 }

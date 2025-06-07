@@ -13,6 +13,7 @@ import com.ddd.praha.domain.Task;
 import com.ddd.praha.domain.TaskId;
 import com.ddd.praha.domain.TaskName;
 import com.ddd.praha.domain.TaskStatus;
+import com.ddd.praha.presentation.request.TaskCreateRequest;
 import com.ddd.praha.presentation.request.TaskStatusUpdateRequest;
 import com.ddd.praha.presentation.response.MemberTaskResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,13 +28,17 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -227,5 +232,47 @@ public class TaskControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createTask_ReturnsCreatedTask() throws Exception {
+        // リクエストの作成
+        TaskCreateRequest request = new TaskCreateRequest("新しい課題");
+
+        // モックの設定
+        when(taskService.addTask(any(TaskName.class))).thenReturn(testTask);
+
+        // APIリクエストの実行と検証
+        mockMvc.perform(post("/api/tasks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(testTask.getId().value()))
+                .andExpect(jsonPath("$.name").value(testTask.getName().value()));
+    }
+
+    @Test
+    void getAllTasks_ReturnsListOfTasks() throws Exception {
+        // テスト用の追加タスクを作成
+        TaskId task2Id = new TaskId("test-task-id-2");
+        TaskName task2Name = new TaskName("テスト課題2");
+        Task testTask2 = new Task(task2Name) {
+            @Override
+            public TaskId getId() {
+                return task2Id;
+            }
+        };
+
+        // モックの設定
+        List<Task> tasks = Arrays.asList(testTask, testTask2);
+        when(taskService.getAllTasks()).thenReturn(tasks);
+
+        // APIリクエストの実行と検証
+        mockMvc.perform(get("/api/tasks"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(testTask.getId().value()))
+                .andExpect(jsonPath("$[0].name").value(testTask.getName().value()))
+                .andExpect(jsonPath("$[1].id").value(testTask2.getId().value()))
+                .andExpect(jsonPath("$[1].name").value(testTask2.getName().value()));
     }
 }
