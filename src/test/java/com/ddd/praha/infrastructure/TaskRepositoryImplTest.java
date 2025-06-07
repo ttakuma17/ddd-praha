@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * TaskRepositoryImplのテスト
@@ -33,29 +33,42 @@ public class TaskRepositoryImplTest {
 
     @Test
     void findAll_ShouldReturnAllTasks() {
-        // Given: Flywayマイグレーションでテストデータが投入されている
+        // Given: テスト用タスクを作成・保存
+        Task task1 = new Task(new TaskName("DDDを学ぶ"));
+        Task task2 = new Task(new TaskName("テストを書く"));
+        Task task3 = new Task(new TaskName("リファクタリング"));
+        
+        taskRepository.save(task1);
+        taskRepository.save(task2);
+        taskRepository.save(task3);
 
         // When: 全てのタスクを取得
         List<Task> tasks = taskRepository.findAll();
 
-        // Then: 3件のタスクが取得できること（V2__Insert_test_data.sqlのデータ）
-        assertThat(tasks).hasSize(3);
-        assertThat(tasks)
-            .extracting(task -> task.getName().value())
-            .containsExactlyInAnyOrder("DDDを学ぶ", "テストを書く", "リファクタリング");
+        // Then: 保存したタスクが取得できること
+        assertTrue(tasks.size() >= 3);
+        List<String> taskNames = tasks.stream()
+            .map(task -> task.getName().value())
+            .toList();
+        assertTrue(taskNames.contains("DDDを学ぶ"));
+        assertTrue(taskNames.contains("テストを書く"));
+        assertTrue(taskNames.contains("リファクタリング"));
     }
 
     @Test
     void findById_WithExistingId_ShouldReturnTask() {
-        // Given: 既存のタスクID
-        TaskId existingId = new TaskId("770e8400-e29b-41d4-a716-446655440001");
+        // Given: テスト用タスクを作成・保存
+        Task testTask = new Task(new TaskName("DDDを学ぶ"));
+        Task savedTask = taskRepository.save(testTask);
+        TaskId existingId = savedTask.getId();
 
         // When: IDで検索
         Optional<Task> result = taskRepository.findById(existingId);
 
         // Then: タスクが取得できること
-        assertThat(result).isPresent();
-        assertThat(result.get().getName().value()).isEqualTo("DDDを学ぶ");
+        assertTrue(result.isPresent());
+        assertEquals("DDDを学ぶ", result.get().getName().value());
+        assertEquals(existingId, result.get().getId());
     }
 
     @Test
@@ -67,7 +80,7 @@ public class TaskRepositoryImplTest {
         Optional<Task> result = taskRepository.findById(nonExistingId);
 
         // Then: 空のOptionalが返ること
-        assertThat(result).isEmpty();
+        assertTrue(result.isEmpty());
     }
 
     @Test
@@ -79,21 +92,22 @@ public class TaskRepositoryImplTest {
         Task savedTask = taskRepository.save(newTask);
 
         // Then: 保存されたタスクが返ること
-        assertThat(savedTask).isNotNull();
-        assertThat(savedTask.getId()).isNotNull();
-        assertThat(savedTask.getName().value()).isEqualTo("新しいタスク");
+        assertNotNull(savedTask);
+        assertNotNull(savedTask.getId());
+        assertEquals("新しいタスク", savedTask.getName().value());
 
         // And: データベースから取得できること
         Optional<Task> retrieved = taskRepository.findById(savedTask.getId());
-        assertThat(retrieved).isPresent();
-        assertThat(retrieved.get().getName().value()).isEqualTo("新しいタスク");
+        assertTrue(retrieved.isPresent());
+        assertEquals("新しいタスク", retrieved.get().getName().value());
     }
 
     @Test
     void save_WithExistingTask_ShouldUpdateTask() {
-        // Given: 既存のタスクを取得
-        TaskId existingId = new TaskId("770e8400-e29b-41d4-a716-446655440001");
-        Task existingTask = taskRepository.findById(existingId).orElseThrow();
+        // Given: テスト用タスクを作成・保存
+        Task originalTask = new Task(new TaskName("更新前タスク"));
+        Task savedOriginalTask = taskRepository.save(originalTask);
+        TaskId existingId = savedOriginalTask.getId();
         
         // And: タスク名を変更
         Task updatedTask = new Task(existingId, new TaskName("更新されたタスク名"));
@@ -102,12 +116,13 @@ public class TaskRepositoryImplTest {
         Task savedTask = taskRepository.save(updatedTask);
 
         // Then: 更新されたタスクが返ること
-        assertThat(savedTask.getName().value()).isEqualTo("更新されたタスク名");
+        assertEquals("更新されたタスク名", savedTask.getName().value());
+        assertEquals(existingId, savedTask.getId());
 
         // And: データベースでも更新されていること
         Optional<Task> retrieved = taskRepository.findById(existingId);
-        assertThat(retrieved).isPresent();
-        assertThat(retrieved.get().getName().value()).isEqualTo("更新されたタスク名");
+        assertTrue(retrieved.isPresent());
+        assertEquals("更新されたタスク名", retrieved.get().getName().value());
     }
 
     @Test
@@ -118,12 +133,25 @@ public class TaskRepositoryImplTest {
         Task task3 = new Task(new TaskName("タスク3"));
 
         // When: 全て保存
-        taskRepository.save(task1);
-        taskRepository.save(task2);
-        taskRepository.save(task3);
+        Task savedTask1 = taskRepository.save(task1);
+        Task savedTask2 = taskRepository.save(task2);
+        Task savedTask3 = taskRepository.save(task3);
 
-        // Then: 全てのタスクが取得できること（既存の3件 + 新規3件）
+        // Then: 保存したタスクが全て取得できること
         List<Task> allTasks = taskRepository.findAll();
-        assertThat(allTasks).hasSize(6);
+        assertTrue(allTasks.size() >= 3);
+        
+        // And: 保存したタスクが全て含まれていること
+        List<String> taskNames = allTasks.stream()
+            .map(task -> task.getName().value())
+            .toList();
+        assertTrue(taskNames.contains("タスク1"));
+        assertTrue(taskNames.contains("タスク2"));
+        assertTrue(taskNames.contains("タスク3"));
+        
+        // And: 各タスクがIDで取得できること
+        assertTrue(taskRepository.findById(savedTask1.getId()).isPresent());
+        assertTrue(taskRepository.findById(savedTask2.getId()).isPresent());
+        assertTrue(taskRepository.findById(savedTask3.getId()).isPresent());
     }
 }

@@ -80,21 +80,21 @@ public class TaskController {
         try {
             // 課題を取得
             Optional<Task> taskOptional = taskService.getTaskById(new TaskId(taskId));
-            if (!taskOptional.isPresent()) {
+            if (taskOptional.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
             Task task = taskOptional.get();
             
             // 参加者を取得
             Optional<Member> memberOptional = memberService.getMemberById(new MemberId(memberId));
-            if (!memberOptional.isPresent()) {
+            if (memberOptional.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
             Member member = memberOptional.get();
             
             // 参加者課題を取得
             Optional<MemberTask> memberTaskOptional = memberTaskService.getMemberTask(member);
-            if (!memberTaskOptional.isPresent()) {
+            if (memberTaskOptional.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
             MemberTask memberTask = memberTaskOptional.get();
@@ -108,10 +108,6 @@ public class TaskController {
             taskStatusMap.put(task, updatedMemberTask.getTaskStatus(task));
             
             return ResponseEntity.ok(MemberTaskResponse.fromDomain(updatedMemberTask, taskStatusMap));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }

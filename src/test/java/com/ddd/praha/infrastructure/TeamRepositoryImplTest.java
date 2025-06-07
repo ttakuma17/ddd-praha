@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * TeamRepositoryImplのテスト
@@ -35,54 +35,86 @@ public class TeamRepositoryImplTest {
 
     @Test
     void findAll_ShouldReturnAllTeamsWithMembers() {
-        // Given: Flywayマイグレーションでテストデータが投入されている
+        // Given: ユニークなEmailでテスト用メンバーを作成・保存
+        String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+        Member member1 = new Member(new MemberName("テスト太郎" + uniqueId), new Email("test1-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member2 = new Member(new MemberName("テスト次郎" + uniqueId), new Email("test2-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member3 = new Member(new MemberName("テスト三郎" + uniqueId), new Email("test3-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member4 = new Member(new MemberName("テスト四郎" + uniqueId), new Email("test4-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        
+        Member savedMember1 = memberRepository.save(member1);
+        Member savedMember2 = memberRepository.save(member2);
+        Member savedMember3 = memberRepository.save(member3);
+        Member savedMember4 = memberRepository.save(member4);
+
+        // And: ユニークなチーム名でテスト用チームを作成・保存
+        Team teamA = new Team(new TeamName("TeamA-" + uniqueId), List.of(savedMember1, savedMember2, savedMember3));
+        Team teamB = new Team(new TeamName("TeamB-" + uniqueId), List.of(savedMember4, savedMember2));
+        
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
 
         // When: 全てのチームを取得
         List<Team> teams = teamRepository.findAll();
 
-        // Then: 2つのチームが取得できること
-        assertThat(teams).hasSize(2);
+        // Then: 保存したチームが取得できること
+        assertTrue(teams.size() >= 2);
         
-        // And: チーム名が正しいこと
-        assertThat(teams)
-            .extracting(team -> team.getName().value())
-            .containsExactlyInAnyOrder("TeamA", "TeamB");
+        // And: チーム名が含まれていること
+        List<String> teamNames = teams.stream()
+            .map(team -> team.getName().value())
+            .toList();
+        assertTrue(teamNames.contains("TeamA-" + uniqueId));
+        assertTrue(teamNames.contains("TeamB-" + uniqueId));
 
         // And: 各チームのメンバー数がドメイン制約（2-4人）を満たしていること
-        Team teamA = teams.stream()
-            .filter(team -> "TeamA".equals(team.getName().value()))
+        Team foundTeamA = teams.stream()
+            .filter(team -> ("TeamA-" + uniqueId).equals(team.getName().value()))
             .findFirst()
             .orElseThrow();
-        assertThat(teamA.getMembers()).hasSize(3);  // TeamA: 3人
+        assertEquals(3, foundTeamA.getMembers().size());  // TeamA: 3人
 
-        Team teamB = teams.stream()
-            .filter(team -> "TeamB".equals(team.getName().value()))
+        Team foundTeamB = teams.stream()
+            .filter(team -> ("TeamB-" + uniqueId).equals(team.getName().value()))
             .findFirst()
             .orElseThrow();
-        assertThat(teamB.getMembers()).hasSize(2);  // TeamB: 2人
+        assertEquals(2, foundTeamB.getMembers().size());  // TeamB: 2人
     }
 
     @Test
     void findById_WithExistingId_ShouldReturnTeamWithMembers() {
-        // Given: 既存のチームID（TeamA）
-        TeamId existingId = new TeamId("660e8400-e29b-41d4-a716-446655440001");
+        // Given: ユニークなEmailでテスト用メンバーを作成・保存
+        String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+        Member member1 = new Member(new MemberName("テスト太郎" + uniqueId), new Email("test1-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member2 = new Member(new MemberName("テスト次郎" + uniqueId), new Email("test2-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member3 = new Member(new MemberName("テスト三郎" + uniqueId), new Email("test3-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        
+        Member savedMember1 = memberRepository.save(member1);
+        Member savedMember2 = memberRepository.save(member2);
+        Member savedMember3 = memberRepository.save(member3);
+
+        // And: ユニークなチーム名でテスト用チームを作成・保存
+        Team testTeam = new Team(new TeamName("TestTeam-" + uniqueId), List.of(savedMember1, savedMember2, savedMember3));
+        Team savedTeam = teamRepository.save(testTeam);
+        TeamId existingId = savedTeam.getId();
 
         // When: IDで検索
         Optional<Team> result = teamRepository.findById(existingId);
 
         // Then: チームが取得できること
-        assertThat(result).isPresent();
+        assertTrue(result.isPresent());
         Team team = result.get();
-        assertThat(team.getName().value()).isEqualTo("TeamA");
+        assertEquals("TestTeam-" + uniqueId, team.getName().value());
 
-        // And: メンバーが3人いること（更新されたテストデータに合わせて）
-        assertThat(team.getMembers()).hasSize(3);
+        // And: メンバーが3人いること
+        assertEquals(3, team.getMembers().size());
         
         // And: メンバーの詳細が正しいこと
         List<String> memberNames = team.getMembers().stream()
             .map(member -> member.getName().value())
+            .sorted()
             .toList();
-        assertThat(memberNames).containsExactlyInAnyOrder("テスト太郎", "テスト次郎", "テスト三郎");
+        assertEquals(List.of("テスト三郎" + uniqueId, "テスト太郎" + uniqueId, "テスト次郎" + uniqueId), memberNames);
     }
 
     @Test
@@ -94,57 +126,65 @@ public class TeamRepositoryImplTest {
         Optional<Team> result = teamRepository.findById(nonExistingId);
 
         // Then: 空のOptionalが返ること
-        assertThat(result).isEmpty();
+        assertTrue(result.isEmpty());
     }
 
     @Test
     void save_WithNewTeam_ShouldCreateTeamWithMembers() {
-        // Given: メンバーを取得
-        Member member1 = memberRepository.findById(new MemberId("550e8400-e29b-41d4-a716-446655440001")).orElseThrow();
-        Member member2 = memberRepository.findById(new MemberId("550e8400-e29b-41d4-a716-446655440002")).orElseThrow();
-        List<Member> members = List.of(member1, member2);
+        // Given: ユニークなEmailでテスト用メンバーを作成・保存
+        String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+        Member member1 = new Member(new MemberName("テスト太郎" + uniqueId), new Email("test1-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member2 = new Member(new MemberName("テスト次郎" + uniqueId), new Email("test2-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        
+        Member savedMember1 = memberRepository.save(member1);
+        Member savedMember2 = memberRepository.save(member2);
+        List<Member> members = List.of(savedMember1, savedMember2);
 
-        // And: 新しいチーム
-        Team newTeam = new Team(new TeamName("新しいチーム"), members);
+        // And: ユニークなチーム名で新しいチーム
+        Team newTeam = new Team(new TeamName("新しいチーム-" + uniqueId), members);
 
         // When: 保存
         Team savedTeam = teamRepository.save(newTeam);
 
         // Then: 保存されたチームが返ること
-        assertThat(savedTeam).isNotNull();
-        assertThat(savedTeam.getId()).isNotNull();
-        assertThat(savedTeam.getName().value()).isEqualTo("新しいチーム");
-        assertThat(savedTeam.getMembers()).hasSize(2);
+        assertNotNull(savedTeam);
+        assertNotNull(savedTeam.getId());
+        assertEquals("新しいチーム-" + uniqueId, savedTeam.getName().value());
+        assertEquals(2, savedTeam.getMembers().size());
 
         // And: データベースから取得できること
         Optional<Team> retrieved = teamRepository.findById(savedTeam.getId());
-        assertThat(retrieved).isPresent();
-        assertThat(retrieved.get().getName().value()).isEqualTo("新しいチーム");
-        assertThat(retrieved.get().getMembers()).hasSize(2);
+        assertTrue(retrieved.isPresent());
+        assertEquals("新しいチーム-" + uniqueId, retrieved.get().getName().value());
+        assertEquals(2, retrieved.get().getMembers().size());
     }
 
     @Test
     void save_WithExistingTeam_ShouldUpdateTeamAndMembers() {
-        // Given: 既存のチーム（TeamB、2人）を取得
-        TeamId existingId = new TeamId("660e8400-e29b-41d4-a716-446655440002");
-        Team existingTeam = teamRepository.findById(existingId).orElseThrow();
-        assertThat(existingTeam.getMembers()).hasSize(2);
+        // Given: ユニークなEmailでテスト用メンバーを作成・保存
+        String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+        Member member1 = new Member(new MemberName("メンバー1-" + uniqueId), new Email("member1-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member2 = new Member(new MemberName("メンバー2-" + uniqueId), new Email("member2-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member3 = new Member(new MemberName("メンバー3-" + uniqueId), new Email("member3-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        
+        Member savedMember1 = memberRepository.save(member1);
+        Member savedMember2 = memberRepository.save(member2);
+        Member savedMember3 = memberRepository.save(member3);
+        
+        // And: ユニークなチーム名で初期チームを作成・保存（2人）
+        Team originalTeam = new Team(new TeamName("初期チーム-" + uniqueId), List.of(savedMember1, savedMember2));
+        Team savedOriginalTeam = teamRepository.save(originalTeam);
+        assertEquals(2, savedOriginalTeam.getMembers().size());
         
         // And: メンバーを変更（3人に増やす）
-        Member additionalMember = memberRepository.findById(new MemberId("550e8400-e29b-41d4-a716-446655440001")).orElseThrow();
-        List<Member> originalMembers = existingTeam.getMembers();
-        List<Member> updatedMembers = List.of(
-            originalMembers.get(0),
-            originalMembers.get(1), 
-            additionalMember
-        );
+        List<Member> updatedMembers = List.of(savedMember1, savedMember2, savedMember3);
         
         // And: チーム名とメンバーを変更（リフレクションを使用してIDを設定）
-        Team updatedTeam = new Team(new TeamName("更新されたチーム"), updatedMembers);
+        Team updatedTeam = new Team(new TeamName("更新されたチーム-" + uniqueId), updatedMembers);
         try {
             var idField = Team.class.getDeclaredField("id");
             idField.setAccessible(true);
-            idField.set(updatedTeam, existingId);
+            idField.set(updatedTeam, savedOriginalTeam.getId());
         } catch (Exception e) {
             throw new RuntimeException("Failed to set team ID", e);
         }
@@ -153,34 +193,41 @@ public class TeamRepositoryImplTest {
         Team savedTeam = teamRepository.save(updatedTeam);
 
         // Then: 更新されたチームが返ること
-        assertThat(savedTeam.getName().value()).isEqualTo("更新されたチーム");
-        assertThat(savedTeam.getMembers()).hasSize(3);
+        assertEquals("更新されたチーム-" + uniqueId, savedTeam.getName().value());
+        assertEquals(3, savedTeam.getMembers().size());
 
         // And: データベースでも更新されていること
-        Optional<Team> retrieved = teamRepository.findById(existingId);
-        assertThat(retrieved).isPresent();
-        assertThat(retrieved.get().getName().value()).isEqualTo("更新されたチーム");
-        assertThat(retrieved.get().getMembers()).hasSize(3);
+        Optional<Team> retrieved = teamRepository.findById(savedOriginalTeam.getId());
+        assertTrue(retrieved.isPresent());
+        assertEquals("更新されたチーム-" + uniqueId, retrieved.get().getName().value());
+        assertEquals(3, retrieved.get().getMembers().size());
     }
 
     @Test
     void save_WithMemberReduction_ShouldUpdateMemberAssociation() {
-        // Given: 既存のチーム（TeamA、3人）を2人に減らす
-        TeamId existingId = new TeamId("660e8400-e29b-41d4-a716-446655440001");
-        Team existingTeam = teamRepository.findById(existingId).orElseThrow();
-        assertThat(existingTeam.getMembers()).hasSize(3);
+        // Given: ユニークなEmailでテスト用メンバーを作成・保存
+        String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+        Member member1 = new Member(new MemberName("メンバー1-" + uniqueId), new Email("member1-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member2 = new Member(new MemberName("メンバー2-" + uniqueId), new Email("member2-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member3 = new Member(new MemberName("メンバー3-" + uniqueId), new Email("member3-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        
+        Member savedMember1 = memberRepository.save(member1);
+        Member savedMember2 = memberRepository.save(member2);
+        Member savedMember3 = memberRepository.save(member3);
+        
+        // And: ユニークなチーム名で3人のチームを作成・保存
+        Team originalTeam = new Team(new TeamName("減少テストチーム-" + uniqueId), List.of(savedMember1, savedMember2, savedMember3));
+        Team savedOriginalTeam = teamRepository.save(originalTeam);
+        assertEquals(3, savedOriginalTeam.getMembers().size());
         
         // And: メンバーを2人に減らす（ドメイン制約の最小数）
-        List<Member> reducedMembers = List.of(
-            existingTeam.getMembers().get(0),
-            existingTeam.getMembers().get(1)
-        );
+        List<Member> reducedMembers = List.of(savedMember1, savedMember2);
         
-        Team updatedTeam = new Team(existingTeam.getName(), reducedMembers);
+        Team updatedTeam = new Team(savedOriginalTeam.getName(), reducedMembers);
         try {
             var idField = Team.class.getDeclaredField("id");
             idField.setAccessible(true);
-            idField.set(updatedTeam, existingId);
+            idField.set(updatedTeam, savedOriginalTeam.getId());
         } catch (Exception e) {
             throw new RuntimeException("Failed to set team ID", e);
         }
@@ -189,50 +236,60 @@ public class TeamRepositoryImplTest {
         teamRepository.save(updatedTeam);
 
         // Then: データベースでメンバーが2人になっていること
-        Optional<Team> retrieved = teamRepository.findById(existingId);
-        assertThat(retrieved).isPresent();
-        assertThat(retrieved.get().getMembers()).hasSize(2);
+        Optional<Team> retrieved = teamRepository.findById(savedOriginalTeam.getId());
+        assertTrue(retrieved.isPresent());
+        assertEquals(2, retrieved.get().getMembers().size());
     }
 
     @Test
     void save_WithMinimumMembers_ShouldCreateValidTeam() {
-        // Given: 最小2人のメンバーでチームを作成（Teamクラスの制約を考慮）
-        Member member1 = memberRepository.findById(new MemberId("550e8400-e29b-41d4-a716-446655440001")).orElseThrow();
-        Member member2 = memberRepository.findById(new MemberId("550e8400-e29b-41d4-a716-446655440002")).orElseThrow();
+        // Given: ユニークなEmailで最小2人のメンバーでチームを作成（Teamクラスの制約を考慮）
+        String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+        Member member1 = new Member(new MemberName("ミニマム1-" + uniqueId), new Email("min1-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member2 = new Member(new MemberName("ミニマム2-" + uniqueId), new Email("min2-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
         
-        Team newTeam = new Team(new TeamName("最小メンバーチーム"), List.of(member1, member2));
+        Member savedMember1 = memberRepository.save(member1);
+        Member savedMember2 = memberRepository.save(member2);
+        
+        Team newTeam = new Team(new TeamName("最小メンバーチーム-" + uniqueId), List.of(savedMember1, savedMember2));
 
         // When: 保存
         Team savedTeam = teamRepository.save(newTeam);
 
         // Then: 2人のメンバーでチームが保存されること
-        assertThat(savedTeam.getMembers()).hasSize(2);
+        assertEquals(2, savedTeam.getMembers().size());
 
         // And: データベースから取得しても2人であること
         Optional<Team> retrieved = teamRepository.findById(savedTeam.getId());
-        assertThat(retrieved).isPresent();
-        assertThat(retrieved.get().getMembers()).hasSize(2);
+        assertTrue(retrieved.isPresent());
+        assertEquals(2, retrieved.get().getMembers().size());
     }
 
     @Test
     void save_WithMaximumMembers_ShouldCreateValidTeam() {
-        // Given: 最大4人のメンバーでチームを作成（Teamクラスの制約の上限）
-        Member member1 = memberRepository.findById(new MemberId("550e8400-e29b-41d4-a716-446655440001")).orElseThrow();
-        Member member2 = memberRepository.findById(new MemberId("550e8400-e29b-41d4-a716-446655440002")).orElseThrow();
-        Member member3 = memberRepository.findById(new MemberId("550e8400-e29b-41d4-a716-446655440003")).orElseThrow();
-        Member member4 = memberRepository.findById(new MemberId("550e8400-e29b-41d4-a716-446655440004")).orElseThrow();
+        // Given: ユニークなEmailで最大4人のメンバーでチームを作成（Teamクラスの制約の上限）
+        String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+        Member member1 = new Member(new MemberName("マックス1-" + uniqueId), new Email("max1-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member2 = new Member(new MemberName("マックス2-" + uniqueId), new Email("max2-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member3 = new Member(new MemberName("マックス3-" + uniqueId), new Email("max3-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
+        Member member4 = new Member(new MemberName("マックス4-" + uniqueId), new Email("max4-" + uniqueId + "@example.com"), EnrollmentStatus.在籍中);
         
-        Team newTeam = new Team(new TeamName("最大メンバーチーム"), List.of(member1, member2, member3, member4));
+        Member savedMember1 = memberRepository.save(member1);
+        Member savedMember2 = memberRepository.save(member2);
+        Member savedMember3 = memberRepository.save(member3);
+        Member savedMember4 = memberRepository.save(member4);
+        
+        Team newTeam = new Team(new TeamName("最大メンバーチーム-" + uniqueId), List.of(savedMember1, savedMember2, savedMember3, savedMember4));
 
         // When: 保存
         Team savedTeam = teamRepository.save(newTeam);
 
         // Then: 4人のメンバーでチームが保存されること
-        assertThat(savedTeam.getMembers()).hasSize(4);
+        assertEquals(4, savedTeam.getMembers().size());
 
         // And: データベースから取得しても4人であること
         Optional<Team> retrieved = teamRepository.findById(savedTeam.getId());
-        assertThat(retrieved).isPresent();
-        assertThat(retrieved.get().getMembers()).hasSize(4);
+        assertTrue(retrieved.isPresent());
+        assertEquals(4, retrieved.get().getMembers().size());
     }
 }
