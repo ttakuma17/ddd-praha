@@ -1,8 +1,5 @@
 package com.ddd.praha.presentation.api;
 
-import com.ddd.praha.presentation.request.MemberCreateRequest;
-import com.ddd.praha.presentation.request.MemberStatusUpdateRequest;
-import com.ddd.praha.presentation.response.MemberResponse;
 import com.ddd.praha.application.service.MemberService;
 import com.ddd.praha.domain.Email;
 import com.ddd.praha.domain.EnrollmentStatus;

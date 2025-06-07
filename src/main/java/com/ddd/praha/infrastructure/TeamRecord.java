@@ -13,7 +13,7 @@ import java.util.List;
 public record TeamRecord(
     String id,
     String name,
-    List<Member> members
+    List<MemberRecord> members
 ) {
 
     /**
@@ -22,10 +22,15 @@ public record TeamRecord(
      */
     public Team toTeam() {
         try {
+            // MemberRecordをMemberに変換
+            List<Member> domainMembers = members != null ? 
+                members.stream().map(MemberRecord::toMember).toList() : 
+                List.of();
+            
             // 通常のコンストラクタでTeamを作成
             Team team = new Team(
                 new TeamName(name),
-                members
+                domainMembers
             );
             
             // リフレクションを使用してIDフィールドを設定

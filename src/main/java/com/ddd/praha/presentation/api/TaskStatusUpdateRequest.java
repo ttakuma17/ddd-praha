@@ -1,16 +1,16 @@
-package com.ddd.praha.presentation.request;
+package com.ddd.praha.presentation.api;
 
 /**
- * 参加者ステータス更新リクエスト
+ * 課題ステータス更新リクエスト
  */
-public class MemberStatusUpdateRequest {
+public class TaskStatusUpdateRequest {
     private String status;
     
     // デフォルトコンストラクタ（Jackson用）
-    public MemberStatusUpdateRequest() {
+    public TaskStatusUpdateRequest() {
     }
     
-    public MemberStatusUpdateRequest(String status) {
+    public TaskStatusUpdateRequest(String status) {
         this.status = status;
     }
     

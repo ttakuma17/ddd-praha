@@ -10,8 +10,6 @@ import com.ddd.praha.domain.MemberName;
 import com.ddd.praha.domain.Team;
 import com.ddd.praha.domain.TeamId;
 import com.ddd.praha.domain.TeamName;
-import com.ddd.praha.presentation.request.TeamMemberUpdateRequest;
-import com.ddd.praha.presentation.response.TeamResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

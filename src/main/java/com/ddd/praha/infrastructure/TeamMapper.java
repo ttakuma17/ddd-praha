@@ -13,49 +13,61 @@ import java.util.List;
 public interface TeamMapper {
 
     /**
+     * チームに所属するメンバーレコードを取得する
+     * @param teamId チームID
+     * @return メンバーレコードのリスト
+     */
+    @Select("SELECT m.id, m.name, m.email, m.status FROM members m JOIN team_members tm ON m.id = tm.member_id WHERE tm.team_id = #{teamId}")
+    List<MemberRecord> findMemberRecordsByTeamId(@Param("teamId") String teamId);
+    
+    /**
      * チームに所属するメンバーを取得する
      * @param teamId チームID
      * @return メンバーのリスト
      */
-    @Select("SELECT m.* FROM members m JOIN team_members tm ON m.id = tm.member_id WHERE tm.team_id = #{teamId}")
-    List<Member> findMembersByTeamId(@Param("teamId") String teamId);
+    default List<Member> findMembersByTeamId(@Param("teamId") String teamId) {
+        return findMemberRecordsByTeamId(teamId).stream()
+            .map(MemberRecord::toMember)
+            .toList();
+    }
 
     /**
-     * 全てのチームを取得する
-     * @return チームのリスト
+     * 全てのチームの基本情報を取得する
+     * @return チームレコードのリスト
      */
     @Select("SELECT id, name FROM teams")
-    @Results({
-        @Result(property = "id", column = "id"),
-        @Result(property = "name", column = "name"),
-        @Result(property = "members", column = "id", javaType = List.class, 
-                many = @Many(select = "findMembersByTeamId"))
-    })
-    List<TeamRecord> findAllRecords();
-
+    List<TeamBasicRecord> findAllBasicRecords();
+    
     /**
      * 全てのチームを取得する
      * @return チームのリスト
      */
     default List<Team> findAll() {
-        return findAllRecords().stream()
-            .map(TeamRecord::toTeam)
+        return findAllBasicRecords().stream()
+            .map(basicRecord -> {
+                List<Member> members = findMembersByTeamId(basicRecord.id());
+                return new TeamRecord(basicRecord.id(), basicRecord.name(), 
+                    members.stream().map(member -> 
+                        new MemberRecord(member.getId().value(), member.getName().value(),
+                                       member.getEmail().value(), member.getStatus().name())).toList())
+                    .toTeam();
+            })
             .toList();
     }
+    
+    /**
+     * チームの基本情報レコード
+     */
+    record TeamBasicRecord(String id, String name) {}
+
 
     /**
-     * IDでチームを検索する
+     * IDでチームの基本情報を検索する
      * @param id チームID
-     * @return チーム
+     * @return チーム基本レコード
      */
     @Select("SELECT id, name FROM teams WHERE id = #{id}")
-    @Results({
-        @Result(property = "id", column = "id"),
-        @Result(property = "name", column = "name"),
-        @Result(property = "members", column = "id", javaType = List.class, 
-                many = @Many(select = "findMembersByTeamId"))
-    })
-    TeamRecord findByIdRecord(@Param("id") String id);
+    TeamBasicRecord findByIdBasicRecord(@Param("id") String id);
 
     /**
      * IDでチームを検索する
@@ -63,8 +75,16 @@ public interface TeamMapper {
      * @return チーム
      */
     default Team findById(@Param("id") String id) {
-        TeamRecord record = findByIdRecord(id);
-        return record != null ? record.toTeam() : null;
+        TeamBasicRecord basicRecord = findByIdBasicRecord(id);
+        if (basicRecord == null) {
+            return null;
+        }
+        List<Member> members = findMembersByTeamId(basicRecord.id());
+        return new TeamRecord(basicRecord.id(), basicRecord.name(), 
+            members.stream().map(member -> 
+                new MemberRecord(member.getId().value(), member.getName().value(),
+                               member.getEmail().value(), member.getStatus().name())).toList())
+            .toTeam();
     }
 
     /**

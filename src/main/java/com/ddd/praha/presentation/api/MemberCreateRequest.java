@@ -1,4 +1,4 @@
-package com.ddd.praha.presentation.request;
+package com.ddd.praha.presentation.api;
 
 /**
  * 参加者作成リクエスト

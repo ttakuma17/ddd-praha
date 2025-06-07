@@ -1,7 +1,5 @@
 package com.ddd.praha.presentation.api;
 
-import com.ddd.praha.presentation.request.TeamMemberUpdateRequest;
-import com.ddd.praha.presentation.response.TeamResponse;
 import com.ddd.praha.application.service.MemberService;
 import com.ddd.praha.application.service.TeamService;
 import com.ddd.praha.domain.Member;

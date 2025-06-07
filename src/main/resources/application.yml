@@ -1,9 +1,9 @@
 logging:
   level:
     praha: DEBUG
-  structured:
-    format:
-      console: ecs
+#  structured:
+#    format:
+#      console: ecs
 
 spring:
   application:

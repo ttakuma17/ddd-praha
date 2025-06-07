@@ -1,4 +1,4 @@
-package com.ddd.praha.presentation.response;
+package com.ddd.praha.presentation.api;
 
 import com.ddd.praha.domain.Member;
 

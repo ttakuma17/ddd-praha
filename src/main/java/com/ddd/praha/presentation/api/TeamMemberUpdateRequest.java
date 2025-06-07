@@ -1,4 +1,4 @@
-package com.ddd.praha.presentation.request;
+package com.ddd.praha.presentation.api;
 
 import java.util.List;
 

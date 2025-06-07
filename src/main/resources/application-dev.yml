@@ -1,0 +1,14 @@
+# 開発環境用の設定
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+logging:
+  level:
+    praha: DEBUG
+    io.micrometer: INFO
+    io.zipkin: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  # structured.format.consoleを設定しないことでECS形式を無効化

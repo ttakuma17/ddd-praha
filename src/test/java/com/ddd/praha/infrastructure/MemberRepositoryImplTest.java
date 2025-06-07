@@ -48,7 +48,7 @@ class MemberRepositoryImplTest {
         // 準備
         // テストデータのIDを取得（実際のテストデータに合わせて調整）
         List<Member> members = memberRepository.findAll();
-        MemberId existingId = members.get(0).getId();
+        MemberId existingId = members.getFirst().getId();
 
         // 実行
         Optional<Member> result = memberRepository.findById(existingId);

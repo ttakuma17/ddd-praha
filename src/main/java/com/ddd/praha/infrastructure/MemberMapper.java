@@ -18,18 +18,6 @@ public interface MemberMapper {
      * @return メンバーのリスト
      */
     @Select("SELECT id, name, email, status FROM members")
-    @Results({
-        @Result(column = "id", javaType = String.class),
-        @Result(column = "name", javaType = String.class),
-        @Result(column = "email", javaType = String.class),
-        @Result(column = "status", javaType = String.class)
-    })
-    @ConstructorArgs({
-        @Arg(column = "id", javaType = String.class),
-        @Arg(column = "name", javaType = String.class),
-        @Arg(column = "email", javaType = String.class),
-        @Arg(column = "status", javaType = String.class)
-    })
     List<MemberRecord> findAllRecords();
 
     /**
@@ -48,18 +36,6 @@ public interface MemberMapper {
      * @return メンバー
      */
     @Select("SELECT id, name, email, status FROM members WHERE id = #{id}")
-    @Results({
-        @Result(column = "id", javaType = String.class),
-        @Result(column = "name", javaType = String.class),
-        @Result(column = "email", javaType = String.class),
-        @Result(column = "status", javaType = String.class)
-    })
-    @ConstructorArgs({
-        @Arg(column = "id", javaType = String.class),
-        @Arg(column = "name", javaType = String.class),
-        @Arg(column = "email", javaType = String.class),
-        @Arg(column = "status", javaType = String.class)
-    })
     MemberRecord findByIdRecord(@Param("id") String id);
 
     /**

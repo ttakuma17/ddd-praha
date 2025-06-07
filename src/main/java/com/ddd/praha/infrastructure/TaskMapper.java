@@ -16,10 +16,6 @@ public interface TaskMapper {
      * @return 課題レコードのリスト
      */
     @Select("SELECT id, name FROM tasks")
-    @Results({
-        @Result(property = "id", column = "id"),
-        @Result(property = "name", column = "name")
-    })
     List<TaskRecord> findAllRecords();
 
     /**
@@ -38,10 +34,6 @@ public interface TaskMapper {
      * @return 課題レコード
      */
     @Select("SELECT id, name FROM tasks WHERE id = #{id}")
-    @Results({
-        @Result(property = "id", column = "id"),
-        @Result(property = "name", column = "name")
-    })
     TaskRecord findByIdRecord(@Param("id") String id);
 
     /**
