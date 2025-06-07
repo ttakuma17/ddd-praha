@@ -13,15 +13,11 @@ import com.ddd.praha.domain.Task;
 import com.ddd.praha.domain.TaskId;
 import com.ddd.praha.domain.TaskName;
 import com.ddd.praha.domain.TaskStatus;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -43,40 +39,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TaskController.class)
 public class TaskControllerTest {
 
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        @Primary
-        public TaskService taskService() {
-            return Mockito.mock(TaskService.class);
-        }
-
-        @Bean
-        @Primary
-        public MemberService memberService() {
-            return Mockito.mock(MemberService.class);
-        }
-
-        @Bean
-        @Primary
-        public MemberTaskService memberTaskService() {
-            return Mockito.mock(MemberTaskService.class);
-        }
-    }
-
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
+    @MockBean
     private TaskService taskService;
 
-    @Autowired
+    @MockBean
     private MemberService memberService;
 
-    @Autowired
+    @MockBean
     private MemberTaskService memberTaskService;
 
 
@@ -140,9 +112,15 @@ public class TaskControllerTest {
         taskStatusMap.put(testTask, TaskStatus.取組中);
 
         // APIリクエストの実行と検証
+        String requestJson = """
+                {
+                    "status": "%s"
+                }
+                """.formatted(request.getStatus());
+
         mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), testMemberId.value())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.owner.id").value(testMember.getId().value()))
                 .andExpect(jsonPath("$.tasks." + testTaskId.value() + ".status").value(TaskStatus.取組中.name()));
@@ -157,9 +135,15 @@ public class TaskControllerTest {
         when(taskService.getTaskById(any(TaskId.class))).thenReturn(Optional.empty());
 
         // APIリクエストの実行と検証
+        String requestJson = """
+                {
+                    "status": "%s"
+                }
+                """.formatted(request.getStatus());
+
         mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", "non-existent-task-id", testMemberId.value())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isNotFound());
     }
 
@@ -173,9 +157,15 @@ public class TaskControllerTest {
         when(memberService.getMemberById(any(MemberId.class))).thenReturn(Optional.empty());
 
         // APIリクエストの実行と検証
+        String requestJson = """
+                {
+                    "status": "%s"
+                }
+                """.formatted(request.getStatus());
+
         mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), "non-existent-member-id")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isNotFound());
     }
 
@@ -190,9 +180,15 @@ public class TaskControllerTest {
         when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.empty());
 
         // APIリクエストの実行と検証
+        String requestJson = """
+                {
+                    "status": "%s"
+                }
+                """.formatted(request.getStatus());
+
         mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), testMemberId.value())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isNotFound());
     }
 
@@ -213,9 +209,15 @@ public class TaskControllerTest {
         )).thenThrow(new IllegalStateException("このステータス変更は許可されていません"));
 
         // APIリクエストの実行と検証
+        String requestJson = """
+                {
+                    "status": "%s"
+                }
+                """.formatted(request.getStatus());
+
         mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), testMemberId.value())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isBadRequest());
     }
 
@@ -224,10 +226,21 @@ public class TaskControllerTest {
         // リクエストの作成
         TaskStatusUpdateRequest request = new TaskStatusUpdateRequest("INVALID_STATUS");
 
+        // モックの設定 - タスクとメンバーは存在するが、ステータスが無効
+        when(taskService.getTaskById(any(TaskId.class))).thenReturn(Optional.of(testTask));
+        when(memberService.getMemberById(any(MemberId.class))).thenReturn(Optional.of(testMember));
+        when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.of(testMemberTask));
+
         // APIリクエストの実行と検証
+        String requestJson = """
+                {
+                    "status": "%s"
+                }
+                """.formatted(request.getStatus());
+
         mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), testMemberId.value())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isBadRequest());
     }
 
@@ -240,9 +253,15 @@ public class TaskControllerTest {
         when(taskService.addTask(any(TaskName.class))).thenReturn(testTask);
 
         // APIリクエストの実行と検証
+        String requestJson = """
+                {
+                    "name": "%s"
+                }
+                """.formatted(request.name());
+
         mockMvc.perform(post("/api/tasks")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(testTask.getId().value()))
                 .andExpect(jsonPath("$.name").value(testTask.getName().value()));

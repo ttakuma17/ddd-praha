@@ -10,15 +10,12 @@ import com.ddd.praha.domain.MemberName;
 import com.ddd.praha.domain.Team;
 import com.ddd.praha.domain.TeamId;
 import com.ddd.praha.domain.TeamName;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -35,32 +32,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TeamController.class)
 public class TeamControllerTest {
 
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        @Primary
-        public TeamService teamService() {
-            return Mockito.mock(TeamService.class);
-        }
-
-        @Bean
-        @Primary
-        public MemberService memberService() {
-            return Mockito.mock(MemberService.class);
-        }
-    }
-
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     private TeamService teamService;
 
-    @Autowired
+    @MockBean
     private MemberService memberService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private Team team1;
     private Team team2;
@@ -177,9 +156,15 @@ public class TeamControllerTest {
         when(teamService.addMemberToTeam(team1.getId(), member3)).thenReturn(updatedTeam1);
 
         // Act & Assert
+        String requestJson = """
+                {
+                    "memberIds": ["%s", "%s"]
+                }
+                """.formatted(member1.getId().value(), member3.getId().value());
+
         mockMvc.perform(put("/api/teams/team-1/members")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("team-1"))
                 .andExpect(jsonPath("$.name").value("TeamA"))
@@ -197,9 +182,15 @@ public class TeamControllerTest {
         when(teamService.getTeamById(new TeamId("non-existent"))).thenReturn(Optional.empty());
 
         // Act & Assert
+        String requestJson = """
+                {
+                    "memberIds": ["%s", "%s"]
+                }
+                """.formatted(member1.getId().value(), member3.getId().value());
+
         mockMvc.perform(put("/api/teams/non-existent/members")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isNotFound());
     }
 
@@ -215,9 +206,15 @@ public class TeamControllerTest {
         when(memberService.getMemberById(new MemberId("non-existent-member"))).thenReturn(Optional.empty());
 
         // Act & Assert
+        String requestJson = """
+                {
+                    "memberIds": ["%s", "%s"]
+                }
+                """.formatted(member1.getId().value(), "non-existent-member");
+
         mockMvc.perform(put("/api/teams/team-1/members")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isBadRequest());
     }
 
@@ -236,9 +233,15 @@ public class TeamControllerTest {
                .when(teamService).removeMemberFromTeam(any(), any());
 
         // Act & Assert
+        String requestJson = """
+                {
+                    "memberIds": ["%s"]
+                }
+                """.formatted(member1.getId().value());
+
         mockMvc.perform(put("/api/teams/team-1/members")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isBadRequest());
     }
 
@@ -254,9 +257,15 @@ public class TeamControllerTest {
         when(teamService.removeMemberFromTeam(any(), any())).thenThrow(new IllegalStateException("Error"));
 
         // Act & Assert
+        String requestJson = """
+                {
+                    "memberIds": ["%s"]
+                }
+                """.formatted(member1.getId().value());
+
         mockMvc.perform(put("/api/teams/team-1/members")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isConflict());
     }
 }

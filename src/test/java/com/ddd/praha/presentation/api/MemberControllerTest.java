@@ -6,15 +6,11 @@ import com.ddd.praha.domain.EnrollmentStatus;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberId;
 import com.ddd.praha.domain.MemberName;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -30,22 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(MemberController.class)
 public class MemberControllerTest {
 
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        @Primary
-        public MemberService memberService() {
-            return Mockito.mock(MemberService.class);
-        }
-    }
-
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
+    @MockBean
     private MemberService memberService;
 
     private Member testMember;
@@ -124,9 +108,21 @@ public class MemberControllerTest {
         )).thenReturn(testMember);
 
         // APIリクエストの実行と検証
+        String requestJson = """
+                {
+                    "name": "%s",
+                    "email": "%s",
+                    "status": "%s"
+                }
+                """.formatted(
+                request.getName(),
+                request.getEmail(),
+                request.getStatus()
+        );
+
         mockMvc.perform(post("/api/members")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(testMember.getId().value()))
                 .andExpect(jsonPath("$.name").value(testMember.getName().value()))
@@ -158,9 +154,15 @@ public class MemberControllerTest {
         )).thenReturn(updatedMember);
 
         // APIリクエストの実行と検証
+        String requestJson = """
+                {
+                    "status": "%s"
+                }
+                """.formatted(request.getStatus());
+
         mockMvc.perform(put("/api/members/{id}/status", testMemberId.value())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(updatedMember.getId().value()))
                 .andExpect(jsonPath("$.name").value(updatedMember.getName().value()))
@@ -180,9 +182,15 @@ public class MemberControllerTest {
         )).thenThrow(new IllegalArgumentException("指定されたIDの参加者が見つかりません"));
 
         // APIリクエストの実行と検証
+        String requestJson = """
+                {
+                    "status": "%s"
+                }
+                """.formatted(request.getStatus());
+
         mockMvc.perform(put("/api/members/{id}/status", "non-existent-id")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isNotFound());
     }
 
@@ -198,9 +206,15 @@ public class MemberControllerTest {
         )).thenThrow(new IllegalStateException("このステータス変更は許可されていません"));
 
         // APIリクエストの実行と検証
+        String requestJson = """
+                {
+                    "status": "%s"
+                }
+                """.formatted(request.getStatus());
+
         mockMvc.perform(put("/api/members/{id}/status", testMemberId.value())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isBadRequest());
     }
 }
