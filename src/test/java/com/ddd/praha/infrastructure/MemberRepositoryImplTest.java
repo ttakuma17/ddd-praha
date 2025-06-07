@@ -30,20 +30,18 @@ class MemberRepositoryImplTest {
 
     @Test
     @DisplayName("全てのメンバーを取得できる")
-    @Sql("/sql/insert_test_members.sql")
     void findAll_ReturnsAllMembers() {
         // 実行
         List<Member> members = memberRepository.findAll();
 
         // 検証
         assertThat(members).isNotEmpty();
-        // テストデータの件数に応じて検証
-        assertThat(members.size()).isGreaterThanOrEqualTo(1);
+        // Flyway migration V2で5件のテストデータが投入される
+        assertThat(members.size()).isEqualTo(5);
     }
 
     @Test
     @DisplayName("存在するIDでメンバーを検索できる")
-    @Sql("/sql/insert_test_members.sql")
     void findById_WhenMemberExists_ReturnsMember() {
         // 準備
         // テストデータのIDを取得（実際のテストデータに合わせて調整）
