@@ -1,0 +1,36 @@
+logging:
+  level:
+    praha: DEBUG
+  structured:
+    format:
+      console: ecs
+
+spring:
+  application:
+    name: praha
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/praha
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  
+  jackson:
+    visibility:
+      field: any
+      getter: none
+      setter: none
+      creator: any
+    serialization:
+      write-dates-as-timestamps: false
+  
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    clean-disabled: false
+    schemas: public
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

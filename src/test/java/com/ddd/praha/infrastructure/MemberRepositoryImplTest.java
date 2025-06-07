@@ -1,5 +1,6 @@
 package com.ddd.praha.infrastructure;
 
+import com.ddd.praha.TestcontainersConfiguration;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberId;
 import com.ddd.praha.domain.MemberName;
@@ -7,10 +8,10 @@ import com.ddd.praha.domain.Email;
 import com.ddd.praha.domain.EnrollmentStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
@@ -19,10 +20,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@MybatisTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(MemberRepositoryImpl.class)
+@SpringBootTest
+@Import(TestcontainersConfiguration.class)
 @org.springframework.test.context.ActiveProfiles("test")
+@Transactional
 class MemberRepositoryImplTest {
 
     @Autowired
