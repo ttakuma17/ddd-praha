@@ -22,7 +22,8 @@ class EnrollmentStatusTransitionTest {
       "在籍中, 休会中",
       "在籍中, 退会済",
       "休会中, 在籍中",
-      "休会中, 退会済"
+      "休会中, 退会済",
+      "退会済, 在籍中"
   })
   void allowValidTransitions(EnrollmentStatus from, EnrollmentStatus to) {
     EnrollmentStatusTransition transition = new EnrollmentStatusTransition();
@@ -32,8 +33,7 @@ class EnrollmentStatusTransitionTest {
   @ParameterizedTest
   @DisplayName("無効な状態遷移は許可されない")
   @CsvSource({
-      "退会済み, 在籍中",
-      "退会済み, 休会中"
+      "退会済, 休会中"
   })
   void disallowInvalidTransitions(EnrollmentStatus from, EnrollmentStatus to) {
     EnrollmentStatusTransition transition = new EnrollmentStatusTransition();

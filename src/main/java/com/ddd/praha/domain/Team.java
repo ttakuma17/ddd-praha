@@ -43,9 +43,9 @@ public class Team {
   }
 
   public void addMember(Member member){
-    if (member.canJoin()){
+    if (!member.canJoin()){
       throw new IllegalArgumentException("在籍中ではない参加者はチームに追加できません");
-    };
+    }
     if (list.contains(member)) {
       throw new IllegalArgumentException("指定された参加者は既にチームに所属しています");
     }

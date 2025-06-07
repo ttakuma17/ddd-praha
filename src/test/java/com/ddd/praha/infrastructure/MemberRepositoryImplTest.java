@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(MemberRepositoryImpl.class)
+@org.springframework.test.context.ActiveProfiles("test")
 class MemberRepositoryImplTest {
 
     @Autowired
@@ -74,8 +75,8 @@ class MemberRepositoryImplTest {
     @DisplayName("新しいメンバーを保存できる")
     void save_NewMember_InsertsAndReturnsNewMember() {
         // 準備
-        MemberName name = new MemberName("テスト太郎");
-        Email email = new Email("test@example.com");
+        MemberName name = new MemberName("新規テスト太郎");
+        Email email = new Email("newtest@example.com");
         EnrollmentStatus status = EnrollmentStatus.在籍中;
         Member newMember = new Member(name, email, status);
 

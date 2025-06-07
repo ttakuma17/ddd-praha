@@ -40,7 +40,9 @@ public class ArchitectureTest {
 
     @BeforeAll
     public static void setup() {
-        importedClasses = new ClassFileImporter().importPackages("com.ddd.praha");
+        importedClasses = new ClassFileImporter()
+                .withImportOption(location -> !location.contains("/test/"))
+                .importPackages("com.ddd.praha");
     }
 
     @Test
@@ -102,6 +104,7 @@ public class ArchitectureTest {
                         "..infrastructure..",
                         "java..",
                         "javax..",
+                        "jakarta..",
                         "org.springframework..",
                         "org.slf4j..",
                         "com.fasterxml..",
@@ -122,6 +125,7 @@ public class ArchitectureTest {
                         "..presentation..",
                         "java..",
                         "javax..",
+                        "jakarta..",
                         "org.springframework..",
                         "org.slf4j..",
                         "com.fasterxml..",

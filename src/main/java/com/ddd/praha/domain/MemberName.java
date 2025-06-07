@@ -4,9 +4,11 @@ import java.util.Objects;
 
 public record MemberName(String value) {
   public MemberName {
-    Objects.requireNonNull(value, "名前は必須です");
-    if (value.isBlank()) {
-      throw new IllegalArgumentException("名前は空文字列にできません");
+    if (value == null || value.isBlank()) {
+      throw new IllegalArgumentException("名前は必須です");
+    }
+    if (value.length() > 30) {
+      throw new IllegalArgumentException("名前は30文字以内にしてください");
     }
   }
 }
