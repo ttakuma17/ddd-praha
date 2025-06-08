@@ -133,4 +133,11 @@ public interface TeamMapper {
      */
     @Select("SELECT COUNT(*) FROM teams WHERE id = #{id}")
     boolean exists(@Param("id") String id);
+
+    /**
+     * チームを削除する
+     * @param id チームID
+     */
+    @Delete("DELETE FROM teams WHERE id = #{id}")
+    void delete(@Param("id") String id);
 }

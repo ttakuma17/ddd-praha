@@ -29,4 +29,10 @@ public interface TeamRepository {
      * @return 保存されたチーム
      */
     Team save(Team team);
+    
+    /**
+     * チームを削除する
+     * @param team 削除するチーム
+     */
+    void delete(Team team);
 }

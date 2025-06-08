@@ -1,7 +1,9 @@
 package com.ddd.praha.domain;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * チーム集約？
@@ -69,5 +71,76 @@ public class Team {
 
   public boolean needsSplitting(){
     return list.size() >= 5;
+  }
+
+  public boolean canAcceptNewMember(){
+    return list.size() < 4;
+  }
+
+  /**
+   * メンバーを追加し、必要に応じてチーム分割を行う
+   * @param member 追加するメンバー
+   * @return チーム編成結果
+   */
+  public TeamComposition addMemberWithComposition(Member member) {
+    addMember(member);
+    
+    if (needsSplitting()) {
+      return splitTeam();
+    }
+    
+    return TeamComposition.noChange(this);
+  }
+
+  /**
+   * チームを2つに分割する
+   * @return 分割結果
+   */
+  private TeamComposition splitTeam() {
+    List<Member> members = getMembers();
+    int half = members.size() / 2;
+    
+    // 後半のメンバーで新しいチームを作成
+    List<Member> movedMembers = new ArrayList<>(members.subList(half, members.size()));
+    
+    // 新しいチームを作成
+    TeamName newTeamName = new TeamName(this.name.value() + "-分割");
+    Team newTeam = new Team(newTeamName, movedMembers);
+    
+    // 元のチームから後半のメンバーを削除
+    for (Member memberToRemove : movedMembers) {
+      this.deleteMember(memberToRemove);
+    }
+    
+    return TeamComposition.split(this, newTeam, movedMembers);
+  }
+
+  /**
+   * 他のチームと合流する
+   * @param allTeams 全チームのリスト
+   * @return 合流結果（合流先が見つからない場合はEmpty）
+   */
+  public Optional<TeamComposition> mergeWithOtherTeam(List<Team> allTeams) {
+    if (list.size() != 1) {
+      throw new IllegalStateException("合流は1名のチームのみ可能です");
+    }
+    
+    // 合流先候補チームを探す（自分以外で4名未満のチーム）
+    Optional<Team> targetTeam = allTeams.stream()
+        .filter(t -> !t.getId().equals(this.getId()))
+        .filter(Team::canAcceptNewMember)
+        .min(Comparator.comparingInt(t -> t.getMembers().size()));
+    
+    if (targetTeam.isPresent()) {
+      Team mergeTarget = targetTeam.get();
+      Member memberToMove = this.list.get(0);
+      
+      // 合流先チームにメンバーを追加
+      mergeTarget.addMember(memberToMove);
+      
+      return Optional.of(TeamComposition.merge(mergeTarget, List.of(memberToMove)));
+    }
+    
+    return Optional.empty();
   }
 }

@@ -1,7 +1,8 @@
 package com.ddd.praha.presentation.api;
 
 import com.ddd.praha.application.service.MemberService;
-import com.ddd.praha.application.service.TeamService;
+import com.ddd.praha.application.service.TeamQueryService;
+import com.ddd.praha.application.service.TeamOrchestrationService;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberId;
 import com.ddd.praha.domain.Team;
@@ -21,11 +22,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
-    private final TeamService teamService;
+    private final TeamQueryService teamQueryService;
+    private final TeamOrchestrationService teamOrchestrationService;
     private final MemberService memberService;
     
-    public TeamController(TeamService teamService, MemberService memberService) {
-        this.teamService = teamService;
+    public TeamController(TeamQueryService teamQueryService, 
+                         TeamOrchestrationService teamOrchestrationService,
+                         MemberService memberService) {
+        this.teamQueryService = teamQueryService;
+        this.teamOrchestrationService = teamOrchestrationService;
         this.memberService = memberService;
     }
     
@@ -35,7 +40,7 @@ public class TeamController {
      */
     @GetMapping
     public ResponseEntity<List<TeamResponse>> getAllTeams() {
-        List<Team> teams = teamService.getAllTeams();
+        List<Team> teams = teamQueryService.getAllTeams();
         List<TeamResponse> response = teams.stream()
                 .map(TeamResponse::fromDomain)
                 .collect(Collectors.toList());
@@ -49,7 +54,7 @@ public class TeamController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<TeamResponse> getTeamById(@PathVariable String id) {
-        return teamService.getTeamById(new TeamId(id))
+        return teamQueryService.getTeamById(new TeamId(id))
                 .map(team -> ResponseEntity.ok(TeamResponse.fromDomain(team)))
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -66,7 +71,7 @@ public class TeamController {
             @RequestBody TeamMemberUpdateRequest request) {
         try {
             // チームを取得
-            Optional<Team> teamOptional = teamService.getTeamById(new TeamId(id));
+            Optional<Team> teamOptional = teamQueryService.getTeamById(new TeamId(id));
             if (teamOptional.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
@@ -88,14 +93,14 @@ public class TeamController {
             // 削除するメンバーを特定して削除
             for (Member member : currentMembers) {
                 if (!newMembers.contains(member)) {
-                    team = teamService.removeMemberFromTeam(team.getId(), member);
+                    team = teamOrchestrationService.removeMemberFromTeam(team.getId(), member);
                 }
             }
             
             // 追加するメンバーを特定して追加
             for (Member member : newMembers) {
                 if (!currentMembers.contains(member)) {
-                    team = teamService.addMemberToTeam(team.getId(), member);
+                    team = teamOrchestrationService.addMemberToTeam(team.getId(), member);
                 }
             }
             

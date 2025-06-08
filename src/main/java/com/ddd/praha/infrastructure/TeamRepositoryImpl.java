@@ -57,4 +57,12 @@ public class TeamRepositoryImpl implements TeamRepository {
         
         return team;
     }
+
+    @Override
+    public void delete(Team team) {
+        // まずチームメンバーの関連を削除
+        teamMapper.removeAllMembers(team.getId().value());
+        // チーム自体を削除
+        teamMapper.delete(team.getId().value());
+    }
 }
