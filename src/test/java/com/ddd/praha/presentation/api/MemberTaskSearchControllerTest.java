@@ -14,7 +14,8 @@ import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import org.springframework.http.MediaType;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(MemberTaskSearchController.class)
@@ -44,10 +45,17 @@ class MemberTaskSearchControllerTest {
         )).thenReturn(searchResult);
 
         // When & Then
-        mockMvc.perform(get("/api/members/search-by-tasks")
-                .param("taskIds", "task1", "task2")
-                .param("statuses", "レビュー待ち")
-                .param("page", "0"))
+        String requestBody = """
+            {
+                "taskIds": ["task1", "task2"],
+                "statuses": ["レビュー待ち"],
+                "page": 0
+            }
+            """;
+        
+        mockMvc.perform(post("/api/members/search-by-tasks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content.length()").value(2))
@@ -73,10 +81,17 @@ class MemberTaskSearchControllerTest {
         )).thenReturn(emptyResult);
 
         // When & Then
-        mockMvc.perform(get("/api/members/search-by-tasks")
-                .param("taskIds", "nonexistent")
-                .param("statuses", "レビュー待ち")
-                .param("page", "0"))
+        String requestBody = """
+            {
+                "taskIds": ["nonexistent"],
+                "statuses": ["レビュー待ち"],
+                "page": 0
+            }
+            """;
+        
+        mockMvc.perform(post("/api/members/search-by-tasks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content.length()").value(0))

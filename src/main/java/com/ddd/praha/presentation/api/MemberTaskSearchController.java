@@ -29,36 +29,34 @@ public class MemberTaskSearchController {
      * 
      * 使用例：
      * - 「設計原則（SOLID）」と「DBモデリング１」を「レビュー待ち」している参加者を10人ずつ取得:
-     *   GET /api/members/search-by-tasks?taskIds=solid&taskIds=db-modeling-1&statuses=レビュー待ち&page=0
+     *   POST /api/members/search-by-tasks
+     *   {"taskIds": ["solid", "db-modeling-1"], "statuses": ["レビュー待ち"], "page": 0}
      * - 「DBモデリング3」を「未着手」の参加者を取得:
-     *   GET /api/members/search-by-tasks?taskIds=db-modeling-3&statuses=未着手&page=0
+     *   POST /api/members/search-by-tasks
+     *   {"taskIds": ["db-modeling-3"], "statuses": ["未着手"], "page": 0}
      * 
-     * @param taskIds 課題IDの配列（複数指定可能）
-     * @param statuses ステータスの配列（複数指定可能）
-     * @param page ページ番号（0から開始、デフォルト：0）
+     * @param request 検索条件（課題ID配列、ステータス配列、ページ番号）
      * @return 最大10件の参加者を含むページング結果
      */
-    @GetMapping("/search-by-tasks")
+    @PostMapping("/search-by-tasks")
     public ResponseEntity<MemberTaskSearchResponse<MemberResponse>> searchMembersByTasksAndStatuses(
-            @RequestParam String[] taskIds,
-            @RequestParam String[] statuses,
-            @RequestParam(defaultValue = "0") int page) {
+            @RequestBody MemberTaskSearchRequest request) {
         
         // ページサイズは固定で10
         final int size = 10;
         
         // パラメータを変換
-        List<TaskId> taskIdList = Arrays.stream(taskIds)
+        List<TaskId> taskIdList = Arrays.stream(request.getTaskIds())
             .map(TaskId::new)
             .collect(Collectors.toList());
         
-        List<TaskStatus> statusList = Arrays.stream(statuses)
+        List<TaskStatus> statusList = Arrays.stream(request.getStatuses())
             .map(TaskStatus::valueOf)
             .collect(Collectors.toList());
         
         // サービスを呼び出し
         MemberSearchResult result = memberTaskService.findMembersByTasksAndStatuses(
-            taskIdList, statusList, page, size);
+            taskIdList, statusList, request.getPage(), size);
         
         // レスポンスを変換
         MemberTaskSearchResponse<MemberResponse> response = MemberTaskSearchResponse.fromMemberSearchResult(result);
