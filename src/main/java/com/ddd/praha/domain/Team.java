@@ -25,6 +25,12 @@ public class Team {
     return new ArrayList<>(list);
   }
 
+  public Team(TeamId id, TeamName name, List<Member> list) {
+    this.id = id;
+    this.name = name;
+    this.list = list;
+  }
+
   public Team(TeamName name, List<Member> list) {
     validateMembers(list);
     this.id = TeamId.generate();

@@ -21,26 +21,14 @@ public record TeamRecord(
      * @return Team
      */
     public Team toTeam() {
-        try {
-            // MemberRecordをMemberに変換
-            List<Member> domainMembers = members != null ? 
-                members.stream().map(MemberRecord::toMember).toList() : 
-                List.of();
-            
-            // 通常のコンストラクタでTeamを作成
-            Team team = new Team(
-                new TeamName(name),
-                domainMembers
-            );
-            
-            // リフレクションを使用してIDフィールドを設定
-            Field idField = Team.class.getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(team, new TeamId(id));
-            
-            return team;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create Team domain object", e);
-        }
+        List<Member> domainMembers = members != null ?
+            members.stream().map(MemberRecord::toMember).toList() :
+            List.of();
+
+        return new Team(
+            new TeamId(id),
+            new TeamName(name),
+            domainMembers
+        );
     }
 }
