@@ -67,7 +67,7 @@ public class TeamController {
         try {
             // チームを取得
             Optional<Team> teamOptional = teamService.getTeamById(new TeamId(id));
-            if (!teamOptional.isPresent()) {
+            if (teamOptional.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
             Team team = teamOptional.get();
@@ -79,7 +79,7 @@ public class TeamController {
             List<Member> newMembers = new ArrayList<>();
             for (String memberId : request.getMemberIds()) {
                 Optional<Member> memberOptional = memberService.getMemberById(new MemberId(memberId));
-                if (!memberOptional.isPresent()) {
+                if (memberOptional.isEmpty()) {
                     return ResponseEntity.badRequest().build();
                 }
                 newMembers.add(memberOptional.get());
