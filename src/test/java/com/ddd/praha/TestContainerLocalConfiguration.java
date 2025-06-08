@@ -4,6 +4,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @TestConfiguration(proxyBeanMethods = false)
@@ -20,4 +21,13 @@ public class TestContainerLocalConfiguration {
     return container;
   }
 
+  @Bean
+  @ServiceConnection
+  RabbitMQContainer rabbitMQContainer() {
+    RabbitMQContainer container = new RabbitMQContainer(DockerImageName.parse("rabbitmq:3.13-management-alpine"));
+    container.withReuse(true);
+    container.start();
+
+    return container;
+  }
 }
