@@ -36,17 +36,7 @@ public class TaskService {
     public Optional<Task> getTaskById(TaskId id) {
         return taskRepository.findById(id);
     }
-    
-    /**
-     * 新しい課題を作成する
-     * @param name 課題名
-     * @return 作成された課題
-     */
-    public Task createTask(TaskName name) {
-        Task newTask = new Task(name);
-        return taskRepository.save(newTask);
-    }
-    
+
     /**
      * 新しい課題を追加する（管理者用API向け）
      * @param name 課題名
