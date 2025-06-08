@@ -3,6 +3,7 @@ package com.ddd.praha.infrastructure;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberTask;
 import com.ddd.praha.domain.Task;
+import com.ddd.praha.domain.TaskId;
 import com.ddd.praha.domain.TaskStatus;
 import com.ddd.praha.application.repository.MemberTaskRepository;
 import com.ddd.praha.application.repository.TaskRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 参加者課題リポジトリのMyBatis実装
@@ -57,5 +59,29 @@ public class MemberTaskRepositoryImpl implements MemberTaskRepository {
         }
 
         return memberTask;
+    }
+
+    @Override
+    public List<Member> findMembersByTasksAndStatuses(List<TaskId> taskIds, List<TaskStatus> statuses, int page, int size) {
+        List<String> taskIdStrings = taskIds.stream()
+            .map(TaskId::value)
+            .collect(Collectors.toList());
+        List<String> statusStrings = statuses.stream()
+            .map(TaskStatus::name)
+            .collect(Collectors.toList());
+        
+        return memberTaskMapper.findMembersByTasksAndStatuses(taskIdStrings, statusStrings, page * size, size);
+    }
+
+    @Override
+    public long countMembersByTasksAndStatuses(List<TaskId> taskIds, List<TaskStatus> statuses) {
+        List<String> taskIdStrings = taskIds.stream()
+            .map(TaskId::value)
+            .collect(Collectors.toList());
+        List<String> statusStrings = statuses.stream()
+            .map(TaskStatus::name)
+            .collect(Collectors.toList());
+        
+        return memberTaskMapper.countMembersByTasksAndStatuses(taskIdStrings, statusStrings);
     }
 }

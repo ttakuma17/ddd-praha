@@ -3,6 +3,8 @@ package com.ddd.praha.application.repository;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberTask;
 import com.ddd.praha.domain.Task;
+import com.ddd.praha.domain.TaskId;
+import com.ddd.praha.domain.TaskStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,4 +33,22 @@ public interface MemberTaskRepository {
      * @return 保存された参加者課題
      */
     MemberTask save(MemberTask memberTask);
+    
+    /**
+     * 指定された課題群が指定されたステータスになっている参加者をページングして取得する
+     * @param taskIds 課題IDのリスト
+     * @param statuses ステータスのリスト
+     * @param page ページ番号（0から開始）
+     * @param size ページサイズ
+     * @return 条件に合致する参加者のリスト
+     */
+    List<Member> findMembersByTasksAndStatuses(List<TaskId> taskIds, List<TaskStatus> statuses, int page, int size);
+    
+    /**
+     * 指定された課題群が指定されたステータスになっている参加者の総数を取得する
+     * @param taskIds 課題IDのリスト
+     * @param statuses ステータスのリスト
+     * @return 条件に合致する参加者の総数
+     */
+    long countMembersByTasksAndStatuses(List<TaskId> taskIds, List<TaskStatus> statuses);
 }

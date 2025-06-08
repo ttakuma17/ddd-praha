@@ -2,7 +2,7 @@ package com.ddd.praha.infrastructure;
 
 import com.ddd.praha.TestcontainersConfiguration;
 import com.ddd.praha.domain.*;
-import com.ddd.praha.infrastructure.config.RabbitMQConfig;
+import com.ddd.praha.config.RabbitMQConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

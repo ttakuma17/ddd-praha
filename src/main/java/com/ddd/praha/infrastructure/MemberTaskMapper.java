@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /**
  * 参加者課題のMyBatisマッパーインターフェース
@@ -117,4 +118,77 @@ public interface MemberTaskMapper {
      */
     @Select("SELECT COUNT(*) FROM member_tasks WHERE member_id = #{memberId} AND task_id = #{taskId}")
     boolean exists(@Param("memberId") String memberId, @Param("taskId") String taskId);
+
+    /**
+     * 指定された課題群が指定されたステータスになっている参加者をページングして取得する
+     * @param taskIds 課題IDのリスト
+     * @param statuses ステータスのリスト
+     * @param offset オフセット
+     * @param limit 取得件数
+     * @return 条件に合致する参加者のリスト
+     */
+    @Select("<script>" +
+            "SELECT DISTINCT m.id, m.name, m.email, m.status " +
+            "FROM members m " +
+            "WHERE m.id IN (" +
+            "  SELECT mt.member_id " +
+            "  FROM member_tasks mt " +
+            "  WHERE mt.task_id IN " +
+            "  <foreach collection='taskIds' item='taskId' open='(' separator=',' close=')'>" +
+            "    #{taskId}" +
+            "  </foreach>" +
+            "  AND mt.status IN " +
+            "  <foreach collection='statuses' item='status' open='(' separator=',' close=')'>" +
+            "    #{status}" +
+            "  </foreach>" +
+            "  GROUP BY mt.member_id " +
+            "  HAVING COUNT(DISTINCT mt.task_id) = #{taskIds.size()}" +
+            ") " +
+            "ORDER BY m.name " +
+            "LIMIT #{limit} OFFSET #{offset}" +
+            "</script>")
+    @Results({
+        @Result(property = "id", column = "id"),
+        @Result(property = "name", column = "name"),
+        @Result(property = "email", column = "email"),
+        @Result(property = "status", column = "status")
+    })
+    List<MemberRecord> findMemberRecordsByTasksAndStatuses(@Param("taskIds") List<String> taskIds, 
+                                                           @Param("statuses") List<String> statuses, 
+                                                           @Param("offset") int offset, 
+                                                           @Param("limit") int limit);
+
+    default List<Member> findMembersByTasksAndStatuses(List<String> taskIds, List<String> statuses, int offset, int limit) {
+        return findMemberRecordsByTasksAndStatuses(taskIds, statuses, offset, limit)
+            .stream()
+            .map(MemberRecord::toMember)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 指定された課題群が指定されたステータスになっている参加者の総数を取得する
+     * @param taskIds 課題IDのリスト
+     * @param statuses ステータスのリスト
+     * @return 条件に合致する参加者の総数
+     */
+    @Select("<script>" +
+            "SELECT COUNT(DISTINCT m.id) " +
+            "FROM members m " +
+            "WHERE m.id IN (" +
+            "  SELECT mt.member_id " +
+            "  FROM member_tasks mt " +
+            "  WHERE mt.task_id IN " +
+            "  <foreach collection='taskIds' item='taskId' open='(' separator=',' close=')'>" +
+            "    #{taskId}" +
+            "  </foreach>" +
+            "  AND mt.status IN " +
+            "  <foreach collection='statuses' item='status' open='(' separator=',' close=')'>" +
+            "    #{status}" +
+            "  </foreach>" +
+            "  GROUP BY mt.member_id " +
+            "  HAVING COUNT(DISTINCT mt.task_id) = #{taskIds.size()}" +
+            ")" +
+            "</script>")
+    long countMembersByTasksAndStatuses(@Param("taskIds") List<String> taskIds, 
+                                        @Param("statuses") List<String> statuses);
 }

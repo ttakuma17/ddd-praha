@@ -1,6 +1,6 @@
 package com.ddd.praha.presentation.api;
 
-import com.ddd.praha.domain.Member;
+import com.ddd.praha.domain.*;
 
 /**
  * 参加者レスポンス
@@ -33,6 +33,19 @@ public class MemberResponse {
                 member.getName().value(),
                 member.getEmail().value(),
                 member.getStatus().name()
+        );
+    }
+    
+    /**
+     * レスポンスオブジェクトからドメインオブジェクトに変換する
+     * @return ドメインオブジェクト
+     */
+    public Member toDomain() {
+        return new Member(
+                new MemberId(id),
+                new MemberName(name),
+                new Email(email),
+                EnrollmentStatus.valueOf(status)
         );
     }
     

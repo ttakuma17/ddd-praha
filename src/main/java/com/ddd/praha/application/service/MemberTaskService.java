@@ -1,8 +1,10 @@
 package com.ddd.praha.application.service;
 
+import com.ddd.praha.domain.MemberSearchResult;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberTask;
 import com.ddd.praha.domain.Task;
+import com.ddd.praha.domain.TaskId;
 import com.ddd.praha.domain.TaskStatus;
 import com.ddd.praha.application.repository.MemberTaskRepository;
 import org.springframework.stereotype.Service;
@@ -65,5 +67,20 @@ public class MemberTaskService {
     public MemberTask assignTasksToMember(Member member, List<Task> tasks) {
         MemberTask memberTask = new MemberTask(member, tasks);
         return memberTaskRepository.save(memberTask);
+    }
+
+    /**
+     * 指定された課題群が指定されたステータスになっている参加者をページングして取得する
+     * @param taskIds 課題IDのリスト
+     * @param statuses ステータスのリスト
+     * @param page ページ番号（0から開始）
+     * @param size ページサイズ
+     * @return メンバー検索結果
+     */
+    public MemberSearchResult findMembersByTasksAndStatuses(List<TaskId> taskIds, List<TaskStatus> statuses, int page, int size) {
+        List<Member> members = memberTaskRepository.findMembersByTasksAndStatuses(taskIds, statuses, page, size);
+        long totalElements = memberTaskRepository.countMembersByTasksAndStatuses(taskIds, statuses);
+        
+        return new MemberSearchResult(members, page, size, totalElements);
     }
 }
