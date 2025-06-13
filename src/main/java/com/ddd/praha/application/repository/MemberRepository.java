@@ -31,5 +31,5 @@ public interface MemberRepository {
      */
     void save(Member member);
 
-    void update(Member member);
+    void updateStatus(Member member);
 }

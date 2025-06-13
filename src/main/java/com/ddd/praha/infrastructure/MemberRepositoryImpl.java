@@ -20,6 +20,18 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
+    public void save(Member member) {
+        memberMapper.insert(
+            member.getId().value(),
+            member.getName().value(),
+            member.getEmail().value(),
+            member.getStatus().name()
+        );
+    }
+
+
+
+    @Override
     public Member get(MemberId id) {
         MemberRecord memberRecord = memberMapper.get(id);
         if (memberRecord == null) {
@@ -45,17 +57,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public void save(Member member) {
-        memberMapper.insert(
-                member.getId().value(),
-                member.getName().value(),
-                member.getEmail().value(),
-                member.getStatus().name()
-        );
-    }
-
-    @Override
-    public void update(Member member) {
-        memberMapper.update(member);
+    public void updateStatus(Member member) {
+        memberMapper.updateStatus(member);
     }
 }

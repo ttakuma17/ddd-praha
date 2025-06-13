@@ -27,8 +27,8 @@ public interface MemberMapper {
     """)
     void insert(@Param("id") String id, @Param("name") String name, @Param("email") String email, @Param("status") String status);
 
-    @Update("UPDATE members SET status = #{member.status.value} WHERE id = #{member.id.value}")
-    void update(@Param("member") Member member);
+    @Update("UPDATE members SET status = #{member.status} WHERE id = #{member.id.value}")
+    void updateStatus(@Param("member") Member member);
 
     @Select("SELECT id, name, email, status FROM members WHERE id = #{id}")
     MemberRecord get(MemberId id);
