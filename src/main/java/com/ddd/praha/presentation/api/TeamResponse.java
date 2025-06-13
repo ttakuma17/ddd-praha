@@ -28,9 +28,9 @@ public class TeamResponse {
      * @param team ドメインオブジェクト
      * @return レスポンスオブジェクト
      */
-    public static TeamResponse fromDomain(Team team) {
+    public static TeamResponse from(Team team) {
         List<MemberResponse> memberResponses = team.getMembers().stream()
-                .map(MemberResponse::fromDomain)
+                .map(MemberResponse::from)
                 .collect(Collectors.toList());
                 
         return new TeamResponse(

@@ -33,7 +33,7 @@ public class TaskService {
      * @param id 課題ID
      * @return 課題（存在しない場合はEmpty）
      */
-    public Optional<Task> getTaskById(TaskId id) {
+    public Task getTaskById(TaskId id) {
         return taskRepository.findById(id);
     }
 

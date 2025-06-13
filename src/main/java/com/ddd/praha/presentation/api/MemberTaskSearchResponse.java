@@ -26,7 +26,7 @@ public class MemberTaskSearchResponse<T> {
      */
     public static MemberTaskSearchResponse<MemberResponse> fromMemberSearchResult(MemberSearchResult searchResult) {
         List<MemberResponse> memberResponses = searchResult.getMembers().stream()
-            .map(MemberResponse::fromDomain)
+            .map(MemberResponse::from)
             .collect(Collectors.toList());
         
         return new MemberTaskSearchResponse<>(
@@ -49,7 +49,7 @@ public class MemberTaskSearchResponse<T> {
         List<MemberResponse> memberResponses = (List<MemberResponse>) content;
         
         List<Member> members = memberResponses.stream()
-            .map(MemberResponse::toDomain)
+            .map(MemberResponse::toMember)
             .collect(Collectors.toList());
         
         return new MemberSearchResult(members, page, size, totalElements);

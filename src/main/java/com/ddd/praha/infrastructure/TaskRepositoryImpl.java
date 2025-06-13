@@ -25,9 +25,9 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
-    public Optional<Task> findById(TaskId id) {
-        Task task = taskMapper.findById(id.value());
-        return Optional.ofNullable(task);
+    public Task findById(TaskId id) {
+        TaskRecord taskRecord = taskMapper.findByIdRecord(id.value());
+        return taskRecord.toTask();
     }
 
     @Override

@@ -33,7 +33,7 @@ public class TeamQueryService {
      * @param id チームID
      * @return チーム（存在しない場合はEmpty）
      */
-    public Optional<Team> getTeamById(TeamId id) {
+    public Optional<Team> findTeamById(TeamId id) {
         return teamRepository.findById(id);
     }
 }

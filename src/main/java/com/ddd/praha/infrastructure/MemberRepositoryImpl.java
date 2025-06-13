@@ -20,33 +20,39 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public List<Member> findAll() {
-        return memberMapper.findAll();
+    public Member get(MemberId id) {
+        MemberRecord memberRecord = memberMapper.get(id);
+        if (memberRecord == null) {
+            throw new IllegalStateException("Member record is null.");
+        }
+        return memberRecord.toMember();
+    }
+
+    @Override
+    public List<Member> getAll() {
+        List<MemberRecord> membersRecord = memberMapper.getAll();
+        if (membersRecord == null) {
+            throw new IllegalStateException("Member records are null. Please check the database connection and table definition.");
+        }
+        return membersRecord.stream().map(MemberRecord::toMember).toList();
     }
 
     @Override
     public Optional<Member> findById(MemberId id) {
-        Member member = memberMapper.findById(id.value());
-        return Optional.ofNullable(member);
+        return Optional.ofNullable(memberMapper.findById(id.value()))
+            .filter(record -> record.id() != null)
+            .map(MemberRecord::toMember);
     }
 
     @Override
-    public Member save(Member member) {
-        if (memberMapper.exists(member.getId().value())) {
-            memberMapper.update(
+    public void save(Member member) {
+        memberMapper.insert(
                 member.getId().value(),
                 member.getName().value(),
                 member.getEmail().value(),
                 member.getStatus().name()
-            );
-        } else {
-            memberMapper.insert(
-                member.getId().value(),
-                member.getName().value(),
-                member.getEmail().value(),
-                member.getStatus().name()
-            );
-        }
-        return member;
+        );
     }
+
+
 }

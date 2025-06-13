@@ -7,8 +7,7 @@ import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberId;
 import com.ddd.praha.domain.Team;
 import com.ddd.praha.domain.TeamId;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.ddd.praha.presentation.exception.ResourceNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -39,12 +38,11 @@ public class TeamController {
      * @return チームのリスト
      */
     @GetMapping
-    public ResponseEntity<List<TeamResponse>> getAllTeams() {
+    public List<TeamResponse> getAllTeams() {
         List<Team> teams = teamQueryService.getAllTeams();
-        List<TeamResponse> response = teams.stream()
-                .map(TeamResponse::fromDomain)
+        return teams.stream()
+                .map(TeamResponse::from)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(response);
     }
     
     /**
@@ -53,10 +51,10 @@ public class TeamController {
      * @return チーム情報
      */
     @GetMapping("/{id}")
-    public ResponseEntity<TeamResponse> getTeamById(@PathVariable String id) {
-        return teamQueryService.getTeamById(new TeamId(id))
-                .map(team -> ResponseEntity.ok(TeamResponse.fromDomain(team)))
-                .orElse(ResponseEntity.notFound().build());
+    public TeamResponse findTeamById(@PathVariable String id) {
+        return teamQueryService.findTeamById(new TeamId(id))
+                .map(TeamResponse::from)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found: " + id));
     }
     
     /**
@@ -66,49 +64,40 @@ public class TeamController {
      * @return 更新されたチーム情報
      */
     @PutMapping("/{id}/members")
-    public ResponseEntity<TeamResponse> updateTeamMembers(
+    public TeamResponse updateTeamMembers(
             @PathVariable String id,
             @RequestBody TeamMemberUpdateRequest request) {
-        try {
-            // チームを取得
-            Optional<Team> teamOptional = teamQueryService.getTeamById(new TeamId(id));
-            if (teamOptional.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-            Team team = teamOptional.get();
-            
-            // 現在のメンバーを取得
-            List<Member> currentMembers = new ArrayList<>(team.getMembers());
-            
-            // リクエストで指定されたメンバーを取得
-            List<Member> newMembers = new ArrayList<>();
-            for (String memberId : request.getMemberIds()) {
-                Optional<Member> memberOptional = memberService.getMemberById(new MemberId(memberId));
-                if (memberOptional.isEmpty()) {
-                    return ResponseEntity.badRequest().build();
-                }
-                newMembers.add(memberOptional.get());
-            }
-            
-            // 削除するメンバーを特定して削除
-            for (Member member : currentMembers) {
-                if (!newMembers.contains(member)) {
-                    team = teamOrchestrationService.removeMemberFromTeam(team.getId(), member);
-                }
-            }
-            
-            // 追加するメンバーを特定して追加
-            for (Member member : newMembers) {
-                if (!currentMembers.contains(member)) {
-                    team = teamOrchestrationService.addMemberToTeam(team.getId(), member);
-                }
-            }
-            
-            return ResponseEntity.ok(TeamResponse.fromDomain(team));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        // チームを取得
+        Optional<Team> teamOptional = teamQueryService.findTeamById(new TeamId(id));
+        if (teamOptional.isEmpty()) {
+            throw new ResourceNotFoundException("Team not found: " + id);
         }
+        Team team = teamOptional.get();
+        
+        // 現在のメンバーを取得
+        List<Member> currentMembers = new ArrayList<>(team.getMembers());
+        
+        // リクエストで指定されたメンバーを取得
+        List<Member> newMembers = new ArrayList<>();
+    for (String memberId : request.getMemberIds()) {
+            Member member = memberService.get(new MemberId(memberId));
+            newMembers.add(member);
+        }
+        
+        // 削除するメンバーを特定して削除
+        for (Member member : currentMembers) {
+            if (!newMembers.contains(member)) {
+                team = teamOrchestrationService.removeMemberFromTeam(team.getId(), member);
+            }
+        }
+        
+        // 追加するメンバーを特定して追加
+        for (Member member : newMembers) {
+            if (!currentMembers.contains(member)) {
+                team = teamOrchestrationService.addMemberToTeam(team.getId(), member);
+            }
+        }
+        
+        return TeamResponse.from(team);
     }
 }

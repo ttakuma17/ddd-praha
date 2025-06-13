@@ -37,16 +37,6 @@ public interface TaskMapper {
     TaskRecord findByIdRecord(@Param("id") String id);
 
     /**
-     * IDで課題を検索する
-     * @param id 課題ID
-     * @return 課題
-     */
-    default Task findById(@Param("id") String id) {
-        TaskRecord record = findByIdRecord(id);
-        return record != null ? record.toTask() : null;
-    }
-
-    /**
      * 課題を保存する（新規追加）
      * @param id 課題ID
      * @param name 課題名

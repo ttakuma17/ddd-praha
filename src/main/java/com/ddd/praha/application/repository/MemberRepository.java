@@ -10,11 +10,13 @@ import java.util.Optional;
  * 参加者リポジトリインターフェース
  */
 public interface MemberRepository {
+    Member get(MemberId id);
+
     /**
      * 全ての参加者を取得する
      * @return 参加者のリスト
      */
-    List<Member> findAll();
+    List<Member> getAll();
     
     /**
      * IDで参加者を検索する
@@ -26,7 +28,7 @@ public interface MemberRepository {
     /**
      * 参加者を保存する（新規追加または更新）
      * @param member 保存する参加者
-     * @return 保存された参加者
      */
-    Member save(Member member);
+    void save(Member member);
+
 }

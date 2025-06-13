@@ -10,8 +10,8 @@ import com.ddd.praha.domain.Task;
 import com.ddd.praha.domain.TaskId;
 import com.ddd.praha.domain.TaskName;
 import com.ddd.praha.domain.TaskStatus;
+import com.ddd.praha.presentation.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -40,12 +40,11 @@ public class TaskController {
      * @return 課題のリスト
      */
     @GetMapping
-    public ResponseEntity<List<TaskResponse>> getAllTasks() {
+    public List<TaskResponse> getAllTasks() {
         List<Task> tasks = taskService.getAllTasks();
-        List<TaskResponse> response = tasks.stream()
-                .map(TaskResponse::fromDomain)
+        return tasks.stream()
+                .map(TaskResponse::from)
                 .toList();
-        return ResponseEntity.ok(response);
     }
     
     /**
@@ -54,15 +53,11 @@ public class TaskController {
      * @return 作成された課題情報
      */
     @PostMapping
-    public ResponseEntity<TaskResponse> createTask(@RequestBody TaskCreateRequest request) {
-        try {
-            TaskName taskName = new TaskName(request.name());
-            Task createdTask = taskService.addTask(taskName);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(TaskResponse.fromDomain(createdTask));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    @ResponseStatus(HttpStatus.CREATED)
+    public TaskResponse createTask(@RequestBody TaskCreateRequest request) {
+        TaskName taskName = new TaskName(request.name());
+        Task createdTask = taskService.addTask(taskName);
+        return TaskResponse.from(createdTask);
     }
     
     /**
@@ -73,43 +68,29 @@ public class TaskController {
      * @return 更新された参加者課題情報
      */
     @PutMapping("/{taskId}/members/{memberId}/status")
-    public ResponseEntity<MemberTaskResponse> updateTaskStatus(
+    public MemberTaskResponse updateTaskStatus(
             @PathVariable String taskId,
             @PathVariable String memberId,
             @RequestBody TaskStatusUpdateRequest request) {
-        try {
-            // 課題を取得
-            Optional<Task> taskOptional = taskService.getTaskById(new TaskId(taskId));
-            if (taskOptional.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-            Task task = taskOptional.get();
-            
-            // 参加者を取得
-            Optional<Member> memberOptional = memberService.getMemberById(new MemberId(memberId));
-            if (memberOptional.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-            Member member = memberOptional.get();
-            
-            // 参加者課題を取得
-            Optional<MemberTask> memberTaskOptional = memberTaskService.getMemberTask(member);
-            if (memberTaskOptional.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-            MemberTask memberTask = memberTaskOptional.get();
-            
-            // ステータスを更新
-            TaskStatus newStatus = TaskStatus.valueOf(request.getStatus());
-            MemberTask updatedMemberTask = memberTaskService.updateTaskStatus(member, member, task, newStatus);
-            
-            // レスポンスを作成
-            Map<Task, TaskStatus> taskStatusMap = new HashMap<>();
-            taskStatusMap.put(task, updatedMemberTask.getTaskStatus(task));
-            
-            return ResponseEntity.ok(MemberTaskResponse.fromDomain(updatedMemberTask, taskStatusMap));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+        Task task = taskService.getTaskById(new TaskId(taskId));
+        if (task == null) {
+            throw new ResourceNotFoundException("Task not found: " + taskId);
         }
+
+        Member member = memberService.get(new MemberId(memberId));
+
+        
+        Optional<MemberTask> memberTaskOptional = memberTaskService.getMemberTask(member);
+        if (memberTaskOptional.isEmpty()) {
+            throw new ResourceNotFoundException("MemberTask not found for member: " + memberId);
+        }
+        
+        TaskStatus newStatus = TaskStatus.valueOf(request.getStatus());
+        MemberTask updatedMemberTask = memberTaskService.updateTaskStatus(member, member, task, newStatus);
+        
+        Map<Task, TaskStatus> taskStatusMap = new HashMap<>();
+        taskStatusMap.put(task, updatedMemberTask.getTaskStatus(task));
+        
+        return MemberTaskResponse.fromDomain(updatedMemberTask, taskStatusMap);
     }
 }

@@ -1,6 +1,8 @@
 package com.ddd.praha.presentation.api;
 
 import com.ddd.praha.domain.*;
+import java.util.Objects;
+import org.springframework.lang.NonNull;
 
 /**
  * 参加者レスポンス
@@ -27,7 +29,8 @@ public class MemberResponse {
      * @param member ドメインオブジェクト
      * @return レスポンスオブジェクト
      */
-    public static MemberResponse fromDomain(Member member) {
+    public static MemberResponse from(@NonNull Member member) {
+        Objects.requireNonNull(member, "Member must not be null");
         return new MemberResponse(
                 member.getId().value(),
                 member.getName().value(),
@@ -40,7 +43,7 @@ public class MemberResponse {
      * レスポンスオブジェクトからドメインオブジェクトに変換する
      * @return ドメインオブジェクト
      */
-    public Member toDomain() {
+    public Member toMember() {
         return new Member(
                 new MemberId(id),
                 new MemberName(name),

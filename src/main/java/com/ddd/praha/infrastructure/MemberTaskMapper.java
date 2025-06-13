@@ -2,13 +2,9 @@ package com.ddd.praha.infrastructure;
 
 import com.ddd.praha.domain.MemberTask;
 import com.ddd.praha.domain.Member;
-import com.ddd.praha.domain.Task;
-import com.ddd.praha.domain.TaskStatus;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -24,12 +20,6 @@ public interface MemberTaskMapper {
      */
     @Select("SELECT m.id as member_id, m.name as member_name, m.email, m.status as member_status " +
             "FROM members m WHERE m.id = #{memberId}")
-    @Results({
-        @Result(property = "owner", column = "member_id", javaType = Member.class, 
-                one = @One(select = "com.ddd.praha.infrastructure.MemberMapper.findById")),
-        @Result(property = "map", column = "member_id", javaType = Map.class, 
-                many = @Many(select = "findTaskStatusMapByMemberId"))
-    })
     MemberTask findByMemberId(@Param("memberId") String memberId);
 
     /**
@@ -41,49 +31,7 @@ public interface MemberTaskMapper {
             "FROM members m " +
             "JOIN member_tasks mt ON m.id = mt.member_id " +
             "WHERE mt.task_id = #{taskId}")
-    @Results({
-        @Result(property = "owner", column = "member_id", javaType = Member.class, 
-                one = @One(select = "com.ddd.praha.infrastructure.MemberMapper.findById")),
-        @Result(property = "map", column = "member_id", javaType = Map.class, 
-                many = @Many(select = "findTaskStatusMapByMemberId"))
-    })
     List<MemberTask> findByTaskId(@Param("taskId") String taskId);
-
-    /**
-     * 参加者の課題ステータスレコードを取得する
-     * @param memberId 参加者ID
-     * @return 課題ステータスレコードのリスト
-     */
-    @Select("SELECT #{memberId} as member_id, t.id as task_id, t.name as task_name, mt.status " +
-            "FROM tasks t " +
-            "LEFT JOIN member_tasks mt ON t.id = mt.task_id AND mt.member_id = #{memberId}")
-    @Results({
-        @Result(property = "memberId", column = "member_id"),
-        @Result(property = "taskId", column = "task_id"),
-        @Result(property = "status", column = "status")
-    })
-    List<MemberTaskRecord> findTaskStatusRecordsByMemberId(@Param("memberId") String memberId);
-
-    /**
-     * 参加者の課題ステータスマップを取得する
-     * @param memberId 参加者ID
-     * @return 課題とステータスのマップ
-     */
-    default Map<Task, TaskStatus> findTaskStatusMapByMemberId(@Param("memberId") String memberId) {
-        List<MemberTaskRecord> records = findTaskStatusRecordsByMemberId(memberId);
-        Map<Task, TaskStatus> result = new HashMap<>();
-
-        for (MemberTaskRecord record : records) {
-            Task task = new TaskRecord(
-                record.taskId(), 
-                ""  // We don't have task name here, but it's not used in the map key comparison
-            ).toTask();
-
-            result.put(task, record.toTaskStatus());
-        }
-
-        return result;
-    }
 
     /**
      * 参加者課題を保存する（新規追加）
@@ -109,15 +57,6 @@ public interface MemberTaskMapper {
      */
     @Delete("DELETE FROM member_tasks WHERE member_id = #{memberId}")
     void deleteAllByMemberId(@Param("memberId") String memberId);
-
-    /**
-     * 参加者課題が存在するか確認する
-     * @param memberId 参加者ID
-     * @param taskId 課題ID
-     * @return 存在する場合はtrue
-     */
-    @Select("SELECT COUNT(*) FROM member_tasks WHERE member_id = #{memberId} AND task_id = #{taskId}")
-    boolean exists(@Param("memberId") String memberId, @Param("taskId") String taskId);
 
     /**
      * 指定された課題群が指定されたステータスになっている参加者をページングして取得する
@@ -147,13 +86,7 @@ public interface MemberTaskMapper {
             "ORDER BY m.name " +
             "LIMIT #{limit} OFFSET #{offset}" +
             "</script>")
-    @Results({
-        @Result(property = "id", column = "id"),
-        @Result(property = "name", column = "name"),
-        @Result(property = "email", column = "email"),
-        @Result(property = "status", column = "status")
-    })
-    List<MemberRecord> findMemberRecordsByTasksAndStatuses(@Param("taskIds") List<String> taskIds, 
+    List<MemberRecord> findMemberRecordsByTasksAndStatuses(@Param("taskIds") List<String> taskIds,
                                                            @Param("statuses") List<String> statuses, 
                                                            @Param("offset") int offset, 
                                                            @Param("limit") int limit);

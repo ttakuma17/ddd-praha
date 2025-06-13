@@ -76,9 +76,6 @@ public interface TeamMapper {
      */
     default Team findById(@Param("id") String id) {
         TeamBasicRecord basicRecord = findByIdBasicRecord(id);
-        if (basicRecord == null) {
-            return null;
-        }
         List<Member> members = findMembersByTeamId(basicRecord.id());
         return new TeamRecord(basicRecord.id(), basicRecord.name(), 
             members.stream().map(member -> 

@@ -1,9 +1,8 @@
 package com.ddd.praha.infrastructure;
 
 import com.ddd.praha.domain.Member;
+import com.ddd.praha.domain.MemberId;
 import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.annotations.Arg;
-import org.apache.ibatis.annotations.ConstructorArgs;
 
 import java.util.List;
 
@@ -18,17 +17,7 @@ public interface MemberMapper {
      * @return メンバーのリスト
      */
     @Select("SELECT id, name, email, status FROM members")
-    List<MemberRecord> findAllRecords();
-
-    /**
-     * 全てのメンバーを取得する
-     * @return メンバーのリスト
-     */
-    default List<Member> findAll() {
-        return findAllRecords().stream()
-            .map(MemberRecord::toMember)
-            .toList();
-    }
+    List<MemberRecord> getAll();
 
     /**
      * IDでメンバーを検索する
@@ -36,17 +25,7 @@ public interface MemberMapper {
      * @return メンバー
      */
     @Select("SELECT id, name, email, status FROM members WHERE id = #{id}")
-    MemberRecord findByIdRecord(@Param("id") String id);
-
-    /**
-     * IDでメンバーを検索する
-     * @param id メンバーID
-     * @return メンバー
-     */
-    default Member findById(@Param("id") String id) {
-        MemberRecord record = findByIdRecord(id);
-        return record != null ? record.toMember() : null;
-    }
+    MemberRecord findById(@Param("id") String id);
 
     /**
      * メンバーを保存する（新規追加）
@@ -55,7 +34,13 @@ public interface MemberMapper {
      * @param email メールアドレス
      * @param status 受講ステータス
      */
-    @Insert("INSERT INTO members (id, name, email, status) VALUES (#{id}, #{name}, #{email}, #{status})")
+    @Insert("""
+        INSERT INTO members (id, name, email, status)
+            SELECT #{id}, #{name}, #{email}, #{status}
+            WHERE NOT EXISTS (
+                SELECT 1 FROM members WHERE id = #{id}
+            )
+    """)
     void insert(@Param("id") String id, @Param("name") String name, @Param("email") String email, @Param("status") String status);
 
     /**
@@ -75,4 +60,7 @@ public interface MemberMapper {
      */
     @Select("SELECT COUNT(*) FROM members WHERE id = #{id}")
     boolean exists(@Param("id") String id);
+
+    @Select("SELECT id, name, email, status FROM members WHERE id = #{id}")
+    MemberRecord get(MemberId id);
 }

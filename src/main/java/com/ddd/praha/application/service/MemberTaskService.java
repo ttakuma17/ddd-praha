@@ -31,16 +31,7 @@ public class MemberTaskService {
     public Optional<MemberTask> getMemberTask(Member member) {
         return memberTaskRepository.findByMember(member);
     }
-    
-    /**
-     * 特定の課題に取り組んでいる全ての参加者の課題を取得する
-     * @param task 課題
-     * @return 参加者課題のリスト
-     */
-    public List<MemberTask> getMemberTasksByTask(Task task) {
-        return memberTaskRepository.findByTask(task);
-    }
-    
+
     /**
      * 参加者の課題進捗ステータスを更新する
      * @param operator 操作を行う参加者
@@ -55,17 +46,6 @@ public class MemberTaskService {
             .orElseThrow(() -> new IllegalArgumentException("指定された参加者の課題が見つかりません"));
         
         memberTask.updateTaskStatus(operator, task, newStatus);
-        return memberTaskRepository.save(memberTask);
-    }
-    
-    /**
-     * 参加者に新しい課題を割り当てる
-     * @param member 参加者
-     * @param tasks 課題のリスト
-     * @return 作成された参加者課題
-     */
-    public MemberTask assignTasksToMember(Member member, List<Task> tasks) {
-        MemberTask memberTask = new MemberTask(member, tasks);
         return memberTaskRepository.save(memberTask);
     }
 

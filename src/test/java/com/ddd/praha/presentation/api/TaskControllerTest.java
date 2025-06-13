@@ -13,6 +13,7 @@ import com.ddd.praha.domain.Task;
 import com.ddd.praha.domain.TaskId;
 import com.ddd.praha.domain.TaskName;
 import com.ddd.praha.domain.TaskStatus;
+import java.util.OptionalInt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,8 +98,8 @@ public class TaskControllerTest {
         updatedMemberTask.updateTaskStatus(testMember, testTask, TaskStatus.取組中);
 
         // モックの設定
-        when(taskService.getTaskById(any(TaskId.class))).thenReturn(Optional.of(testTask));
-        when(memberService.getMemberById(any(MemberId.class))).thenReturn(Optional.of(testMember));
+        when(taskService.getTaskById(any(TaskId.class))).thenReturn(testTask);
+        when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
         when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.of(testMemberTask));
         when(memberTaskService.updateTaskStatus(
                 any(Member.class),
@@ -132,7 +133,7 @@ public class TaskControllerTest {
         TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(TaskStatus.取組中.name());
 
         // モックの設定
-        when(taskService.getTaskById(any(TaskId.class))).thenReturn(Optional.empty());
+        when(taskService.getTaskById(any(TaskId.class))).thenReturn(null);
 
         // APIリクエストの実行と検証
         String requestJson = """
@@ -153,8 +154,8 @@ public class TaskControllerTest {
         TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(TaskStatus.取組中.name());
 
         // モックの設定
-        when(taskService.getTaskById(any(TaskId.class))).thenReturn(Optional.of(testTask));
-        when(memberService.getMemberById(any(MemberId.class))).thenReturn(Optional.empty());
+        when(taskService.getTaskById(any(TaskId.class))).thenReturn(testTask);
+        when(memberService.findById(any(MemberId.class))).thenReturn(Optional.empty());
 
         // APIリクエストの実行と検証
         String requestJson = """
@@ -175,8 +176,8 @@ public class TaskControllerTest {
         TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(TaskStatus.取組中.name());
 
         // モックの設定
-        when(taskService.getTaskById(any(TaskId.class))).thenReturn(Optional.of(testTask));
-        when(memberService.getMemberById(any(MemberId.class))).thenReturn(Optional.of(testMember));
+        when(taskService.getTaskById(any(TaskId.class))).thenReturn(testTask);
+        when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
         when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.empty());
 
         // APIリクエストの実行と検証
@@ -198,8 +199,8 @@ public class TaskControllerTest {
         TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(TaskStatus.完了.name());
 
         // モックの設定
-        when(taskService.getTaskById(any(TaskId.class))).thenReturn(Optional.of(testTask));
-        when(memberService.getMemberById(any(MemberId.class))).thenReturn(Optional.of(testMember));
+        when(taskService.getTaskById(any(TaskId.class))).thenReturn(testTask);
+        when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
         when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.of(testMemberTask));
         when(memberTaskService.updateTaskStatus(
                 any(Member.class),
@@ -227,8 +228,8 @@ public class TaskControllerTest {
         TaskStatusUpdateRequest request = new TaskStatusUpdateRequest("INVALID_STATUS");
 
         // モックの設定 - タスクとメンバーは存在するが、ステータスが無効
-        when(taskService.getTaskById(any(TaskId.class))).thenReturn(Optional.of(testTask));
-        when(memberService.getMemberById(any(MemberId.class))).thenReturn(Optional.of(testMember));
+        when(taskService.getTaskById(any(TaskId.class))).thenReturn(testTask);
+        when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
         when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.of(testMemberTask));
 
         // APIリクエストの実行と検証

@@ -21,7 +21,7 @@ public interface TaskRepository {
      * @param id 課題ID
      * @return 課題（存在しない場合はEmpty）
      */
-    Optional<Task> findById(TaskId id);
+    Task findById(TaskId id);
     
     /**
      * 課題を保存する（新規追加または更新）

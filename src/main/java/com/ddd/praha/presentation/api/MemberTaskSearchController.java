@@ -4,7 +4,6 @@ import com.ddd.praha.domain.MemberSearchResult;
 import com.ddd.praha.application.service.MemberTaskService;
 import com.ddd.praha.domain.TaskId;
 import com.ddd.praha.domain.TaskStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -39,7 +38,7 @@ public class MemberTaskSearchController {
      * @return 最大10件の参加者を含むページング結果
      */
     @PostMapping("/search-by-tasks")
-    public ResponseEntity<MemberTaskSearchResponse<MemberResponse>> searchMembersByTasksAndStatuses(
+    public MemberTaskSearchResponse<MemberResponse> searchMembersByTasksAndStatuses(
             @RequestBody MemberTaskSearchRequest request) {
         
         // ページサイズは固定で10
@@ -61,6 +60,6 @@ public class MemberTaskSearchController {
         // レスポンスを変換
         MemberTaskSearchResponse<MemberResponse> response = MemberTaskSearchResponse.fromMemberSearchResult(result);
         
-        return ResponseEntity.ok(response);
+        return response;
     }
 }

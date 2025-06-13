@@ -30,7 +30,7 @@ public class MemberTaskResponse {
      * @return レスポンスオブジェクト
      */
     public static MemberTaskResponse fromDomain(MemberTask memberTask, Map<Task, TaskStatus> tasks) {
-        MemberResponse ownerResponse = MemberResponse.fromDomain(memberTask.getOwner());
+        MemberResponse ownerResponse = MemberResponse.from(memberTask.getOwner());
         
         Map<String, TaskStatusResponse> taskStatusMap = tasks.entrySet().stream()
                 .collect(Collectors.toMap(

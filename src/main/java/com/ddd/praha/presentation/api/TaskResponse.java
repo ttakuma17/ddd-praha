@@ -9,7 +9,7 @@ public record TaskResponse(
         String id,
         String name
 ) {
-    public static TaskResponse fromDomain(Task task) {
+    public static TaskResponse from(Task task) {
         return new TaskResponse(
                 task.getId().value(),
                 task.getName().value()
