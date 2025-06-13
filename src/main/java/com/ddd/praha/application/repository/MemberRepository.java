@@ -1,5 +1,6 @@
 package com.ddd.praha.application.repository;
 
+import com.ddd.praha.domain.EnrollmentStatus;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberId;
 
@@ -31,5 +32,5 @@ public interface MemberRepository {
      */
     void save(Member member);
 
-    void updateStatus(Member member);
+    void updateStatus(MemberId id, EnrollmentStatus status);
 }

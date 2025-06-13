@@ -9,8 +9,6 @@ spring:
     name: praha
   
   datasource:
-    # Testcontainers will override these values
-    url: jdbc:tc:postgresql:15:///testdb
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
     hikari:
       maximum-pool-size: 2

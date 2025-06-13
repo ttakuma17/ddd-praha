@@ -12,3 +12,7 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   # structured.format.consoleを設定しないことでECS形式を無効化
+
+  flyway:
+    locations: classpath:db/migration,classpath:db/local
+    repeatable-sql-migration-prefix=R:

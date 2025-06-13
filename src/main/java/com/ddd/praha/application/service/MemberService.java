@@ -64,6 +64,6 @@ public class MemberService {
     public void updateMemberStatus(MemberId id, EnrollmentStatus newStatus) {
         Member member = memberRepository.get(id);
         member.updateEnrollmentStatus(newStatus);
-        memberRepository.updateStatus(member);
+        memberRepository.updateStatus(member.getId(), newStatus);
     }
 }

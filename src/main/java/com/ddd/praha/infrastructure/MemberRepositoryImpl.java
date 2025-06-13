@@ -1,5 +1,6 @@
 package com.ddd.praha.infrastructure;
 
+import com.ddd.praha.domain.EnrollmentStatus;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberId;
 import com.ddd.praha.application.repository.MemberRepository;
@@ -21,15 +22,8 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public void save(Member member) {
-        memberMapper.insert(
-            member.getId().value(),
-            member.getName().value(),
-            member.getEmail().value(),
-            member.getStatus().name()
-        );
+        memberMapper.insert(member);
     }
-
-
 
     @Override
     public Member get(MemberId id) {
@@ -51,13 +45,13 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Optional<Member> findById(MemberId id) {
-        return Optional.ofNullable(memberMapper.findById(id.value()))
+        return Optional.ofNullable(memberMapper.findById(id))
             .filter(record -> record.id() != null)
             .map(MemberRecord::toMember);
     }
 
     @Override
-    public void updateStatus(Member member) {
-        memberMapper.updateStatus(member);
+    public void updateStatus(MemberId id, EnrollmentStatus status) {
+        memberMapper.updateStatus(id, status);
     }
 }

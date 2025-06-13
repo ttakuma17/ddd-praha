@@ -1,5 +1,6 @@
 package com.ddd.praha.infrastructure;
 
+import com.ddd.praha.domain.EnrollmentStatus;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberId;
 import org.apache.ibatis.annotations.*;
@@ -15,21 +16,21 @@ public interface MemberMapper {
     @Select("SELECT id, name, email, status FROM members")
     List<MemberRecord> getAll();
 
-    @Select("SELECT id, name, email, status FROM members WHERE id = #{id}")
-    MemberRecord findById(@Param("id") String id);
+    @Select("SELECT id, name, email, status FROM members WHERE id = #{id.value}")
+    MemberRecord findById(@Param("id") MemberId id);
 
     @Insert("""
         INSERT INTO members (id, name, email, status)
-            SELECT #{id}, #{name}, #{email}, #{status}
+            SELECT #{member.id.value}, #{member.name.value}, #{member.email.value}, #{member.status}
             WHERE NOT EXISTS (
-                SELECT 1 FROM members WHERE id = #{id}
+                SELECT 1 FROM members WHERE id = #{member.id.value}
             )
     """)
-    void insert(@Param("id") String id, @Param("name") String name, @Param("email") String email, @Param("status") String status);
+    void insert(@Param("member") Member member);
 
-    @Update("UPDATE members SET status = #{member.status} WHERE id = #{member.id.value}")
-    void updateStatus(@Param("member") Member member);
+    @Update("UPDATE members SET status = #{status} WHERE id = #{id.value}")
+    void updateStatus(@Param("id") MemberId id, @Param("status") EnrollmentStatus status);
 
-    @Select("SELECT id, name, email, status FROM members WHERE id = #{id}")
-    MemberRecord get(MemberId id);
+    @Select("SELECT id, name, email, status FROM members WHERE id = #{id.value}")
+    MemberRecord get(@Param("id") MemberId id);
 }
