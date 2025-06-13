@@ -40,8 +40,8 @@ public class TaskController {
      * @return 課題のリスト
      */
     @GetMapping
-    public List<TaskResponse> getAllTasks() {
-        List<Task> tasks = taskService.getAllTasks();
+    public List<TaskResponse> findAll() {
+        List<Task> tasks = taskService.findAll();
         return tasks.stream()
                 .map(TaskResponse::from)
                 .toList();
@@ -50,14 +50,12 @@ public class TaskController {
     /**
      * 新しい課題を作成する
      * @param request 課題作成リクエスト
-     * @return 作成された課題情報
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TaskResponse createTask(@RequestBody TaskCreateRequest request) {
+    public void createTask(@RequestBody TaskCreateRequest request) {
         TaskName taskName = new TaskName(request.name());
-        Task createdTask = taskService.addTask(taskName);
-        return TaskResponse.from(createdTask);
+        taskService.addTask(taskName);
     }
     
     /**
@@ -72,14 +70,9 @@ public class TaskController {
             @PathVariable String taskId,
             @PathVariable String memberId,
             @RequestBody TaskStatusUpdateRequest request) {
-        Task task = taskService.getTaskById(new TaskId(taskId));
-        if (task == null) {
-            throw new ResourceNotFoundException("Task not found: " + taskId);
-        }
-
+        Task task = taskService.get(new TaskId(taskId));
         Member member = memberService.get(new MemberId(memberId));
 
-        
         Optional<MemberTask> memberTaskOptional = memberTaskService.getMemberTask(member);
         if (memberTaskOptional.isEmpty()) {
             throw new ResourceNotFoundException("MemberTask not found for member: " + memberId);

@@ -7,7 +7,6 @@ import com.ddd.praha.application.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 課題サービス
@@ -20,30 +19,16 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
     
-    /**
-     * 全ての課題を取得する
-     * @return 課題のリスト
-     */
-    public List<Task> getAllTasks() {
+    public List<Task> findAll() {
         return taskRepository.findAll();
     }
     
-    /**
-     * IDで課題を検索する
-     * @param id 課題ID
-     * @return 課題（存在しない場合はEmpty）
-     */
-    public Task getTaskById(TaskId id) {
-        return taskRepository.findById(id);
+    public Task get(TaskId id) {
+        return taskRepository.get(id);
     }
 
-    /**
-     * 新しい課題を追加する（管理者用API向け）
-     * @param name 課題名
-     * @return 作成された課題
-     */
-    public Task addTask(TaskName name) {
+    public void addTask(TaskName name) {
         Task newTask = new Task(name);
-        return taskRepository.save(newTask);
+        taskRepository.save(newTask);
     }
 }

@@ -13,7 +13,6 @@ import com.ddd.praha.domain.Task;
 import com.ddd.praha.domain.TaskId;
 import com.ddd.praha.domain.TaskName;
 import com.ddd.praha.domain.TaskStatus;
-import java.util.OptionalInt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -98,7 +98,7 @@ public class TaskControllerTest {
         updatedMemberTask.updateTaskStatus(testMember, testTask, TaskStatus.取組中);
 
         // モックの設定
-        when(taskService.getTaskById(any(TaskId.class))).thenReturn(testTask);
+        when(taskService.get(any(TaskId.class))).thenReturn(testTask);
         when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
         when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.of(testMemberTask));
         when(memberTaskService.updateTaskStatus(
@@ -133,7 +133,7 @@ public class TaskControllerTest {
         TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(TaskStatus.取組中.name());
 
         // モックの設定
-        when(taskService.getTaskById(any(TaskId.class))).thenReturn(null);
+        when(taskService.get(any(TaskId.class))).thenReturn(null);
 
         // APIリクエストの実行と検証
         String requestJson = """
@@ -154,7 +154,7 @@ public class TaskControllerTest {
         TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(TaskStatus.取組中.name());
 
         // モックの設定
-        when(taskService.getTaskById(any(TaskId.class))).thenReturn(testTask);
+        when(taskService.get(any(TaskId.class))).thenReturn(testTask);
         when(memberService.findById(any(MemberId.class))).thenReturn(Optional.empty());
 
         // APIリクエストの実行と検証
@@ -176,7 +176,7 @@ public class TaskControllerTest {
         TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(TaskStatus.取組中.name());
 
         // モックの設定
-        when(taskService.getTaskById(any(TaskId.class))).thenReturn(testTask);
+        when(taskService.get(any(TaskId.class))).thenReturn(testTask);
         when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
         when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.empty());
 
@@ -199,7 +199,7 @@ public class TaskControllerTest {
         TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(TaskStatus.完了.name());
 
         // モックの設定
-        when(taskService.getTaskById(any(TaskId.class))).thenReturn(testTask);
+        when(taskService.get(any(TaskId.class))).thenReturn(testTask);
         when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
         when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.of(testMemberTask));
         when(memberTaskService.updateTaskStatus(
@@ -228,7 +228,7 @@ public class TaskControllerTest {
         TaskStatusUpdateRequest request = new TaskStatusUpdateRequest("INVALID_STATUS");
 
         // モックの設定 - タスクとメンバーは存在するが、ステータスが無効
-        when(taskService.getTaskById(any(TaskId.class))).thenReturn(testTask);
+        when(taskService.get(any(TaskId.class))).thenReturn(testTask);
         when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
         when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.of(testMemberTask));
 
@@ -251,7 +251,7 @@ public class TaskControllerTest {
         TaskCreateRequest request = new TaskCreateRequest("新しい課題");
 
         // モックの設定
-        when(taskService.addTask(any(TaskName.class))).thenReturn(testTask);
+        doNothing().when(taskService).addTask(any(TaskName.class));
 
         // APIリクエストの実行と検証
         String requestJson = """
@@ -269,7 +269,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    void getAllTasks_ReturnsListOfTasks() throws Exception {
+    void findAllTasks_ReturnsListOf() throws Exception {
         // テスト用の追加タスクを作成
         TaskId task2Id = new TaskId("test-task-id-2");
         TaskName task2Name = new TaskName("テスト課題2");
@@ -282,7 +282,7 @@ public class TaskControllerTest {
 
         // モックの設定
         List<Task> tasks = Arrays.asList(testTask, testTask2);
-        when(taskService.getAllTasks()).thenReturn(tasks);
+        when(taskService.findAll()).thenReturn(tasks);
 
         // APIリクエストの実行と検証
         mockMvc.perform(get("/api/tasks"))

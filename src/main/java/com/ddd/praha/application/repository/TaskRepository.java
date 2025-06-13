@@ -4,7 +4,6 @@ import com.ddd.praha.domain.Task;
 import com.ddd.praha.domain.TaskId;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 課題リポジトリインターフェース
@@ -21,12 +20,11 @@ public interface TaskRepository {
      * @param id 課題ID
      * @return 課題（存在しない場合はEmpty）
      */
-    Task findById(TaskId id);
+    Task get(TaskId id);
     
     /**
      * 課題を保存する（新規追加または更新）
      * @param task 保存する課題
-     * @return 保存された課題
      */
-    Task save(Task task);
+    void save(Task task);
 }
