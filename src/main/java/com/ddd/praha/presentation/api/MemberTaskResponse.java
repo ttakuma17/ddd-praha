@@ -29,7 +29,7 @@ public class MemberTaskResponse {
      * @param tasks 課題のリスト
      * @return レスポンスオブジェクト
      */
-    public static MemberTaskResponse fromDomain(MemberTask memberTask, Map<Task, TaskStatus> tasks) {
+    public static MemberTaskResponse from(MemberTask memberTask, Map<Task, TaskStatus> tasks) {
         MemberResponse ownerResponse = MemberResponse.from(memberTask.getOwner());
         
         Map<String, TaskStatusResponse> taskStatusMap = tasks.entrySet().stream()

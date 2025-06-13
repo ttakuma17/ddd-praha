@@ -91,6 +91,6 @@ public class TaskController {
         Map<Task, TaskStatus> taskStatusMap = new HashMap<>();
         taskStatusMap.put(task, updatedMemberTask.getTaskStatus(task));
         
-        return MemberTaskResponse.fromDomain(updatedMemberTask, taskStatusMap);
+        return MemberTaskResponse.from(updatedMemberTask, taskStatusMap);
     }
 }

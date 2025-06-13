@@ -1,6 +1,7 @@
 package com.ddd.praha.presentation.api;
 
 import com.ddd.praha.application.service.MemberService;
+import com.ddd.praha.application.service.MemberTaskService;
 import com.ddd.praha.domain.Email;
 import com.ddd.praha.domain.EnrollmentStatus;
 import com.ddd.praha.domain.Member;
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -31,6 +33,9 @@ public class MemberControllerTest {
   @MockitoBean
   private MemberService memberService;
 
+  @MockitoBean
+  private MemberTaskService memberTaskService;
+
   private Member testMember;
   private MemberId testMemberId;
 
@@ -41,14 +46,7 @@ public class MemberControllerTest {
     MemberName name = new MemberName("テスト太郎");
     Email email = new Email("test@example.com");
     EnrollmentStatus status = EnrollmentStatus.在籍中;
-
-    // テスト用のMemberオブジェクトを作成するためのモックを設定
-    testMember = new Member(name, email, status) {
-      @Override
-      public MemberId getId() {
-        return testMemberId;
-      }
-    };
+    testMember = new Member(testMemberId,name, email, status);
   }
 
   @Test
@@ -157,6 +155,9 @@ public class MemberControllerTest {
     // リクエストの作成
     MemberStatusUpdateRequest request = new MemberStatusUpdateRequest(
         EnrollmentStatus.休会中.name());
+
+    // 存在しないメンバーの場合の振る舞いを設定
+    doNothing().when(memberService).updateMemberStatus(any(), any());
 
     // APIリクエストの実行と検証
     String requestJson = """
