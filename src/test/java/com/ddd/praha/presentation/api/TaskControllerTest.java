@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,12 +65,7 @@ public class TaskControllerTest {
         // テスト用のタスクを作成
         testTaskId = new TaskId("test-task-id-1");
         TaskName taskName = new TaskName("テスト課題");
-        testTask = new Task(taskName) {
-            @Override
-            public TaskId getId() {
-                return testTaskId;
-            }
-        };
+        testTask = new Task(taskName);
 
         // テスト用のメンバーを作成
         testMemberId = new MemberId("test-member-id-1");
@@ -77,15 +73,72 @@ public class TaskControllerTest {
         Email email = new Email("test@example.com");
         EnrollmentStatus status = EnrollmentStatus.在籍中;
 
-        testMember = new Member(name, email, status) {
-            @Override
-            public MemberId getId() {
-                return testMemberId;
-            }
-        };
+        testMember = new Member(name, email, status);
 
         // テスト用のメンバータスクを作成
         testMemberTask = new MemberTask(testMember, Collections.singletonList(testTask));
+    }
+
+    @Test
+    void createTask_ReturnsCreatedTask() throws Exception {
+        // リクエストの作成
+        TaskCreateRequest request = new TaskCreateRequest("新しい課題");
+
+        // モックの設定
+        doNothing().when(taskService).addTask(any(TaskName.class));
+
+        // APIリクエストの実行と検証
+        String requestJson = """
+                {
+                    "name": "%s"
+                }
+                """.formatted(request.name());
+
+        mockMvc.perform(post("/api/tasks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+            .andExpect(status().isCreated());
+
+    }
+
+    @Test
+    void findAllTasks_ReturnsListOf() throws Exception {
+        // テスト用の追加タスクを作成
+        TaskId task2Id = new TaskId("test-task-id-2");
+        TaskName task2Name = new TaskName("テスト課題2");
+        Task testTask2 = new Task(task2Name) {
+            @Override
+            public TaskId getId() {
+                return task2Id;
+            }
+        };
+
+        // モックの設定
+        List<Task> tasks = Arrays.asList(testTask, testTask2);
+        when(taskService.findAll()).thenReturn(tasks);
+
+        String expectedJson = """
+            [
+                {
+                    "id": "%s",
+                    "name": "%s"
+                },
+                {
+                    "id": "%s",
+                    "name": "%s"
+                }
+            ]
+            """.formatted(
+            testTask.getId().value(),
+            testTask.getName().value(),
+            testTask2.getId().value(),
+            testTask2.getName().value()
+        );
+
+
+        // APIリクエストの実行と検証
+        mockMvc.perform(get("/api/tasks"))
+            .andExpect(status().isOk()).andExpect(content().json(expectedJson));
     }
 
     @Test
@@ -119,12 +172,28 @@ public class TaskControllerTest {
                 }
                 """.formatted(request.getStatus());
 
+        String expectedJson = """
+            {
+                "owner": {
+                    "id": "%s"
+                },
+                "tasks": {
+                    "%s": {
+                        "status": "%s"
+                    }
+                }
+            }
+            """.formatted(
+            testMember.getId().value(),
+            testTaskId.value(),
+            TaskStatus.取組中.name()
+        );
+
+
         mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), testMemberId.value())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.owner.id").value(testMember.getId().value()))
-                .andExpect(jsonPath("$.tasks." + testTaskId.value() + ".status").value(TaskStatus.取組中.name()));
+                .andExpect(status().isOk()).andExpect(content().json(expectedJson));
     }
 
     @Test
@@ -245,51 +314,5 @@ public class TaskControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void createTask_ReturnsCreatedTask() throws Exception {
-        // リクエストの作成
-        TaskCreateRequest request = new TaskCreateRequest("新しい課題");
 
-        // モックの設定
-        doNothing().when(taskService).addTask(any(TaskName.class));
-
-        // APIリクエストの実行と検証
-        String requestJson = """
-                {
-                    "name": "%s"
-                }
-                """.formatted(request.name());
-
-        mockMvc.perform(post("/api/tasks")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(testTask.getId().value()))
-                .andExpect(jsonPath("$.name").value(testTask.getName().value()));
-    }
-
-    @Test
-    void findAllTasks_ReturnsListOf() throws Exception {
-        // テスト用の追加タスクを作成
-        TaskId task2Id = new TaskId("test-task-id-2");
-        TaskName task2Name = new TaskName("テスト課題2");
-        Task testTask2 = new Task(task2Name) {
-            @Override
-            public TaskId getId() {
-                return task2Id;
-            }
-        };
-
-        // モックの設定
-        List<Task> tasks = Arrays.asList(testTask, testTask2);
-        when(taskService.findAll()).thenReturn(tasks);
-
-        // APIリクエストの実行と検証
-        mockMvc.perform(get("/api/tasks"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(testTask.getId().value()))
-                .andExpect(jsonPath("$[0].name").value(testTask.getName().value()))
-                .andExpect(jsonPath("$[1].id").value(testTask2.getId().value()))
-                .andExpect(jsonPath("$[1].name").value(testTask2.getName().value()));
-    }
 }
