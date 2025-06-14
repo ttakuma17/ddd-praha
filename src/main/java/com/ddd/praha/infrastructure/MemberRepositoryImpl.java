@@ -4,6 +4,8 @@ import com.ddd.praha.application.repository.MemberRepository;
 import com.ddd.praha.domain.entity.Member;
 import com.ddd.praha.domain.model.EnrollmentStatus;
 import com.ddd.praha.domain.model.MemberId;
+import com.ddd.praha.domain.model.TaskId;
+import com.ddd.praha.domain.model.TaskStatus;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -54,4 +56,12 @@ public class MemberRepositoryImpl implements MemberRepository {
     public void updateStatus(MemberId id, EnrollmentStatus status) {
         memberMapper.updateStatus(id, status);
     }
+
+    @Override
+    public List<Member> findMembersByTasksAndStatuses(List<TaskId> taskIds, List<TaskStatus> statuses, int page, int size) {
+        // TODO: MyBatisマッパーの実装が必要
+        // 一旦空のリストを返す
+        return List.of();
+    }
+
 }

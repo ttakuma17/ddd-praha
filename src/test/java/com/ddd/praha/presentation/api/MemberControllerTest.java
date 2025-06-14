@@ -32,9 +32,6 @@ public class MemberControllerTest {
   @MockitoBean
   private MemberService memberService;
 
-  @MockitoBean
-  private MemberTaskService memberTaskService;
-
   private Member testMember;
   private MemberId testMemberId;
 

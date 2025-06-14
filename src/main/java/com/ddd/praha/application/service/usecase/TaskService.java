@@ -13,11 +13,9 @@ import java.util.List;
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
-    private final MemberTaskRepository memberTaskRepository;
 
-    public TaskService(TaskRepository taskRepository, MemberTaskRepository memberTaskRepository) {
+    public TaskService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
-        this.memberTaskRepository = memberTaskRepository;
     }
 
     public List<Task> findAll() {

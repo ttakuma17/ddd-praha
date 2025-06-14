@@ -1,6 +1,7 @@
 package com.ddd.praha.presentation.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -47,6 +48,15 @@ public class GlobalExceptionHandler {
         Map<String, String> error = new HashMap<>();
         error.put("error", "Bad Request");
         error.put("message", e.getMessage());
+        return error;
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Bad Request");
+        error.put("message", "Validation failed");
         return error;
     }
 

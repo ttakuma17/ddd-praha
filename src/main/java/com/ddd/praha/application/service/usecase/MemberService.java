@@ -105,4 +105,21 @@ public class MemberService {
                 .anyMatch(member -> member.getId().equals(memberId)))
             .findFirst();
     }
+
+    /**
+     * 特定の課題が特定のステータスになっている参加者を検索する
+     * @param taskIds 課題IDのリスト
+     * @param statuses ステータスのリスト
+     * @param page ページ番号（0から開始）
+     * @param size ページサイズ
+     * @return 検索結果
+     */
+    public MemberSearchResult searchMembersByTasksAndStatuses(
+            List<TaskId> taskIds,
+            List<TaskStatus> statuses,
+            int page,
+            int size) {
+        List<Member> members = memberRepository.findMembersByTasksAndStatuses(taskIds, statuses, page, size);
+        return new MemberSearchResult(members, page, size, members.size());
+    }
 }

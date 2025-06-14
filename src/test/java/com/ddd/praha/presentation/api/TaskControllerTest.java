@@ -68,9 +68,6 @@ public class TaskControllerTest {
         EnrollmentStatus status = EnrollmentStatus.在籍中;
 
         testMember = new Member(name, email, status);
-
-        // テスト用のメンバータスクを作成
-        testMemberTask = new MemberTask(testMember, Collections.singletonList(testTask));
     }
 
     @Test
