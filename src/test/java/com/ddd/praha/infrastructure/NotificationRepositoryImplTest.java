@@ -74,9 +74,9 @@ class NotificationRepositoryImplTest {
         assertNotNull(receivedMessage);
         
         // 構造化されたメッセージが送信されることを確認
-        assertTrue(receivedMessage instanceof NotificationRepositoryImpl.NotificationMessage);
-        NotificationRepositoryImpl.NotificationMessage notification = 
-            (NotificationRepositoryImpl.NotificationMessage) receivedMessage;
+      assertInstanceOf(NotificationMessage.class, receivedMessage);
+        NotificationMessage notification =
+            (NotificationMessage) receivedMessage;
         
         assertEquals("MERGE_FAILURE", notification.type());
         assertNotNull(notification.message());

@@ -139,7 +139,7 @@ public class Team {
     
     if (targetTeam.isPresent()) {
       Team mergeTarget = targetTeam.get();
-      Member memberToMove = this.list.get(0);
+      Member memberToMove = this.list.getFirst();
       
       // 合流先チームにメンバーを追加
       mergeTarget.addMember(memberToMove);

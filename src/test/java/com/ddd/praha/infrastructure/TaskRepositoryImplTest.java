@@ -39,7 +39,8 @@ class TaskRepositoryImplTest {
 
     assertAll(
         () -> assertEquals(2, result.size()),
-        () -> assertTrue(result.stream().anyMatch(t -> t.getId().value().equals("task-1"))),
+        () -> assertTrue(result.stream().anyMatch(t -> t.getId()
+            .value().equals("task-1"))),
         () -> assertTrue(result.stream().anyMatch(t -> t.getId().value().equals("task-2")))
     );
   }
