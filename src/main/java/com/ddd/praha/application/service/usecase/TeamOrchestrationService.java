@@ -69,6 +69,44 @@ public class TeamOrchestrationService {
             return mergedTeam;
         }
 
+        // 合流失敗の場合
+        if (result.mergeFailure()) {
+            notificationService.notifyMergeFailure(
+                result.composition().getOriginalTeam(),
+                result.composition().getOriginalTeam().getMembers().get(0)
+            );
+        }
+
         return result.composition().getOriginalTeam();
+    }
+
+    /**
+     * 復帰したメンバーを適切なチームに割り当てる
+     *
+     * @param member 復帰するメンバー
+     */
+    public void assignMemberToTeam(Member member) {
+        List<Team> allTeams = teamRepository.getAll();
+        
+        TeamCompositionResult result = domainService.assignMemberToTeam(member, allTeams);
+        
+        // チーム分割が必要な場合
+        if (result.requiresSplit()) {
+            Team newTeam = result.composition().getNewTeam();
+            Team originalTeam = result.composition().getOriginalTeam();
+            
+            teamRepository.create(newTeam);
+            notificationService.notifyTeamSplit(originalTeam, newTeam);
+            logger.info("復帰時にチーム分割: {} -> {}", originalTeam.getName(), newTeam.getName());
+            
+            return;
+        }
+        
+        // 通常の追加
+        teamRepository.addMember(result.composition().getOriginalTeam().getId(), member.getId());
+        logger.info("メンバー {} をチーム {} に割り当てました", 
+            member.getName().value(), 
+            result.composition().getOriginalTeam().getName().value());
+
     }
 }

@@ -5,7 +5,10 @@ import com.ddd.praha.domain.EnrollmentStatus;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberId;
 import com.ddd.praha.domain.MemberName;
+import com.ddd.praha.domain.Team;
+import com.ddd.praha.domain.TeamId;
 import com.ddd.praha.application.repository.MemberRepository;
+import com.ddd.praha.application.repository.TeamRepository;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +20,15 @@ import java.util.List;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final TeamRepository teamRepository;
+    private final TeamOrchestrationService teamOrchestrationService;
     
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, 
+                        TeamRepository teamRepository,
+                        TeamOrchestrationService teamOrchestrationService) {
         this.memberRepository = memberRepository;
+        this.teamRepository = teamRepository;
+        this.teamOrchestrationService = teamOrchestrationService;
     }
 
     public Member get(MemberId memberId) {
@@ -62,7 +71,43 @@ public class MemberService {
      */
     public void updateMemberStatus(MemberId id, EnrollmentStatus newStatus) {
         Member member = memberRepository.get(id);
+        EnrollmentStatus oldStatus = member.getStatus();
+        
+        // ステータスを更新
         member.updateEnrollmentStatus(newStatus);
         memberRepository.updateStatus(member.getId(), newStatus);
+        
+        // チーム再編成の処理
+        handleTeamReorganization(member, oldStatus, newStatus);
+    }
+    
+    /**
+     * ステータス変更に応じたチーム再編成を処理する
+     */
+    private void handleTeamReorganization(Member member, EnrollmentStatus oldStatus, EnrollmentStatus newStatus) {
+        // 在籍中に復帰した場合
+        if (newStatus == EnrollmentStatus.在籍中 && oldStatus != EnrollmentStatus.在籍中) {
+            teamOrchestrationService.assignMemberToTeam(member);
+            return;
+        }
+        
+        // 休会・退会した場合
+        if (oldStatus == EnrollmentStatus.在籍中 && newStatus != EnrollmentStatus.在籍中) {
+            // 現在所属しているチームを探す
+            Optional<Team> currentTeam = findMemberTeam(member.getId());
+          currentTeam.ifPresent(
+              team -> teamOrchestrationService.removeMemberFromTeam(team.getId(), member));
+        }
+    }
+    
+    /**
+     * メンバーが所属しているチームを探す
+     */
+    private Optional<Team> findMemberTeam(MemberId memberId) {
+        List<Team> allTeams = teamRepository.getAll();
+        return allTeams.stream()
+            .filter(team -> team.getMembers().stream()
+                .anyMatch(member -> member.getId().equals(memberId)))
+            .findFirst();
     }
 }

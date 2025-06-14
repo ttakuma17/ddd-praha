@@ -7,27 +7,28 @@ public record TeamRedistributionResult(
     TeamComposition composition,
     Member removedMember,
     boolean requiresMonitoring,
-    boolean requiresMerge
+    boolean requiresMerge,
+    boolean mergeFailure
 ) {
   /**
    * 通常の削除結果を作成
    */
   public static TeamRedistributionResult normal(TeamComposition composition, Member removedMember) {
-    return new TeamRedistributionResult(composition, removedMember, false, false);
+    return new TeamRedistributionResult(composition, removedMember, false, false, false);
   }
 
   /**
    * 監視が必要な結果を作成
    */
   public static TeamRedistributionResult needsMonitoring(TeamComposition composition, Member removedMember) {
-    return new TeamRedistributionResult(composition, removedMember, true, false);
+    return new TeamRedistributionResult(composition, removedMember, true, false, false);
   }
 
   /**
    * チーム合流の結果を作成
    */
   public static TeamRedistributionResult merged(TeamComposition composition, Member removedMember) {
-    return new TeamRedistributionResult(composition, removedMember, false, true);
+    return new TeamRedistributionResult(composition, removedMember, false, true, false);
   }
 
   /**
@@ -35,6 +36,13 @@ public record TeamRedistributionResult(
    */
   public static TeamRedistributionResult needsMonitoringAndMerge(
       TeamComposition composition, Member removedMember) {
-    return new TeamRedistributionResult(composition, removedMember, true, true);
+    return new TeamRedistributionResult(composition, removedMember, true, true, false);
+  }
+  
+  /**
+   * 合流失敗の結果を作成
+   */
+  public static TeamRedistributionResult mergeFailure(TeamComposition composition, Member removedMember) {
+    return new TeamRedistributionResult(composition, removedMember, false, false, true);
   }
 }

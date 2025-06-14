@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * チーム集約？
@@ -132,21 +134,64 @@ public class Team {
     }
     
     // 合流先候補チームを探す（自分以外で4名未満のチーム）
-    Optional<Team> targetTeam = allTeams.stream()
+    List<Team> candidateTeams = allTeams.stream()
         .filter(t -> !t.getId().equals(this.getId()))
         .filter(Team::canAcceptNewMember)
-        .min(Comparator.comparingInt(t -> t.getMembers().size()));
+        .toList();
     
-    if (targetTeam.isPresent()) {
-      Team mergeTarget = targetTeam.get();
-      Member memberToMove = this.list.getFirst();
-      
-      // 合流先チームにメンバーを追加
-      mergeTarget.addMember(memberToMove);
-      
-      return Optional.of(TeamComposition.merge(mergeTarget, List.of(memberToMove)));
+    if (candidateTeams.isEmpty()) {
+      return Optional.empty();
     }
     
-    return Optional.empty();
+    // 最小人数を見つける
+    int minSize = candidateTeams.stream()
+        .mapToInt(t -> t.getMembers().size())
+        .min()
+        .orElse(Integer.MAX_VALUE);
+    
+    // 最小人数のチームを全て取得
+    List<Team> smallestTeams = candidateTeams.stream()
+        .filter(t -> t.getMembers().size() == minSize)
+        .toList();
+    
+    // 同じ人数の場合はランダムに選択
+    Random random = new Random();
+    Team mergeTarget = smallestTeams.get(random.nextInt(smallestTeams.size()));
+    Member memberToMove = this.list.getFirst();
+    
+    // 合流先チームにメンバーを追加
+    mergeTarget.addMember(memberToMove);
+    
+    return Optional.of(TeamComposition.merge(mergeTarget, List.of(memberToMove)));
+  }
+  
+  /**
+   * 最も人数が少ないチームを見つける（復帰時のチーム割り当て用）
+   * @param teams チームのリスト
+   * @return 最も人数が少ないチーム（同数の場合はランダム）
+   */
+  public static Optional<Team> findSmallestTeam(List<Team> teams) {
+    List<Team> candidateTeams = teams.stream()
+        .filter(Team::canAcceptNewMember)
+        .toList();
+    
+    if (candidateTeams.isEmpty()) {
+      return Optional.empty();
+    }
+    
+    // 最小人数を見つける
+    int minSize = candidateTeams.stream()
+        .mapToInt(t -> t.getMembers().size())
+        .min()
+        .orElse(Integer.MAX_VALUE);
+    
+    // 最小人数のチームを全て取得
+    List<Team> smallestTeams = candidateTeams.stream()
+        .filter(t -> t.getMembers().size() == minSize)
+        .toList();
+    
+    // 同じ人数の場合はランダムに選択
+    Random random = new Random();
+    return Optional.of(smallestTeams.get(random.nextInt(smallestTeams.size())));
   }
 }

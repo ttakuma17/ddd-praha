@@ -25,23 +25,45 @@ public class TeamCompositionDomainService {
   public TeamRedistributionResult executeRedistribution(Team team, Member removedMember, List<Team> allTeams) {
     team.deleteMember(removedMember);
     boolean needsMonitoring = team.needsMonitoring();
+    boolean needsRedistribution = team.needsRedistribution();
 
-    Optional<TeamComposition> compositionOpt = team.mergeWithOtherTeam(allTeams);
-
-    if (compositionOpt.isPresent()) {
-      TeamComposition composition = compositionOpt.get();
-      if (needsMonitoring) {
-        return TeamRedistributionResult.needsMonitoringAndMerge(composition, removedMember);
+    // チームが1名になった場合、合流を試みる
+    if (needsRedistribution) {
+      Optional<TeamComposition> compositionOpt = team.mergeWithOtherTeam(allTeams);
+      
+      if (compositionOpt.isPresent()) {
+        TeamComposition composition = compositionOpt.get();
+        if (needsMonitoring) {
+          return TeamRedistributionResult.needsMonitoringAndMerge(composition, removedMember);
+        }
+        return TeamRedistributionResult.merged(composition, removedMember);
+      } else {
+        // 合流先が見つからない場合
+        TeamComposition noChangeComposition = TeamComposition.noChange(team);
+        return TeamRedistributionResult.mergeFailure(noChangeComposition, team.getMembers().getFirst());
       }
-      return TeamRedistributionResult.merged(composition, removedMember);
     }
 
-    // 合流先が見つからない場合
+    // 合流が不要な場合
     TeamComposition noChangeComposition = TeamComposition.noChange(team);
     if (needsMonitoring) {
       return TeamRedistributionResult.needsMonitoring(noChangeComposition, removedMember);
     }
 
     return TeamRedistributionResult.normal(noChangeComposition, removedMember);
+  }
+
+  /**
+   * メンバーを最適なチームに割り当てる（復帰時）
+   */
+  public TeamCompositionResult assignMemberToTeam(Member member, List<Team> allTeams) {
+    Optional<Team> targetTeam = Team.findSmallestTeam(allTeams);
+    
+    if (targetTeam.isEmpty()) {
+      throw new IllegalStateException("メンバーを割り当て可能なチームが見つかりません");
+    }
+    
+    TeamComposition composition = targetTeam.get().addMemberWithComposition(member);
+    return TeamCompositionResult.normal(composition);
   }
 }
