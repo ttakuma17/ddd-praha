@@ -27,7 +27,6 @@ public interface TeamRepository {
     /**
      * チームを保存する（新規追加または更新）
      * @param team 保存するチーム
-     * @return 保存されたチーム
      */
     void create(Team team);
 

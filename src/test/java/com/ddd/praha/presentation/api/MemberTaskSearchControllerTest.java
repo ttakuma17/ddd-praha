@@ -1,7 +1,7 @@
 package com.ddd.praha.presentation.api;
 
 import com.ddd.praha.domain.MemberSearchResult;
-import com.ddd.praha.application.service.MemberTaskService;
+import com.ddd.praha.application.service.usecase.MemberTaskService;
 import com.ddd.praha.domain.*;
 import java.util.List;
 import org.junit.jupiter.api.Test;

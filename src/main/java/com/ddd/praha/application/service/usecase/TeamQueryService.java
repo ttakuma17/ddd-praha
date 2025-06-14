@@ -1,4 +1,4 @@
-package com.ddd.praha.application.service;
+package com.ddd.praha.application.service.usecase;
 
 import com.ddd.praha.application.repository.TeamRepository;
 import com.ddd.praha.domain.Team;

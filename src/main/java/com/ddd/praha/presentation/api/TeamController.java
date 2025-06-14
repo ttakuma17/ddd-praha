@@ -1,8 +1,8 @@
 package com.ddd.praha.presentation.api;
 
-import com.ddd.praha.application.service.MemberService;
-import com.ddd.praha.application.service.TeamQueryService;
-import com.ddd.praha.application.service.TeamOrchestrationService;
+import com.ddd.praha.application.service.usecase.MemberService;
+import com.ddd.praha.application.service.usecase.TeamQueryService;
+import com.ddd.praha.application.service.usecase.TeamOrchestrationService;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberId;
 import com.ddd.praha.domain.Team;
@@ -62,12 +62,8 @@ public class TeamController {
             @PathVariable String id,
             @RequestBody TeamMemberUpdateRequest request) {
         // チームを取得
-        Optional<Team> teamOptional = teamQueryService.get(new TeamId(id));
-        if (teamOptional.isEmpty()) {
-            throw new ResourceNotFoundException("Team not found: " + id);
-        }
-        Team team = teamOptional.get();
-        
+        Team team = teamQueryService.get(new TeamId(id));
+
         // 現在のメンバーを取得
         List<Member> currentMembers = new ArrayList<>(team.getMembers());
         

@@ -1,7 +1,7 @@
 package com.ddd.praha.presentation.api;
 
-import com.ddd.praha.application.service.MemberService;
-import com.ddd.praha.application.service.MemberTaskService;
+import com.ddd.praha.application.service.usecase.MemberService;
+import com.ddd.praha.application.service.usecase.MemberTaskService;
 import com.ddd.praha.domain.Email;
 import com.ddd.praha.domain.EnrollmentStatus;
 import com.ddd.praha.domain.Member;

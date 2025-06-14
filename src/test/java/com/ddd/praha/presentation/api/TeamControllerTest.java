@@ -1,8 +1,8 @@
 package com.ddd.praha.presentation.api;
 
-import com.ddd.praha.application.service.MemberService;
-import com.ddd.praha.application.service.TeamQueryService;
-import com.ddd.praha.application.service.TeamOrchestrationService;
+import com.ddd.praha.application.service.usecase.MemberService;
+import com.ddd.praha.application.service.usecase.TeamQueryService;
+import com.ddd.praha.application.service.usecase.TeamOrchestrationService;
 import com.ddd.praha.domain.Email;
 import com.ddd.praha.domain.EnrollmentStatus;
 import com.ddd.praha.domain.Member;
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -77,22 +78,13 @@ public class TeamControllerTest {
         List<Member> team1Members = new ArrayList<>();
         team1Members.add(member1);
         team1Members.add(member2);
-        team1 = new Team(new TeamName("TeamA"), team1Members) {
-            @Override
-            public TeamId getId() {
-                return new TeamId("team-1");
-            }
-        };
+        team1 = new Team(new TeamName("TeamA"), team1Members);
 
         List<Member> team2Members = new ArrayList<>();
         team2Members.add(member2);
         team2Members.add(member3);
-        team2 = new Team(new TeamName("TeamB"), team2Members) {
-            @Override
-            public TeamId getId() {
-                return new TeamId("team-2");
-            }
-        };
+        team2 = new Team(new TeamName("TeamB"), team2Members);
+
     }
 
     @Test
@@ -117,7 +109,7 @@ public class TeamControllerTest {
     @Test
     public void findTeamById_WhenTeamExists_ReturnsTeam() throws Exception {
         // Arrange
-        when(teamQueryService.get(new TeamId("team-1"))).thenReturn(Optional.of(team1));
+        when(teamQueryService.get(new TeamId("team-1"))).thenReturn(team1);
 
         // Act & Assert
         mockMvc.perform(get("/api/teams/team-1"))
@@ -131,7 +123,7 @@ public class TeamControllerTest {
     @Test
     public void findTeamById_WhenTeamDoesNotExist_ReturnsNotFound() throws Exception {
         // Arrange
-        when(teamQueryService.get(new TeamId("non-existent"))).thenReturn(Optional.empty());
+        doNothing().when(teamQueryService.get(new TeamId("non-existent")));
 
         // Act & Assert
         mockMvc.perform(get("/api/teams/non-existent"))
@@ -145,7 +137,7 @@ public class TeamControllerTest {
                 Arrays.asList(member1.getId().value(), member3.getId().value())
         );
 
-        when(teamQueryService.get(new TeamId("team-1"))).thenReturn(Optional.of(team1));
+        when(teamQueryService.get(new TeamId("team-1"))).thenReturn(team1);
         when(memberService.findById(member1.getId()));
         when(memberService.findById(member3.getId()));
 
@@ -184,7 +176,7 @@ public class TeamControllerTest {
                 Arrays.asList(member1.getId().value(), member3.getId().value())
         );
 
-        when(teamQueryService.get(new TeamId("non-existent"))).thenReturn(Optional.empty());
+        doNothing().when(teamQueryService.get(new TeamId("non-existent")));
 
         // Act & Assert
         String requestJson = """
@@ -206,7 +198,7 @@ public class TeamControllerTest {
                 Arrays.asList(member1.getId().value(), "non-existent-member")
         );
 
-        when(teamQueryService.get(new TeamId("team-1"))).thenReturn(Optional.of(team1));
+        when(teamQueryService.get(new TeamId("team-1"))).thenReturn(team1);
         when(memberService.findById(member1.getId())).thenReturn(Optional.of(member1));
         when(memberService.findById(new MemberId("non-existent-member"))).thenReturn(null);
 
@@ -230,7 +222,7 @@ public class TeamControllerTest {
                 Arrays.asList(member1.getId().value())
         );
 
-        when(teamQueryService.get(new TeamId("team-1"))).thenReturn(Optional.of(team1));
+        when(teamQueryService.get(new TeamId("team-1"))).thenReturn(team1);
         when(memberService.findById(member1.getId())).thenReturn(Optional.of(member1));
 
         // Use doThrow instead of when().thenThrow()
@@ -257,7 +249,7 @@ public class TeamControllerTest {
             Collections.singletonList(member1.getId().value())
         );
 
-        when(teamQueryService.get(new TeamId("team-1"))).thenReturn(Optional.of(team1));
+        when(teamQueryService.get(new TeamId("team-1"))).thenReturn(team1);
         when(memberService.findById(member1.getId())).thenReturn(Optional.of(member1));
         when(teamOrchestrationService.removeMemberFromTeam(any(), any())).thenThrow(new IllegalStateException("Error"));
 

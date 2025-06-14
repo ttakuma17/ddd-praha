@@ -1,4 +1,4 @@
-package com.ddd.praha.application.service;
+package com.ddd.praha.application.service.usecase;
 
 import com.ddd.praha.domain.Task;
 import com.ddd.praha.domain.TaskId;

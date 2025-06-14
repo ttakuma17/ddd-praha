@@ -1,4 +1,5 @@
-package com.ddd.praha.application.service;
+package com.ddd.praha.application.service.domain;
+
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.Team;
 import com.ddd.praha.domain.TeamComposition;
@@ -13,7 +14,7 @@ public class TeamCompositionDomainService {
   /**
    * チーム編成のビジネスルールを実行
    */
-  public TeamCompositionResult executeComposition(Team team, Member member, List<Team> allTeams) {
+  public TeamCompositionResult executeComposition(Team team, Member member) {
     TeamComposition composition = team.addMemberWithComposition(member);
     return TeamCompositionResult.normal(composition);
   }
@@ -42,6 +43,5 @@ public class TeamCompositionDomainService {
     }
 
     return TeamRedistributionResult.normal(noChangeComposition, removedMember);
-
   }
 }

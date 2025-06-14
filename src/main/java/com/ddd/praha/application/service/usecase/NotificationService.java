@@ -1,6 +1,7 @@
-package com.ddd.praha.application.service;
+package com.ddd.praha.application.service.usecase;
 
 import com.ddd.praha.application.repository.NotificationRepository;
+import com.ddd.praha.application.exception.NotificationException;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.Team;
 import com.ddd.praha.domain.TeamNotificationEvent;

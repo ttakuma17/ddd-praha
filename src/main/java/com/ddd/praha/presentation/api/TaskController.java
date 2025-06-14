@@ -1,8 +1,8 @@
 package com.ddd.praha.presentation.api;
 
-import com.ddd.praha.application.service.MemberService;
-import com.ddd.praha.application.service.MemberTaskService;
-import com.ddd.praha.application.service.TaskService;
+import com.ddd.praha.application.service.usecase.MemberService;
+import com.ddd.praha.application.service.usecase.MemberTaskService;
+import com.ddd.praha.application.service.usecase.TaskService;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberId;
 import com.ddd.praha.domain.MemberTask;
@@ -10,7 +10,6 @@ import com.ddd.praha.domain.Task;
 import com.ddd.praha.domain.TaskId;
 import com.ddd.praha.domain.TaskName;
 import com.ddd.praha.domain.TaskStatus;
-import com.ddd.praha.presentation.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

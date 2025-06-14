@@ -1,15 +1,15 @@
-package com.ddd.praha.application.service;
+package com.ddd.praha.application.service.usecase;
 
-import com.ddd.praha.application.repository.NotificationRepository;
 import com.ddd.praha.domain.*;
 import com.ddd.praha.application.repository.TeamRepository;
+import com.ddd.praha.application.service.domain.TeamCompositionDomainService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+
 @Service
 @Transactional
 public class TeamOrchestrationService {
@@ -28,9 +28,8 @@ public class TeamOrchestrationService {
 
     public Team addMemberToTeam(TeamId teamId, Member member) {
         Team team = teamRepository.get(teamId);
-        List<Team> allTeams = teamRepository.getAll();
 
-        TeamCompositionResult result = domainService.executeComposition(team, member, allTeams);
+        TeamCompositionResult result = domainService.executeComposition(team, member);
 
         // チーム分割が必要な場合
         if (result.requiresSplit()) {

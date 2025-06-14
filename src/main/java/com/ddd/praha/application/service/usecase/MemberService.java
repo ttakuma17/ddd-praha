@@ -1,4 +1,4 @@
-package com.ddd.praha.application.service;
+package com.ddd.praha.application.service.usecase;
 
 import com.ddd.praha.domain.Email;
 import com.ddd.praha.domain.EnrollmentStatus;
@@ -48,7 +48,6 @@ public class MemberService {
      * @param name 参加者名
      * @param email メールアドレス
      * @param status 在籍ステータス
-     * @return 追加された参加者
      */
     public void addMember(MemberName name, Email email, EnrollmentStatus status) {
         Member newMember = new Member(name, email, status);
