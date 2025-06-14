@@ -30,7 +30,7 @@ public class Team {
   public Team(TeamId id, TeamName name, List<Member> list) {
     this.id = id;
     this.name = name;
-    this.list = list;
+    this.list = new ArrayList<>(list);
   }
 
   public Team(TeamName name, List<Member> list) {
@@ -171,9 +171,15 @@ public class Team {
    * @return 最も人数が少ないチーム（同数の場合はランダム）
    */
   public static Optional<Team> findSmallestTeam(List<Team> teams) {
+    // まず4名未満のチームを探す
     List<Team> candidateTeams = teams.stream()
         .filter(Team::canAcceptNewMember)
         .toList();
+    
+    // 4名未満のチームがない場合は、全チームから選択（分割が発生する）
+    if (candidateTeams.isEmpty()) {
+      candidateTeams = new ArrayList<>(teams);
+    }
     
     if (candidateTeams.isEmpty()) {
       return Optional.empty();

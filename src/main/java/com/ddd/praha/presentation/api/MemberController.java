@@ -7,16 +7,12 @@ import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberId;
 import com.ddd.praha.domain.MemberName;
 import com.ddd.praha.presentation.exception.ResourceNotFoundException;
-import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * 参加者コントローラー
- */
 @RestController
 @RequestMapping("/api/members")
 public class MemberController {
@@ -58,9 +54,9 @@ public class MemberController {
     @ResponseStatus(HttpStatus.CREATED)
     public void createMember(@RequestBody MemberCreateRequest request) {
         memberService.addMember(
-                new MemberName(request.getName()),
-                new Email(request.getEmail()),
-                EnrollmentStatus.valueOf(request.getStatus())
+                new MemberName(request.name()),
+                new Email(request.email()),
+                EnrollmentStatus.valueOf(request.status())
         );
     }
     

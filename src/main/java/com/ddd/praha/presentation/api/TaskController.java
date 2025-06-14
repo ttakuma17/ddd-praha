@@ -5,7 +5,6 @@ import com.ddd.praha.application.service.usecase.MemberTaskService;
 import com.ddd.praha.application.service.usecase.TaskService;
 import com.ddd.praha.domain.Member;
 import com.ddd.praha.domain.MemberId;
-import com.ddd.praha.domain.MemberTask;
 import com.ddd.praha.domain.Task;
 import com.ddd.praha.domain.TaskId;
 import com.ddd.praha.domain.TaskName;
@@ -13,14 +12,8 @@ import com.ddd.praha.domain.TaskStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-/**
- * 課題コントローラー
- */
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
@@ -60,25 +53,17 @@ public class TaskController {
     /**
      * 特定の参加者の課題進捗ステータスを更新する
      * @param taskId 課題ID
-     * @param memberId 参加者ID
      * @param request ステータス更新リクエスト
-     * @return 更新された参加者課題情報
      */
-    @PutMapping("/{taskId}/members/{memberId}/status")
-    public MemberTaskResponse updateTaskStatus(
+    @PutMapping("/{taskId}/status")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateTaskStatus(
             @PathVariable String taskId,
-            @PathVariable String memberId,
             @RequestBody TaskStatusUpdateRequest request) {
         Task task = taskService.get(new TaskId(taskId));
-        Member member = memberService.get(new MemberId(memberId));
-        MemberTask memberTaskOptional = memberTaskService.getMemberTask(member);
+        Member member = memberService.get(new MemberId(request.memberId()));
+        TaskStatus newStatus = TaskStatus.valueOf(request.status());
 
-        TaskStatus newStatus = TaskStatus.valueOf(request.getStatus());
-        MemberTask updatedMemberTask = memberTaskService.updateTaskStatus(member, member, task, newStatus);
-        
-        Map<Task, TaskStatus> taskStatusMap = new HashMap<>();
-        taskStatusMap.put(task, updatedMemberTask.getTaskStatus(task));
-        
-        return MemberTaskResponse.from(updatedMemberTask, taskStatusMap);
+        memberTaskService.updateTaskStatus(member, member, task, newStatus);
     }
 }

@@ -18,8 +18,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import org.springframework.http.MediaType;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(MemberTaskSearchController.class)
-class MemberTaskSearchControllerTest {
+@WebMvcTest(MemberSearchController.class)
+class MemberSearchControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

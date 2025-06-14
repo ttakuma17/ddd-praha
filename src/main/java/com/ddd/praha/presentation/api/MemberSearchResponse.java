@@ -6,14 +6,14 @@ import com.ddd.praha.domain.Member;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MemberTaskSearchResponse<T> {
+public class MemberSearchResponse<T> {
     private final List<T> content;
     private final int page;
     private final int size;
     private final long totalElements;
     private final int totalPages;
     
-    public MemberTaskSearchResponse(List<T> content, int page, int size, long totalElements) {
+    public MemberSearchResponse(List<T> content, int page, int size, long totalElements) {
         this.content = content;
         this.page = page;
         this.size = size;
@@ -24,12 +24,12 @@ public class MemberTaskSearchResponse<T> {
     /**
      * MemberSearchResultからMemberTaskSearchResponseに変換する
      */
-    public static MemberTaskSearchResponse<MemberResponse> fromMemberSearchResult(MemberSearchResult searchResult) {
+    public static MemberSearchResponse<MemberResponse> from(MemberSearchResult searchResult) {
         List<MemberResponse> memberResponses = searchResult.getMembers().stream()
             .map(MemberResponse::from)
             .collect(Collectors.toList());
         
-        return new MemberTaskSearchResponse<>(
+        return new MemberSearchResponse<>(
             memberResponses,
             searchResult.getPage(),
             searchResult.getSize(),
@@ -41,7 +41,7 @@ public class MemberTaskSearchResponse<T> {
      * application層で使用するためのMemberSearchResultに変換する
      */
     public MemberSearchResult toMemberSearchResult() {
-        if (!(content instanceof List<?>)) {
+        if (content == null) {
             throw new IllegalStateException("コンテンツがMemberResponseのリストではありません");
         }
         

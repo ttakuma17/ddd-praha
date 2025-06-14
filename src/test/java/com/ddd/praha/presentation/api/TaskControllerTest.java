@@ -144,7 +144,7 @@ public class TaskControllerTest {
     @Test
     void updateTaskStatus_WhenSuccessful_ReturnsUpdatedTask() throws Exception {
         // リクエストの作成
-        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(TaskStatus.取組中.name());
+        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(testMemberId.value(),TaskStatus.取組中.name());
 
         // 更新後のメンバータスク
         MemberTask updatedMemberTask = new MemberTask(testMember, Collections.singletonList(testTask));
@@ -170,7 +170,7 @@ public class TaskControllerTest {
                 {
                     "status": "%s"
                 }
-                """.formatted(request.getStatus());
+                """.formatted(request.status());
 
         String expectedJson = """
             {
@@ -199,7 +199,7 @@ public class TaskControllerTest {
     @Test
     void updateTaskStatus_WhenTaskNotFound_ReturnsNotFound() throws Exception {
         // リクエストの作成
-        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(TaskStatus.取組中.name());
+        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(testMemberId.value(),TaskStatus.取組中.name());
 
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(null);
@@ -209,7 +209,7 @@ public class TaskControllerTest {
                 {
                     "status": "%s"
                 }
-                """.formatted(request.getStatus());
+                """.formatted(request.status());
 
         mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", "non-existent-task-id", testMemberId.value())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -220,7 +220,7 @@ public class TaskControllerTest {
     @Test
     void updateTaskStatus_WhenMemberNotFound_ReturnsNotFound() throws Exception {
         // リクエストの作成
-        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(TaskStatus.取組中.name());
+        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(testMemberId.value(),TaskStatus.取組中.name());
 
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
@@ -231,7 +231,7 @@ public class TaskControllerTest {
                 {
                     "status": "%s"
                 }
-                """.formatted(request.getStatus());
+                """.formatted(request.status());
 
         mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), "non-existent-member-id")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -242,7 +242,7 @@ public class TaskControllerTest {
     @Test
     void updateTaskStatus_WhenMemberTaskNotFound_ReturnsNotFound() throws Exception {
         // リクエストの作成
-        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(TaskStatus.取組中.name());
+        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(testMemberId.value(),TaskStatus.取組中.name());
 
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
@@ -254,7 +254,7 @@ public class TaskControllerTest {
                 {
                     "status": "%s"
                 }
-                """.formatted(request.getStatus());
+                """.formatted(request.status());
 
         mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), testMemberId.value())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -265,7 +265,7 @@ public class TaskControllerTest {
     @Test
     void updateTaskStatus_WhenStatusTransitionInvalid_ReturnsBadRequest() throws Exception {
         // リクエストの作成
-        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(TaskStatus.完了.name());
+        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(testMemberId.value(),TaskStatus.完了.name());
 
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
@@ -283,7 +283,7 @@ public class TaskControllerTest {
                 {
                     "status": "%s"
                 }
-                """.formatted(request.getStatus());
+                """.formatted(request.status());
 
         mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), testMemberId.value())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -294,7 +294,7 @@ public class TaskControllerTest {
     @Test
     void updateTaskStatus_WhenIllegalArgument_ReturnsBadRequest() throws Exception {
         // リクエストの作成
-        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest("INVALID_STATUS");
+        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(testMemberId.value(),TaskStatus.取組中.name());
 
         // モックの設定 - タスクとメンバーは存在するが、ステータスが無効
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
@@ -306,7 +306,7 @@ public class TaskControllerTest {
                 {
                     "status": "%s"
                 }
-                """.formatted(request.getStatus());
+                """.formatted(request.status());
 
         mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), testMemberId.value())
                 .contentType(MediaType.APPLICATION_JSON)

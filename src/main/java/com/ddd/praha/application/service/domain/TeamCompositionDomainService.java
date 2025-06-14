@@ -64,6 +64,12 @@ public class TeamCompositionDomainService {
     }
     
     TeamComposition composition = targetTeam.get().addMemberWithComposition(member);
+    
+    // チーム分割が発生したかどうかを確認
+    if (composition.getType() == TeamComposition.CompositionType.SPLIT) {
+      return TeamCompositionResult.split(composition);
+    }
+    
     return TeamCompositionResult.normal(composition);
   }
 }

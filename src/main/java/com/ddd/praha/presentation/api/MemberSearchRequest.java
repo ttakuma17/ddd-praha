@@ -3,7 +3,7 @@ package com.ddd.praha.presentation.api;
 /**
  * 参加者課題検索リクエスト
  */
-public class MemberTaskSearchRequest {
+public class MemberSearchRequest {
     
     /**
      * 課題IDの配列（複数指定可能）
@@ -20,10 +20,10 @@ public class MemberTaskSearchRequest {
      */
     private int page = 0;
     
-    public MemberTaskSearchRequest() {
+    public MemberSearchRequest() {
     }
     
-    public MemberTaskSearchRequest(String[] taskIds, String[] statuses, int page) {
+    public MemberSearchRequest(String[] taskIds, String[] statuses, int page) {
         this.taskIds = taskIds;
         this.statuses = statuses;
         this.page = page;
