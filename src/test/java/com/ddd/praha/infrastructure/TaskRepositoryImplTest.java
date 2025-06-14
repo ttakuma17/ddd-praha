@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.ddd.praha.TestcontainersConfiguration;
-import com.ddd.praha.domain.Task;
-import com.ddd.praha.domain.TaskId;
-import com.ddd.praha.domain.TaskName;
+import com.ddd.praha.domain.entity.Task;
+import com.ddd.praha.domain.model.TaskId;
+import com.ddd.praha.domain.model.TaskName;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

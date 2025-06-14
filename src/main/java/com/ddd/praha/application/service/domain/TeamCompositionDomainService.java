@@ -1,10 +1,7 @@
 package com.ddd.praha.application.service.domain;
 
-import com.ddd.praha.domain.Member;
-import com.ddd.praha.domain.Team;
-import com.ddd.praha.domain.TeamComposition;
-import com.ddd.praha.domain.TeamCompositionResult;
-import com.ddd.praha.domain.TeamRedistributionResult;
+import com.ddd.praha.domain.entity.*;
+import com.ddd.praha.domain.model.*;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;

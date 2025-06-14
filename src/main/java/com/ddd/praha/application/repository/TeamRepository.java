@@ -1,9 +1,8 @@
 package com.ddd.praha.application.repository;
 
-import com.ddd.praha.domain.MemberId;
-import com.ddd.praha.domain.Team;
-import com.ddd.praha.domain.TeamId;
-
+import com.ddd.praha.domain.entity.Team;
+import com.ddd.praha.domain.model.MemberId;
+import com.ddd.praha.domain.model.TeamId;
 import java.util.List;
 
 /**

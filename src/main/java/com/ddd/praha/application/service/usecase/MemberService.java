@@ -1,14 +1,9 @@
 package com.ddd.praha.application.service.usecase;
 
-import com.ddd.praha.domain.Email;
-import com.ddd.praha.domain.EnrollmentStatus;
-import com.ddd.praha.domain.Member;
-import com.ddd.praha.domain.MemberId;
-import com.ddd.praha.domain.MemberName;
-import com.ddd.praha.domain.Team;
-import com.ddd.praha.domain.TeamId;
 import com.ddd.praha.application.repository.MemberRepository;
 import com.ddd.praha.application.repository.TeamRepository;
+import com.ddd.praha.domain.entity.*;
+import com.ddd.praha.domain.model.*;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 

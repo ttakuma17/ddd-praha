@@ -1,6 +1,6 @@
 package com.ddd.praha.presentation.api;
 
-import com.ddd.praha.domain.Task;
+import com.ddd.praha.domain.entity.Task;
 
 /**
  * タスクレスポンス

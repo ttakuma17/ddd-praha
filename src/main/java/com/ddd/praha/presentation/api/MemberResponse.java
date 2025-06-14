@@ -1,6 +1,10 @@
 package com.ddd.praha.presentation.api;
 
-import com.ddd.praha.domain.*;
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.model.Email;
+import com.ddd.praha.domain.model.EnrollmentStatus;
+import com.ddd.praha.domain.model.MemberId;
+import com.ddd.praha.domain.model.MemberName;
 import java.util.Objects;
 import org.springframework.lang.NonNull;
 

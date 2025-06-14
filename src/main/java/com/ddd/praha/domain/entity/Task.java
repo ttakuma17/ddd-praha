@@ -1,4 +1,6 @@
-package com.ddd.praha.domain;
+package com.ddd.praha.domain.entity;
+
+import com.ddd.praha.domain.model.*;
 
 public class Task {
   TaskId id;

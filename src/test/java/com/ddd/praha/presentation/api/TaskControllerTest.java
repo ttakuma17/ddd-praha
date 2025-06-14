@@ -3,16 +3,16 @@ package com.ddd.praha.presentation.api;
 import com.ddd.praha.application.service.usecase.MemberService;
 import com.ddd.praha.application.service.usecase.MemberTaskService;
 import com.ddd.praha.application.service.usecase.TaskService;
-import com.ddd.praha.domain.Email;
-import com.ddd.praha.domain.EnrollmentStatus;
-import com.ddd.praha.domain.Member;
-import com.ddd.praha.domain.MemberId;
-import com.ddd.praha.domain.MemberName;
-import com.ddd.praha.domain.MemberTask;
-import com.ddd.praha.domain.Task;
-import com.ddd.praha.domain.TaskId;
-import com.ddd.praha.domain.TaskName;
-import com.ddd.praha.domain.TaskStatus;
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.entity.MemberTask;
+import com.ddd.praha.domain.entity.Task;
+import com.ddd.praha.domain.model.Email;
+import com.ddd.praha.domain.model.EnrollmentStatus;
+import com.ddd.praha.domain.model.MemberId;
+import com.ddd.praha.domain.model.MemberName;
+import com.ddd.praha.domain.model.TaskId;
+import com.ddd.praha.domain.model.TaskName;
+import com.ddd.praha.domain.model.TaskStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,7 +144,8 @@ public class TaskControllerTest {
     @Test
     void updateTaskStatus_WhenSuccessful_ReturnsUpdatedTask() throws Exception {
         // リクエストの作成
-        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(testMemberId.value(),TaskStatus.取組中.name());
+        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(testMemberId.value(),
+            TaskStatus.取組中.name());
 
         // 更新後のメンバータスク
         MemberTask updatedMemberTask = new MemberTask(testMember, Collections.singletonList(testTask));

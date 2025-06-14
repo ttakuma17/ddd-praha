@@ -1,17 +1,17 @@
 package com.ddd.praha.infrastructure;
 
-import com.ddd.praha.domain.Member;
-import com.ddd.praha.domain.MemberTask;
-import com.ddd.praha.domain.Task;
-import com.ddd.praha.domain.TaskId;
-import com.ddd.praha.domain.TaskStatus;
+
 import com.ddd.praha.application.repository.MemberTaskRepository;
 import com.ddd.praha.application.repository.TaskRepository;
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.entity.MemberTask;
+import com.ddd.praha.domain.entity.Task;
+import com.ddd.praha.domain.model.TaskId;
+import com.ddd.praha.domain.model.TaskStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**

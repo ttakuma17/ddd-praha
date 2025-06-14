@@ -1,5 +1,9 @@
 package com.ddd.praha.domain;
 
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.model.Email;
+import com.ddd.praha.domain.model.EnrollmentStatus;
+import com.ddd.praha.domain.model.MemberName;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

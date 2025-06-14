@@ -1,6 +1,7 @@
-package com.ddd.praha.domain;
+package com.ddd.praha.domain.model;
 
-import java.util.List;
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.entity.Team;
 
 /**
  * チーム関連のドメインイベント

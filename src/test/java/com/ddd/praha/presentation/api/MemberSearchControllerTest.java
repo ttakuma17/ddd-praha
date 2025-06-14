@@ -1,8 +1,12 @@
 package com.ddd.praha.presentation.api;
 
-import com.ddd.praha.domain.MemberSearchResult;
 import com.ddd.praha.application.service.usecase.MemberTaskService;
-import com.ddd.praha.domain.*;
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.model.Email;
+import com.ddd.praha.domain.model.EnrollmentStatus;
+import com.ddd.praha.domain.model.MemberId;
+import com.ddd.praha.domain.model.MemberName;
+import com.ddd.praha.domain.model.MemberSearchResult;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

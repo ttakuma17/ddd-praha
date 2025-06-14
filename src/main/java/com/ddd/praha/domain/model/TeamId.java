@@ -1,4 +1,4 @@
-package com.ddd.praha.domain;
+package com.ddd.praha.domain.model;
 
 import java.util.Objects;
 import java.util.UUID;

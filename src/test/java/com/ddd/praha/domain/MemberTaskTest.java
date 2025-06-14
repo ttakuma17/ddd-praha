@@ -1,5 +1,13 @@
 package com.ddd.praha.domain;
 
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.entity.MemberTask;
+import com.ddd.praha.domain.entity.Task;
+import com.ddd.praha.domain.model.Email;
+import com.ddd.praha.domain.model.EnrollmentStatus;
+import com.ddd.praha.domain.model.MemberName;
+import com.ddd.praha.domain.model.TaskName;
+import com.ddd.praha.domain.model.TaskStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -38,7 +46,7 @@ class MemberTaskTest {
     void createMemberTaskWithValidValues() {
       MemberTask memberTask = new MemberTask(owner, tasks);
 
-      assertEquals(owner, memberTask.owner);
+      assertEquals(owner, memberTask.getOwner());
       assertEquals(TaskStatus.未着手, memberTask.getTaskStatus(task1));
       assertEquals(TaskStatus.未着手, memberTask.getTaskStatus(task2));
     }

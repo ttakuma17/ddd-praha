@@ -1,6 +1,7 @@
 package com.ddd.praha.application.repository;
 
-import com.ddd.praha.domain.TeamNotificationEvent;
+
+import com.ddd.praha.domain.model.TeamNotificationEvent;
 
 /**
  * 通知処理のインターフェース

@@ -2,11 +2,11 @@ package com.ddd.praha.presentation.api;
 
 import com.ddd.praha.application.service.usecase.MemberService;
 import com.ddd.praha.application.service.usecase.MemberTaskService;
-import com.ddd.praha.domain.Email;
-import com.ddd.praha.domain.EnrollmentStatus;
-import com.ddd.praha.domain.Member;
-import com.ddd.praha.domain.MemberId;
-import com.ddd.praha.domain.MemberName;
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.model.Email;
+import com.ddd.praha.domain.model.EnrollmentStatus;
+import com.ddd.praha.domain.model.MemberId;
+import com.ddd.praha.domain.model.MemberName;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -108,9 +108,9 @@ public class MemberControllerTest {
             "status": "%s"
         }
         """.formatted(
-        request.getName(),
-        request.getEmail(),
-        request.getStatus()
+        request.name(),
+        request.email(),
+        request.status()
     );
 
     mockMvc.perform(post("/api/members")
@@ -142,7 +142,7 @@ public class MemberControllerTest {
         {
             "status": "%s"
         }
-        """.formatted(request.getStatus());
+        """.formatted(request.status());
 
     mockMvc.perform(put("/api/members/{id}/status", testMemberId.value())
             .contentType(MediaType.APPLICATION_JSON)
@@ -164,7 +164,7 @@ public class MemberControllerTest {
         {
             "status": "%s"
         }
-        """.formatted(request.getStatus());
+        """.formatted(request.status());
 
     mockMvc.perform(put("/api/members/{id}/status", "non-existent-id")
             .contentType(MediaType.APPLICATION_JSON)
@@ -183,7 +183,7 @@ public class MemberControllerTest {
         {
             "status": "%s"
         }
-        """.formatted(request.getStatus());
+        """.formatted(request.status());
 
     mockMvc.perform(put("/api/members/{id}/status", testMemberId.value())
             .contentType(MediaType.APPLICATION_JSON)

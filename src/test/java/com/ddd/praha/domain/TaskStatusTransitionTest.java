@@ -1,5 +1,7 @@
 package com.ddd.praha.domain;
 
+import com.ddd.praha.domain.model.TaskStatus;
+import com.ddd.praha.domain.model.TaskStatusTransition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

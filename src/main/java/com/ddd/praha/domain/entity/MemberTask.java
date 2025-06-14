@@ -1,5 +1,6 @@
-package com.ddd.praha.domain;
+package com.ddd.praha.domain.entity;
 
+import com.ddd.praha.domain.model.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

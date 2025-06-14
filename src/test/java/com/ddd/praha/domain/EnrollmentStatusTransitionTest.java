@@ -2,6 +2,8 @@ package com.ddd.praha.domain;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.ddd.praha.domain.model.EnrollmentStatus;
+import com.ddd.praha.domain.model.EnrollmentStatusTransition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

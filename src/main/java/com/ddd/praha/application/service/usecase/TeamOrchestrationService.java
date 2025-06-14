@@ -1,8 +1,9 @@
 package com.ddd.praha.application.service.usecase;
 
-import com.ddd.praha.domain.*;
 import com.ddd.praha.application.repository.TeamRepository;
 import com.ddd.praha.application.service.domain.TeamCompositionDomainService;
+import com.ddd.praha.domain.entity.*;
+import com.ddd.praha.domain.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

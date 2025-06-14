@@ -1,4 +1,6 @@
-package com.ddd.praha.domain;
+package com.ddd.praha.domain.model;
+
+import com.ddd.praha.domain.entity.Member;
 
 /**
  * チーム再編成の結果を表現するクラス

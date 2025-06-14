@@ -6,7 +6,17 @@ import static org.mockito.Mockito.*;
 
 import com.ddd.praha.application.repository.TeamRepository;
 import com.ddd.praha.application.service.domain.TeamCompositionDomainService;
-import com.ddd.praha.domain.*;
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.entity.Team;
+import com.ddd.praha.domain.model.Email;
+import com.ddd.praha.domain.model.EnrollmentStatus;
+import com.ddd.praha.domain.model.MemberId;
+import com.ddd.praha.domain.model.MemberName;
+import com.ddd.praha.domain.model.TeamComposition;
+import com.ddd.praha.domain.model.TeamCompositionResult;
+import com.ddd.praha.domain.model.TeamId;
+import com.ddd.praha.domain.model.TeamName;
+import com.ddd.praha.domain.model.TeamRedistributionResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

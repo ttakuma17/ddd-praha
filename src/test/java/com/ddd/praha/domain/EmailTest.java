@@ -2,6 +2,7 @@ package com.ddd.praha.domain;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.ddd.praha.domain.model.Email;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

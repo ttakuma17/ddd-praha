@@ -1,9 +1,10 @@
 package com.ddd.praha.application.repository;
 
-import com.ddd.praha.domain.EnrollmentStatus;
-import com.ddd.praha.domain.Member;
-import com.ddd.praha.domain.MemberId;
 
+
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.model.EnrollmentStatus;
+import com.ddd.praha.domain.model.MemberId;
 import java.util.List;
 import java.util.Optional;
 

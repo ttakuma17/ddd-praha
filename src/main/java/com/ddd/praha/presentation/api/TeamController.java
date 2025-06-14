@@ -3,10 +3,10 @@ package com.ddd.praha.presentation.api;
 import com.ddd.praha.application.service.usecase.MemberService;
 import com.ddd.praha.application.service.usecase.TeamQueryService;
 import com.ddd.praha.application.service.usecase.TeamOrchestrationService;
-import com.ddd.praha.domain.Member;
-import com.ddd.praha.domain.MemberId;
-import com.ddd.praha.domain.Team;
-import com.ddd.praha.domain.TeamId;
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.model.MemberId;
+import com.ddd.praha.domain.entity.Team;
+import com.ddd.praha.domain.model.TeamId;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;

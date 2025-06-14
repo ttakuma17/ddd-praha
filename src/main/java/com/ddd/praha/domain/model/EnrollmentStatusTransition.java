@@ -1,4 +1,4 @@
-package com.ddd.praha.domain;
+package com.ddd.praha.domain.model;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ public class EnrollmentStatusTransition {
     allowed.put(EnrollmentStatus.退会済, EnumSet.of(EnrollmentStatus.在籍中));
   }
 
-  boolean canTransit(EnrollmentStatus from, EnrollmentStatus to) {
+  public boolean canTransit(EnrollmentStatus from, EnrollmentStatus to) {
     Set<EnrollmentStatus> allowedStates = allowed.get(from);
     return allowedStates.contains(to);
   }

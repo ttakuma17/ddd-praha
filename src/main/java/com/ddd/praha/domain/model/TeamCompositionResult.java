@@ -1,4 +1,4 @@
-package com.ddd.praha.domain;
+package com.ddd.praha.domain.model;
 
 /**
  * チーム編成の結果を表現するクラス

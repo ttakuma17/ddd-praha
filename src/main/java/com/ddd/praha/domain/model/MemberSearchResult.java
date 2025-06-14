@@ -1,5 +1,6 @@
-package com.ddd.praha.domain;
+package com.ddd.praha.domain.model;
 
+import com.ddd.praha.domain.entity.Member;
 import java.util.List;
 
 /**

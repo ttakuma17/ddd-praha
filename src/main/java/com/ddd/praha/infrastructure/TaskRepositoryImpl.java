@@ -1,8 +1,9 @@
 package com.ddd.praha.infrastructure;
 
-import com.ddd.praha.domain.Task;
-import com.ddd.praha.domain.TaskId;
+
 import com.ddd.praha.application.repository.TaskRepository;
+import com.ddd.praha.domain.entity.Task;
+import com.ddd.praha.domain.model.TaskId;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

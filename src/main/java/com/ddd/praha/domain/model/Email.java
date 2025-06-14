@@ -1,4 +1,4 @@
-package com.ddd.praha.domain;
+package com.ddd.praha.domain.model;
 
 public record Email(String value) {
 

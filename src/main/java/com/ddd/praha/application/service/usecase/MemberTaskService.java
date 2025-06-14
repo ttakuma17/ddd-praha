@@ -1,12 +1,8 @@
 package com.ddd.praha.application.service.usecase;
 
-import com.ddd.praha.domain.MemberSearchResult;
-import com.ddd.praha.domain.Member;
-import com.ddd.praha.domain.MemberTask;
-import com.ddd.praha.domain.Task;
-import com.ddd.praha.domain.TaskId;
-import com.ddd.praha.domain.TaskStatus;
 import com.ddd.praha.application.repository.MemberTaskRepository;
+import com.ddd.praha.domain.entity.*;
+import com.ddd.praha.domain.model.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

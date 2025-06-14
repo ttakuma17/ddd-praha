@@ -1,7 +1,7 @@
 package com.ddd.praha.presentation.api;
 
-import com.ddd.praha.domain.MemberSearchResult;
-import com.ddd.praha.domain.Member;
+import com.ddd.praha.domain.model.MemberSearchResult;
+import com.ddd.praha.domain.entity.Member;
 
 import java.util.List;
 import java.util.stream.Collectors;

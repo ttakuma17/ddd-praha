@@ -1,10 +1,9 @@
 package com.ddd.praha.infrastructure;
 
-import com.ddd.praha.domain.Team;
-import com.ddd.praha.domain.TeamId;
-import com.ddd.praha.domain.TeamName;
-import com.ddd.praha.domain.Member;
-import java.lang.reflect.Field;
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.entity.Team;
+import com.ddd.praha.domain.model.TeamId;
+import com.ddd.praha.domain.model.TeamName;
 import java.util.List;
 
 /**

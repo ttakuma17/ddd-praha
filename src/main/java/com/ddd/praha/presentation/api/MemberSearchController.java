@@ -1,9 +1,9 @@
 package com.ddd.praha.presentation.api;
 
-import com.ddd.praha.domain.MemberSearchResult;
+import com.ddd.praha.domain.model.MemberSearchResult;
 import com.ddd.praha.application.service.usecase.MemberTaskService;
-import com.ddd.praha.domain.TaskId;
-import com.ddd.praha.domain.TaskStatus;
+import com.ddd.praha.domain.model.TaskId;
+import com.ddd.praha.domain.model.TaskStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;

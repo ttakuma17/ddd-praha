@@ -2,9 +2,8 @@ package com.ddd.praha.application.service.usecase;
 
 import com.ddd.praha.application.repository.NotificationRepository;
 import com.ddd.praha.application.exception.NotificationException;
-import com.ddd.praha.domain.Member;
-import com.ddd.praha.domain.Team;
-import com.ddd.praha.domain.TeamNotificationEvent;
+import com.ddd.praha.domain.entity.*;
+import com.ddd.praha.domain.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

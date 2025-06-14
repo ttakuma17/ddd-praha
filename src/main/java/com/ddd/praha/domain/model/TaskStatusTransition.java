@@ -1,4 +1,4 @@
-package com.ddd.praha.domain;
+package com.ddd.praha.domain.model;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ public class TaskStatusTransition {
     allowed.put(TaskStatus.レビュー待ち, EnumSet.of(TaskStatus.取組中, TaskStatus.完了));
   }
 
-  boolean canTransit(TaskStatus from, TaskStatus to) {
+  public boolean canTransit(TaskStatus from, TaskStatus to) {
     Set<TaskStatus> allowedStates = allowed.get(from);
     return allowedStates.contains(to);
   }

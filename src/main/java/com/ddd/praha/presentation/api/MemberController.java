@@ -1,11 +1,11 @@
 package com.ddd.praha.presentation.api;
 
 import com.ddd.praha.application.service.usecase.MemberService;
-import com.ddd.praha.domain.Email;
-import com.ddd.praha.domain.EnrollmentStatus;
-import com.ddd.praha.domain.Member;
-import com.ddd.praha.domain.MemberId;
-import com.ddd.praha.domain.MemberName;
+import com.ddd.praha.domain.model.Email;
+import com.ddd.praha.domain.model.EnrollmentStatus;
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.model.MemberId;
+import com.ddd.praha.domain.model.MemberName;
 import com.ddd.praha.presentation.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -70,7 +70,7 @@ public class MemberController {
     public void updateMemberStatus(@PathVariable String id, @RequestBody MemberStatusUpdateRequest request) {
         memberService.updateMemberStatus(
                 new MemberId(id),
-                EnrollmentStatus.valueOf(request.getStatus())
+                EnrollmentStatus.valueOf(request.status())
         );
     }
 }

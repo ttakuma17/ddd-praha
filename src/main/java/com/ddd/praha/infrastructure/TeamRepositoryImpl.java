@@ -1,10 +1,11 @@
 package com.ddd.praha.infrastructure;
 
-import com.ddd.praha.domain.MemberId;
-import com.ddd.praha.domain.Team;
-import com.ddd.praha.domain.TeamId;
-import com.ddd.praha.domain.Member;
+
 import com.ddd.praha.application.repository.TeamRepository;
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.entity.Team;
+import com.ddd.praha.domain.model.MemberId;
+import com.ddd.praha.domain.model.TeamId;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

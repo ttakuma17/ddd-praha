@@ -1,15 +1,15 @@
 package com.ddd.praha.infrastructure;
 
-import com.ddd.praha.domain.Email;
-import com.ddd.praha.domain.EnrollmentStatus;
-import com.ddd.praha.domain.Member;
-import com.ddd.praha.domain.MemberId;
-import com.ddd.praha.domain.MemberName;
-import com.ddd.praha.domain.MemberTask;
-import com.ddd.praha.domain.Task;
-import com.ddd.praha.domain.TaskId;
-import com.ddd.praha.domain.TaskName;
-import com.ddd.praha.domain.TaskStatus;
+import com.ddd.praha.domain.entity.Member;
+import com.ddd.praha.domain.entity.MemberTask;
+import com.ddd.praha.domain.entity.Task;
+import com.ddd.praha.domain.model.Email;
+import com.ddd.praha.domain.model.EnrollmentStatus;
+import com.ddd.praha.domain.model.MemberId;
+import com.ddd.praha.domain.model.MemberName;
+import com.ddd.praha.domain.model.TaskId;
+import com.ddd.praha.domain.model.TaskName;
+import com.ddd.praha.domain.model.TaskStatus;
 import java.util.HashMap;
 import java.util.Map;
 

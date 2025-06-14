@@ -1,9 +1,8 @@
 package com.ddd.praha.application.service.usecase;
 
-import com.ddd.praha.domain.Task;
-import com.ddd.praha.domain.TaskId;
-import com.ddd.praha.domain.TaskName;
 import com.ddd.praha.application.repository.TaskRepository;
+import com.ddd.praha.domain.entity.*;
+import com.ddd.praha.domain.model.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

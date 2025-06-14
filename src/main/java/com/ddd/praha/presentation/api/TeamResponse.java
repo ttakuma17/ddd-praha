@@ -1,6 +1,6 @@
 package com.ddd.praha.presentation.api;
 
-import com.ddd.praha.domain.Team;
+import com.ddd.praha.domain.entity.Team;
 
 import java.util.List;
 import java.util.stream.Collectors;

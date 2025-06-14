@@ -1,8 +1,9 @@
 package com.ddd.praha.infrastructure;
 
-import com.ddd.praha.domain.MemberId;
-import com.ddd.praha.domain.Team;
-import com.ddd.praha.domain.TeamId;
+
+import com.ddd.praha.domain.entity.Team;
+import com.ddd.praha.domain.model.MemberId;
+import com.ddd.praha.domain.model.TeamId;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
