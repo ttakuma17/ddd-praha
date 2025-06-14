@@ -38,23 +38,17 @@ public class TeamController {
      * @return チームのリスト
      */
     @GetMapping
-    public List<TeamResponse> getAllTeams() {
-        List<Team> teams = teamQueryService.getAllTeams();
+    public List<TeamResponse> listAll() {
+        List<Team> teams = teamQueryService.getAll();
         return teams.stream()
                 .map(TeamResponse::from)
                 .collect(Collectors.toList());
     }
     
-    /**
-     * IDでチームを検索する
-     * @param id チームID
-     * @return チーム情報
-     */
     @GetMapping("/{id}")
-    public TeamResponse findTeamById(@PathVariable String id) {
-        return teamQueryService.findTeamById(new TeamId(id))
-                .map(TeamResponse::from)
-                .orElseThrow(() -> new ResourceNotFoundException("Team not found: " + id));
+    public TeamResponse get(@PathVariable String id) {
+        Team team = teamQueryService.get(new TeamId(id));
+        return TeamResponse.from(team);
     }
     
     /**
@@ -68,7 +62,7 @@ public class TeamController {
             @PathVariable String id,
             @RequestBody TeamMemberUpdateRequest request) {
         // チームを取得
-        Optional<Team> teamOptional = teamQueryService.findTeamById(new TeamId(id));
+        Optional<Team> teamOptional = teamQueryService.get(new TeamId(id));
         if (teamOptional.isEmpty()) {
             throw new ResourceNotFoundException("Team not found: " + id);
         }

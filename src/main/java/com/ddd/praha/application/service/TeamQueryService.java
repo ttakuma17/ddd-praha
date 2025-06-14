@@ -6,7 +6,6 @@ import com.ddd.praha.domain.TeamId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * チーム照会専用サービス
@@ -24,16 +23,15 @@ public class TeamQueryService {
      * 全てのチームを取得する
      * @return チームのリスト
      */
-    public List<Team> getAllTeams() {
-        return teamRepository.findAll();
+    public List<Team> getAll() {
+        return teamRepository.getAll();
     }
     
     /**
      * IDでチームを検索する
      * @param id チームID
-     * @return チーム（存在しない場合はEmpty）
      */
-    public Optional<Team> findTeamById(TeamId id) {
-        return teamRepository.findById(id);
+    public Team get(TeamId id) {
+        return teamRepository.get(id);
     }
 }
