@@ -1,7 +1,6 @@
 package com.ddd.praha.presentation.api;
 
 import com.ddd.praha.application.service.usecase.MemberService;
-import com.ddd.praha.application.service.usecase.MemberTaskService;
 import com.ddd.praha.domain.entity.Member;
 import com.ddd.praha.domain.model.Email;
 import com.ddd.praha.domain.model.EnrollmentStatus;

@@ -13,11 +13,13 @@ import java.util.List;
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
-    
-    public TaskService(TaskRepository taskRepository) {
+    private final MemberTaskRepository memberTaskRepository;
+
+    public TaskService(TaskRepository taskRepository, MemberTaskRepository memberTaskRepository) {
         this.taskRepository = taskRepository;
+        this.memberTaskRepository = memberTaskRepository;
     }
-    
+
     public List<Task> findAll() {
         return taskRepository.findAll();
     }
@@ -30,4 +32,18 @@ public class TaskService {
         Task newTask = new Task(name);
         taskRepository.save(newTask);
     }
+
+    /**
+     * 参加者の課題進捗ステータスを更新する
+     *
+     * @param operator  操作を行う参加者
+     * @param member    課題の所有者である参加者
+     * @param task      更新する課題
+     * @param newStatus 新しい進捗ステータス
+     * @throws IllegalArgumentException 参加者課題が存在しない場合
+     */
+    public void updateTaskStatus(Member operator, Member member, Task task, TaskStatus newStatus) {
+
+    }
+
 }

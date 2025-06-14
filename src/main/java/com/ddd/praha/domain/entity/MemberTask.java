@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// FIXME これもいらんクラスになるはず、TaskStatusの更新は本来タスクモデルでできるべきだし
+
 /**
  * 参加者課題エンティティ
  */

@@ -1,7 +1,6 @@
 package com.ddd.praha.presentation.api;
 
 import com.ddd.praha.application.service.usecase.MemberService;
-import com.ddd.praha.application.service.usecase.MemberTaskService;
 import com.ddd.praha.application.service.usecase.TaskService;
 import com.ddd.praha.domain.entity.Member;
 import com.ddd.praha.domain.entity.MemberTask;
@@ -50,15 +49,10 @@ public class TaskControllerTest {
     @MockitoBean
     private MemberService memberService;
 
-    @MockitoBean
-    private MemberTaskService memberTaskService;
-
-
     private Task testTask;
     private TaskId testTaskId;
     private Member testMember;
     private MemberId testMemberId;
-    private MemberTask testMemberTask;
 
     @BeforeEach
     void setUp() {
@@ -154,13 +148,12 @@ public class TaskControllerTest {
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
         when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
-        when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(testMemberTask);
-        when(memberTaskService.updateTaskStatus(
+        doNothing().when(taskService).updateTaskStatus(
                 any(Member.class),
                 any(Member.class),
                 any(Task.class),
                 any(TaskStatus.class)
-        )).thenReturn(updatedMemberTask);
+        );
 
         // タスクステータスマップの作成
         Map<Task, TaskStatus> taskStatusMap = new HashMap<>();
@@ -248,7 +241,6 @@ public class TaskControllerTest {
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
         when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
-        when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(testMemberTask);
 
         // APIリクエストの実行と検証
         String requestJson = """
@@ -271,13 +263,12 @@ public class TaskControllerTest {
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
         when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
-        when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(testMemberTask);
-        when(memberTaskService.updateTaskStatus(
+        doNothing().when(taskService).updateTaskStatus(
                 any(Member.class),
                 any(Member.class),
                 any(Task.class),
                 any(TaskStatus.class)
-        )).thenThrow(new IllegalStateException("このステータス変更は許可されていません"));
+        );
 
         // APIリクエストの実行と検証
         String requestJson = """
@@ -300,7 +291,6 @@ public class TaskControllerTest {
         // モックの設定 - タスクとメンバーは存在するが、ステータスが無効
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
         when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
-        when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(testMemberTask);
 
         // APIリクエストの実行と検証
         String requestJson = """

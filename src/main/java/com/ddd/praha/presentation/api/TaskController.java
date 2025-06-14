@@ -1,7 +1,6 @@
 package com.ddd.praha.presentation.api;
 
 import com.ddd.praha.application.service.usecase.MemberService;
-import com.ddd.praha.application.service.usecase.MemberTaskService;
 import com.ddd.praha.application.service.usecase.TaskService;
 import com.ddd.praha.domain.entity.Member;
 import com.ddd.praha.domain.model.MemberId;
@@ -19,12 +18,10 @@ import java.util.List;
 public class TaskController {
     private final TaskService taskService;
     private final MemberService memberService;
-    private final MemberTaskService memberTaskService;
-    
-    public TaskController(TaskService taskService, MemberService memberService, MemberTaskService memberTaskService) {
+
+    public TaskController(TaskService taskService, MemberService memberService) {
         this.taskService = taskService;
         this.memberService = memberService;
-        this.memberTaskService = memberTaskService;
     }
     
     /**
@@ -64,6 +61,6 @@ public class TaskController {
         Member member = memberService.get(new MemberId(request.memberId()));
         TaskStatus newStatus = TaskStatus.valueOf(request.status());
 
-        memberTaskService.updateTaskStatus(member, member, task, newStatus);
+        taskService.updateTaskStatus(member, member, task, newStatus);
     }
 }
