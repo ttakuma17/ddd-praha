@@ -62,31 +62,33 @@ public class TeamController {
 
     // チームを取得
     Team team = teamQueryService.get(new TeamId(id));
+    TeamId teamId = team.getId();
 
-    // 現在のメンバーを取得
+    // 現在のメンバーと新しいメンバーを取得
     List<Member> currentMembers = new ArrayList<>(team.getMembers());
+    List<Member> newMembers = request.getMemberIds().stream()
+        .map(memberId -> memberService.get(new MemberId(memberId)))
+        .toList();
 
-    // リクエストで指定されたメンバーを取得
-    List<Member> newMembers = new ArrayList<>();
-    for (String memberId : request.getMemberIds()) {
-      Member member = memberService.get(new MemberId(memberId));
-      newMembers.add(member);
+    // 削除するメンバーを特定
+    List<Member> membersToRemove = currentMembers.stream()
+        .filter(member -> !newMembers.contains(member))
+        .toList();
+
+    // 追加するメンバーを特定
+    List<Member> membersToAdd = newMembers.stream()
+        .filter(member -> !currentMembers.contains(member))
+        .toList();
+
+    // メンバーの更新を実行
+    Team updatedTeam = team;
+    for (Member member : membersToRemove) {
+      updatedTeam = teamOrchestrationService.removeMemberFromTeam(teamId, member);
+    }
+    for (Member member : membersToAdd) {
+      updatedTeam = teamOrchestrationService.addMemberToTeam(teamId, member);
     }
 
-    // 削除するメンバーを特定して削除
-    for (Member member : currentMembers) {
-      if (!newMembers.contains(member)) {
-        team = teamOrchestrationService.removeMemberFromTeam(team.getId(), member);
-      }
-    }
-
-    // 追加するメンバーを特定して追加
-    for (Member member : newMembers) {
-      if (!currentMembers.contains(member)) {
-        team = teamOrchestrationService.addMemberToTeam(team.getId(), member);
-      }
-    }
-
-    return TeamResponse.from(team);
+    return TeamResponse.from(updatedTeam);
   }
 }
