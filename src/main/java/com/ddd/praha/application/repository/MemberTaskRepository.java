@@ -18,7 +18,7 @@ public interface MemberTaskRepository {
      * @param member 参加者
      * @return 参加者の課題
      */
-    Optional<MemberTask> findByMember(Member member);
+    MemberTask getByMember(Member member);
     
     /**
      * 特定の課題に取り組んでいる全ての参加者の課題を取得する

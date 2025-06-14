@@ -28,9 +28,12 @@ public class MemberTaskRepositoryImpl implements MemberTaskRepository {
     }
 
     @Override
-    public Optional<MemberTask> findByMember(Member member) {
-        MemberTask memberTask = memberTaskMapper.findByMemberId(member.getId().value());
-        return Optional.ofNullable(memberTask);
+    public MemberTask getByMember(Member member) {
+        MemberTaskRecord memberTaskRecord = memberTaskMapper.findByMemberId(member.getId());
+        if (memberTaskRecord == null) {
+            throw new IllegalStateException("Member task record is null.");
+        }
+        return memberTaskRecord.toMemberTask();
     }
 
     @Override

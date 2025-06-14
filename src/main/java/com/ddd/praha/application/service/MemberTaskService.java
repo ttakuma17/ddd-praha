@@ -10,7 +10,6 @@ import com.ddd.praha.application.repository.MemberTaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 参加者課題サービス
@@ -28,8 +27,8 @@ public class MemberTaskService {
      * @param member 参加者
      * @return 参加者の課題
      */
-    public Optional<MemberTask> getMemberTask(Member member) {
-        return memberTaskRepository.findByMember(member);
+    public MemberTask getMemberTask(Member member) {
+        return memberTaskRepository.getByMember(member);
     }
 
     /**
@@ -42,9 +41,7 @@ public class MemberTaskService {
      * @throws IllegalArgumentException 参加者課題が存在しない場合
      */
     public MemberTask updateTaskStatus(Member operator, Member member, Task task, TaskStatus newStatus) {
-        MemberTask memberTask = memberTaskRepository.findByMember(member)
-            .orElseThrow(() -> new IllegalArgumentException("指定された参加者の課題が見つかりません"));
-        
+        MemberTask memberTask = memberTaskRepository.getByMember(member);
         memberTask.updateTaskStatus(operator, task, newStatus);
         return memberTaskRepository.save(memberTask);
     }

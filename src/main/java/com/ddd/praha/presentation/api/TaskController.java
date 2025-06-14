@@ -72,12 +72,8 @@ public class TaskController {
             @RequestBody TaskStatusUpdateRequest request) {
         Task task = taskService.get(new TaskId(taskId));
         Member member = memberService.get(new MemberId(memberId));
+        MemberTask memberTaskOptional = memberTaskService.getMemberTask(member);
 
-        Optional<MemberTask> memberTaskOptional = memberTaskService.getMemberTask(member);
-        if (memberTaskOptional.isEmpty()) {
-            throw new ResourceNotFoundException("MemberTask not found for member: " + memberId);
-        }
-        
         TaskStatus newStatus = TaskStatus.valueOf(request.getStatus());
         MemberTask updatedMemberTask = memberTaskService.updateTaskStatus(member, member, task, newStatus);
         

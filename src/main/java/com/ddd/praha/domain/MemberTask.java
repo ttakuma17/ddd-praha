@@ -20,6 +20,11 @@ public class MemberTask {
     list.forEach(Task -> map.put(Task, TaskStatus.未着手));
   }
 
+  public MemberTask(Member owner, Map<Task, TaskStatus> map) {
+    this.owner = owner;
+    this.map = map;
+  }
+
   public void updateTaskStatus(Member operator, Task task, TaskStatus newStatus) {
     if (!owner.equals(operator)) {
       throw new RuntimeException("進捗ステータスを変更できるのは、課題の所有者だけです");

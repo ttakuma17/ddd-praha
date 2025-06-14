@@ -153,7 +153,7 @@ public class TaskControllerTest {
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
         when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
-        when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.of(testMemberTask));
+        when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(testMemberTask);
         when(memberTaskService.updateTaskStatus(
                 any(Member.class),
                 any(Member.class),
@@ -247,7 +247,7 @@ public class TaskControllerTest {
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
         when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
-        when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.empty());
+        when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(testMemberTask);
 
         // APIリクエストの実行と検証
         String requestJson = """
@@ -270,7 +270,7 @@ public class TaskControllerTest {
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
         when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
-        when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.of(testMemberTask));
+        when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(testMemberTask);
         when(memberTaskService.updateTaskStatus(
                 any(Member.class),
                 any(Member.class),
@@ -299,7 +299,7 @@ public class TaskControllerTest {
         // モックの設定 - タスクとメンバーは存在するが、ステータスが無効
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
         when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
-        when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(Optional.of(testMemberTask));
+        when(memberTaskService.getMemberTask(any(Member.class))).thenReturn(testMemberTask);
 
         // APIリクエストの実行と検証
         String requestJson = """

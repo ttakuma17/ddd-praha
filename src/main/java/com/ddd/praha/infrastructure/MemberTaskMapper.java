@@ -1,5 +1,6 @@
 package com.ddd.praha.infrastructure;
 
+import com.ddd.praha.domain.MemberId;
 import com.ddd.praha.domain.MemberTask;
 import com.ddd.praha.domain.Member;
 import org.apache.ibatis.annotations.*;
@@ -13,14 +14,14 @@ import java.util.stream.Collectors;
 @Mapper
 public interface MemberTaskMapper {
 
+    // FIXME
     /**
      * 特定の参加者の課題を取得する
-     * @param memberId 参加者ID
      * @return 参加者課題
      */
     @Select("SELECT m.id as member_id, m.name as member_name, m.email, m.status as member_status " +
-            "FROM members m WHERE m.id = #{memberId}")
-    MemberTask findByMemberId(@Param("memberId") String memberId);
+            "FROM members m WHERE m.id = #{id.value}")
+    MemberTaskRecord findByMemberId(@Param("id") MemberId id);
 
     /**
      * 特定の課題に取り組んでいる全ての参加者の課題を取得する
