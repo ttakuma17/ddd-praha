@@ -1,7 +1,7 @@
 package com.ddd.praha.infrastructure;
 
 import com.ddd.praha.domain.entity.Member;
-import com.ddd.praha.domain.entity.MemberTask;
+import com.ddd.praha.domain.entity.TaskProgress;
 import com.ddd.praha.domain.entity.Task;
 import com.ddd.praha.domain.model.Email;
 import com.ddd.praha.domain.model.EnrollmentStatus;
@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * 参加者課題のSQLマッピングレコード
  */
-public record MemberTaskRecord(
+public record TaskProgressRecord(
     String memberId,
     String memberName,
     String email,
@@ -35,7 +35,7 @@ public record MemberTaskRecord(
     return taskStatus != null ? TaskStatus.valueOf(taskStatus) : TaskStatus.未着手;
   }
 
-  public MemberTask toMemberTask() {
+  public TaskProgress toMemberTask() {
     Map<Task, TaskStatus> map = new HashMap<>();
     Task task = new Task(
         new TaskId(taskId),
@@ -50,7 +50,7 @@ public record MemberTaskRecord(
         EnrollmentStatus.valueOf(memberStatus)
     );
 
-    return new MemberTask(
+    return new TaskProgress(
         member,
         map
     );

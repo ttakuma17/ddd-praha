@@ -1,6 +1,6 @@
 package com.ddd.praha.application.service.usecase;
 
-import com.ddd.praha.application.repository.MemberTaskRepository;
+import com.ddd.praha.application.repository.TaskProgressRepository;
 import com.ddd.praha.application.repository.TaskRepository;
 import com.ddd.praha.domain.entity.*;
 import com.ddd.praha.domain.model.*;
@@ -14,11 +14,11 @@ import java.util.List;
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
-    private final MemberTaskRepository memberTaskRepository;
+    private final TaskProgressRepository taskProgressRepository;
 
-    public TaskService(TaskRepository taskRepository, MemberTaskRepository memberTaskRepository) {
+    public TaskService(TaskRepository taskRepository, TaskProgressRepository taskProgressRepository) {
         this.taskRepository = taskRepository;
-        this.memberTaskRepository = memberTaskRepository;
+        this.taskProgressRepository = taskProgressRepository;
     }
 
     public List<Task> findAll() {
@@ -44,13 +44,13 @@ public class TaskService {
      * @throws IllegalArgumentException 参加者課題が存在しない場合
      */
     public void updateTaskStatus(Member operator, Member member, Task task, TaskStatus newStatus) {
-        MemberTask memberTask = memberTaskRepository.findByMemberAndTask(member, task);
-        if (memberTask == null) {
+        TaskProgress taskProgress = taskProgressRepository.findByMemberAndTask(member, task);
+        if (taskProgress == null) {
             throw new IllegalArgumentException("指定された課題が見つかりません");
         }
         
-        memberTask.updateTaskStatus(operator, task, newStatus);
-        memberTaskRepository.save(memberTask, task);
+        taskProgress.updateTaskStatus(operator, task, newStatus);
+        taskProgressRepository.save(taskProgress, task);
     }
 
 }

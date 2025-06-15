@@ -1,6 +1,5 @@
 package com.ddd.praha.infrastructure;
 
-import com.ddd.praha.domain.entity.MemberTask;
 import com.ddd.praha.domain.model.MemberId;
 import com.ddd.praha.domain.model.TaskId;
 import org.apache.ibatis.annotations.*;
@@ -9,7 +8,7 @@ import org.apache.ibatis.annotations.*;
  * 参加者課題のMyBatisマッパーインターフェース
  */
 @Mapper
-public interface MemberTaskMapper {
+public interface TaskProgressMapper {
 
     /**
      * 参加者IDと課題IDで参加者課題を検索する
@@ -31,7 +30,7 @@ public interface MemberTaskMapper {
         INNER JOIN tasks t ON mt.task_id = t.id
         WHERE mt.member_id = #{memberId.value} AND mt.task_id = #{taskId.value}
     """)
-    MemberTaskRecord findByMemberAndTaskRecord(
+    TaskProgressRecord findByMemberAndTaskRecord(
         @Param("memberId") MemberId memberId, 
         @Param("taskId") TaskId taskId
     );

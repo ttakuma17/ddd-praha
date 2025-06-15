@@ -3,7 +3,6 @@ package com.ddd.praha.presentation.api;
 import com.ddd.praha.application.service.usecase.MemberService;
 import com.ddd.praha.application.service.usecase.TaskService;
 import com.ddd.praha.domain.entity.Member;
-import com.ddd.praha.domain.entity.MemberTask;
 import com.ddd.praha.domain.entity.Task;
 import com.ddd.praha.domain.model.Email;
 import com.ddd.praha.domain.model.EnrollmentStatus;
@@ -21,11 +20,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;

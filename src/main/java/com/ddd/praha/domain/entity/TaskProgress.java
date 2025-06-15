@@ -5,12 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// FIXME これもいらんクラスになるはず、TaskStatusの更新は本来タスクモデルでできるべきだし
-
 /**
  * 参加者課題エンティティ
  */
-public class MemberTask {
+public class TaskProgress {
   Member owner;
   Map<Task, TaskStatus> map = new HashMap<>();
 
@@ -18,12 +16,12 @@ public class MemberTask {
     return owner;
   }
 
-  public MemberTask(Member Member, List<Task> list) {
+  public TaskProgress(Member Member, List<Task> list) {
     this.owner = Member;
     list.forEach(Task -> map.put(Task, TaskStatus.未着手));
   }
 
-  public MemberTask(Member owner, Map<Task, TaskStatus> map) {
+  public TaskProgress(Member owner, Map<Task, TaskStatus> map) {
     this.owner = owner;
     this.map = map;
   }

@@ -1,7 +1,7 @@
 package com.ddd.praha.domain;
 
 import com.ddd.praha.domain.entity.Member;
-import com.ddd.praha.domain.entity.MemberTask;
+import com.ddd.praha.domain.entity.TaskProgress;
 import com.ddd.praha.domain.entity.Task;
 import com.ddd.praha.domain.model.Email;
 import com.ddd.praha.domain.model.EnrollmentStatus;
@@ -18,7 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MemberTaskTest {
+class TaskProgressTest {
 
   private Member owner;
   private Task task1;
@@ -39,16 +39,16 @@ class MemberTaskTest {
 
   @Nested
   @DisplayName("メンバータスク作成のテスト")
-  class CreateMemberTaskTest {
+  class CreateTaskProgressTest {
 
     @Test
     @DisplayName("有効なメンバーとタスクリストでメンバータスクを作成できる")
     void createMemberTaskWithValidValues() {
-      MemberTask memberTask = new MemberTask(owner, tasks);
+      TaskProgress taskProgress = new TaskProgress(owner, tasks);
 
-      assertEquals(owner, memberTask.getOwner());
-      assertEquals(TaskStatus.未着手, memberTask.getTaskStatus(task1));
-      assertEquals(TaskStatus.未着手, memberTask.getTaskStatus(task2));
+      assertEquals(owner, taskProgress.getOwner());
+      assertEquals(TaskStatus.未着手, taskProgress.getTaskStatus(task1));
+      assertEquals(TaskStatus.未着手, taskProgress.getTaskStatus(task2));
     }
   }
 
@@ -56,19 +56,19 @@ class MemberTaskTest {
   @DisplayName("タスクステータス更新のテスト")
   class UpdateTaskStatusTest {
 
-    private MemberTask memberTask;
+    private TaskProgress taskProgress;
 
     @BeforeEach
     void setUp() {
-      memberTask = new MemberTask(owner, tasks);
+      taskProgress = new TaskProgress(owner, tasks);
     }
 
     @Test
     @DisplayName("タスク所有者は進捗ステータスを更新できる")
     void ownerCanUpdateTaskStatus() {
-      memberTask.updateTaskStatus(owner, task1, TaskStatus.取組中);
+      taskProgress.updateTaskStatus(owner, task1, TaskStatus.取組中);
 
-      assertEquals(TaskStatus.取組中, memberTask.getTaskStatus(task1));
+      assertEquals(TaskStatus.取組中, taskProgress.getTaskStatus(task1));
     }
 
     @Test
@@ -81,7 +81,7 @@ class MemberTaskTest {
       );
 
       Exception exception = assertThrows(RuntimeException.class, () -> {
-        memberTask.updateTaskStatus(otherMember, task1, TaskStatus.取組中);
+        taskProgress.updateTaskStatus(otherMember, task1, TaskStatus.取組中);
       });
       assertEquals("進捗ステータスを変更できるのは、課題の所有者だけです", exception.getMessage());
     }
@@ -90,12 +90,12 @@ class MemberTaskTest {
     @DisplayName("有効なステータス遷移の場合は更新できる")
     void updateStatusWithValidTransition() {
       // 未着手 -> 取組中 (有効な遷移)
-      memberTask.updateTaskStatus(owner, task1, TaskStatus.取組中);
-      assertEquals(TaskStatus.取組中, memberTask.getTaskStatus(task1));
+      taskProgress.updateTaskStatus(owner, task1, TaskStatus.取組中);
+      assertEquals(TaskStatus.取組中, taskProgress.getTaskStatus(task1));
 
       // 取組中 -> レビュー待ち (有効な遷移)
-      memberTask.updateTaskStatus(owner, task1, TaskStatus.レビュー待ち);
-      assertEquals(TaskStatus.レビュー待ち, memberTask.getTaskStatus(task1));
+      taskProgress.updateTaskStatus(owner, task1, TaskStatus.レビュー待ち);
+      assertEquals(TaskStatus.レビュー待ち, taskProgress.getTaskStatus(task1));
     }
 
     @Test
@@ -103,7 +103,7 @@ class MemberTaskTest {
     void throwExceptionForInvalidTransition() {
       // 未着手 -> レビュー待ち (無効な遷移)
       Exception exception = assertThrows(IllegalStateException.class, () -> {
-        memberTask.updateTaskStatus(owner, task1, TaskStatus.レビュー待ち);
+        taskProgress.updateTaskStatus(owner, task1, TaskStatus.レビュー待ち);
       });
       assertEquals("このステータス変更は許可されていません", exception.getMessage());
     }
@@ -113,20 +113,20 @@ class MemberTaskTest {
   @DisplayName("タスクステータス取得のテスト")
   class GetTaskStatusTest {
 
-    private MemberTask memberTask;
+    private TaskProgress taskProgress;
 
     @BeforeEach
     void setUp() {
-      memberTask = new MemberTask(owner, tasks);
+      taskProgress = new TaskProgress(owner, tasks);
     }
 
     @Test
     @DisplayName("タスクのステータスを正しく取得できる")
     void getCorrectTaskStatus() {
-      assertEquals(TaskStatus.未着手, memberTask.getTaskStatus(task1));
+      assertEquals(TaskStatus.未着手, taskProgress.getTaskStatus(task1));
 
-      memberTask.updateTaskStatus(owner, task1, TaskStatus.取組中);
-      assertEquals(TaskStatus.取組中, memberTask.getTaskStatus(task1));
+      taskProgress.updateTaskStatus(owner, task1, TaskStatus.取組中);
+      assertEquals(TaskStatus.取組中, taskProgress.getTaskStatus(task1));
     }
   }
 }
