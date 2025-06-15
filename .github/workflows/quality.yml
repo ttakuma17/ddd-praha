@@ -59,7 +59,7 @@ jobs:
     
     - name: Upload coverage reports to Codecov
       if: success()
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         file: ./build/reports/jacoco/test/jacocoTestReport.xml
         fail_ci_if_error: false
