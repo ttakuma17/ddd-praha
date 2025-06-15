@@ -58,10 +58,12 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public List<Member> findMembersByTasksAndStatuses(List<TaskId> taskIds, List<TaskStatus> statuses, int page, int size) {
-        // TODO: MyBatisマッパーの実装が必要
-        // 一旦空のリストを返す
-        return List.of();
+    public List<Member> findMembersByTaskNamesAndStatuses(List<String> taskNames, List<TaskStatus> statuses, int page, int size) {
+        int offset = page * size;
+        List<MemberRecord> records = memberMapper.findMembersByTaskNamesAndStatuses(taskNames, statuses, offset, size);
+        return records.stream()
+            .map(MemberRecord::toMember)
+            .toList();
     }
 
 }

@@ -232,9 +232,9 @@ class MemberServiceTest {
     }
 
     @Test
-    void searchMembersByTasksAndStatuses_指定した条件でメンバーを検索できる() {
+    void searchMembersByTaskNamesAndStatuses_指定した条件でメンバーを検索できる() {
         // 準備
-        List<TaskId> taskIds = Arrays.asList(new TaskId("task-1"), new TaskId("task-2"));
+        List<String> taskNames = Arrays.asList("設計原則（SOLID）", "DBモデリング1");
         List<TaskStatus> statuses = Arrays.asList(TaskStatus.レビュー待ち);
         int page = 0;
         int size = 10;
@@ -254,37 +254,36 @@ class MemberServiceTest {
             )
         );
         
-        MemberSearchResult expectedResult = new MemberSearchResult(expectedMembers, page, size, 15);
-        when(memberRepository.findMembersByTasksAndStatuses(taskIds, statuses, page, size))
+        when(memberRepository.findMembersByTaskNamesAndStatuses(taskNames, statuses, page, size))
             .thenReturn(expectedMembers);
 
         // 実行
-        MemberSearchResult result = memberService.searchMembersByTasksAndStatuses(taskIds, statuses, page, size);
+        MemberSearchResult result = memberService.searchMembersByTaskNamesAndStatuses(taskNames, statuses, page, size);
         
         // 検証
         assertNotNull(result);
         assertEquals(2, result.getMembers().size());
         assertEquals(page, result.getPage());
         assertEquals(size, result.getSize());
-        assertEquals(15, result.getTotalElements());
-        assertEquals(2, result.getTotalPages());
+        assertEquals(2, result.getTotalElements());
+        assertEquals(1, result.getTotalPages());
         assertEquals(true, result.isFirst());
-        assertEquals(false, result.isLast());
+        assertEquals(true, result.isLast());
     }
 
     @Test
-    void searchMembersByTasksAndStatuses_結果が空の場合() {
+    void searchMembersByTaskNamesAndStatuses_結果が空の場合() {
         // 準備
-        List<TaskId> taskIds = Arrays.asList(new TaskId("task-1"));
+        List<String> taskNames = Arrays.asList("存在しない課題");
         List<TaskStatus> statuses = Arrays.asList(TaskStatus.完了);
         int page = 0;
         int size = 10;
         
-        when(memberRepository.findMembersByTasksAndStatuses(taskIds, statuses, page, size))
+        when(memberRepository.findMembersByTaskNamesAndStatuses(taskNames, statuses, page, size))
             .thenReturn(List.of());
 
         // 実行
-        MemberSearchResult result = memberService.searchMembersByTasksAndStatuses(taskIds, statuses, page, size);
+        MemberSearchResult result = memberService.searchMembersByTaskNamesAndStatuses(taskNames, statuses, page, size);
         
         // 検証
         assertNotNull(result);
@@ -294,9 +293,9 @@ class MemberServiceTest {
     }
 
     @Test
-    void searchMembersByTasksAndStatuses_2ページ目の検索() {
+    void searchMembersByTaskNamesAndStatuses_2ページ目の検索() {
         // 準備
-        List<TaskId> taskIds = Arrays.asList(new TaskId("task-1"));
+        List<String> taskNames = Arrays.asList("DBモデリング3");
         List<TaskStatus> statuses = Arrays.asList(TaskStatus.取組中);
         int page = 1;
         int size = 10;
@@ -310,18 +309,18 @@ class MemberServiceTest {
             )
         );
         
-        when(memberRepository.findMembersByTasksAndStatuses(taskIds, statuses, page, size))
+        when(memberRepository.findMembersByTaskNamesAndStatuses(taskNames, statuses, page, size))
             .thenReturn(expectedMembers);
 
         // 実行
-        MemberSearchResult result = memberService.searchMembersByTasksAndStatuses(taskIds, statuses, page, size);
+        MemberSearchResult result = memberService.searchMembersByTaskNamesAndStatuses(taskNames, statuses, page, size);
         
         // 検証
         assertNotNull(result);
         assertEquals(1, result.getMembers().size());
         assertEquals(1, result.getPage());
-        assertEquals(11, result.getTotalElements());
-        assertEquals(2, result.getTotalPages());
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1, result.getTotalPages());
         assertEquals(false, result.isFirst());
         assertEquals(true, result.isLast());
     }

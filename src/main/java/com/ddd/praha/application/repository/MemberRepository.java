@@ -36,13 +36,13 @@ public interface MemberRepository {
     void updateStatus(MemberId id, EnrollmentStatus status);
 
     /**
-     * 指定された課題が指定されたステータスになっている参加者を検索する
-     * @param taskIds 課題IDのリスト
+     * 課題名のリストで検索し、指定されたステータスになっている参加者を検索する
+     * @param taskNames 課題名のリスト（完全一致検索）
      * @param statuses ステータスのリスト
      * @param page ページ番号（0から開始）
      * @param size ページサイズ
      * @return 条件に合致する参加者のリスト
      */
-    List<Member> findMembersByTasksAndStatuses(List<TaskId> taskIds, List<TaskStatus> statuses, int page, int size);
+    List<Member> findMembersByTaskNamesAndStatuses(List<String> taskNames, List<TaskStatus> statuses, int page, int size);
 
 }

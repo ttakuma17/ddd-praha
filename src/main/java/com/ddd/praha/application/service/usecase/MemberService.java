@@ -107,19 +107,19 @@ public class MemberService {
     }
 
     /**
-     * 特定の課題が特定のステータスになっている参加者を検索する
-     * @param taskIds 課題IDのリスト
+     * 課題名のリストで検索し、特定のステータスになっている参加者を検索する
+     * @param taskNames 課題名のリスト（完全一致検索）
      * @param statuses ステータスのリスト
      * @param page ページ番号（0から開始）
      * @param size ページサイズ
      * @return 検索結果
      */
-    public MemberSearchResult searchMembersByTasksAndStatuses(
-            List<TaskId> taskIds,
+    public MemberSearchResult searchMembersByTaskNamesAndStatuses(
+            List<String> taskNames,
             List<TaskStatus> statuses,
             int page,
             int size) {
-        List<Member> members = memberRepository.findMembersByTasksAndStatuses(taskIds, statuses, page, size);
+        List<Member> members = memberRepository.findMembersByTaskNamesAndStatuses(taskNames, statuses, page, size);
         return new MemberSearchResult(members, page, size, members.size());
     }
 }

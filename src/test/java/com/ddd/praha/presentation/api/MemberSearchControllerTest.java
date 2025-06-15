@@ -30,7 +30,6 @@ public class MemberSearchControllerTest {
     private MemberService memberService;
 
     private List<Member> testMembers;
-    private List<TaskId> testTaskIds;
     private List<TaskStatus> testStatuses;
 
     @BeforeEach
@@ -48,11 +47,7 @@ public class MemberSearchControllerTest {
         );
         testMembers = Arrays.asList(member1, member2);
         
-        // テスト用の課題IDとステータス
-        testTaskIds = Arrays.asList(
-            new TaskId("task-1"),
-            new TaskId("task-2")
-        );
+        // テスト用のステータス
         testStatuses = Arrays.asList(TaskStatus.レビュー待ち);
     }
 
@@ -60,13 +55,13 @@ public class MemberSearchControllerTest {
     void searchMembersByTasksAndStatuses_正常系_単一課題単一ステータス() throws Exception {
         // Given
         MemberSearchResult searchResult = new MemberSearchResult(testMembers, 0, 10, 2);
-        when(memberService.searchMembersByTasksAndStatuses(any(), any(), eq(0), eq(10)))
+        when(memberService.searchMembersByTaskNamesAndStatuses(any(), any(), eq(0), eq(10)))
             .thenReturn(searchResult);
 
         // When & Then
         String requestJson = """
             {
-                "taskIds": ["task-1"],
+                "taskNames": ["設計原則（SOLID）"],
                 "statuses": ["レビュー待ち"],
                 "page": 0
             }
@@ -92,13 +87,13 @@ public class MemberSearchControllerTest {
     void searchMembersByTasksAndStatuses_正常系_複数課題複数ステータス() throws Exception {
         // Given
         MemberSearchResult searchResult = new MemberSearchResult(testMembers, 0, 10, 15);
-        when(memberService.searchMembersByTasksAndStatuses(any(), any(), eq(0), eq(10)))
+        when(memberService.searchMembersByTaskNamesAndStatuses(any(), any(), eq(0), eq(10)))
             .thenReturn(searchResult);
 
         // When & Then
         String requestJson = """
             {
-                "taskIds": ["task-1", "task-2"],
+                "taskNames": ["設計原則（SOLID）", "DBモデリング1"],
                 "statuses": ["未着手", "レビュー待ち"],
                 "page": 0
             }
@@ -118,13 +113,13 @@ public class MemberSearchControllerTest {
     void searchMembersByTasksAndStatuses_正常系_ページング2ページ目() throws Exception {
         // Given
         MemberSearchResult searchResult = new MemberSearchResult(testMembers, 1, 10, 15);
-        when(memberService.searchMembersByTasksAndStatuses(any(), any(), eq(1), eq(10)))
+        when(memberService.searchMembersByTaskNamesAndStatuses(any(), any(), eq(1), eq(10)))
             .thenReturn(searchResult);
 
         // When & Then
         String requestJson = """
             {
-                "taskIds": ["task-1"],
+                "taskNames": ["DBモデリング3"],
                 "statuses": ["レビュー待ち"],
                 "page": 1
             }
@@ -143,13 +138,13 @@ public class MemberSearchControllerTest {
     void searchMembersByTasksAndStatuses_正常系_空の結果() throws Exception {
         // Given
         MemberSearchResult emptyResult = new MemberSearchResult(List.of(), 0, 10, 0);
-        when(memberService.searchMembersByTasksAndStatuses(any(), any(), eq(0), eq(10)))
+        when(memberService.searchMembersByTaskNamesAndStatuses(any(), any(), eq(0), eq(10)))
             .thenReturn(emptyResult);
 
         // When & Then
         String requestJson = """
             {
-                "taskIds": ["task-1"],
+                "taskNames": ["存在しない課題"],
                 "statuses": ["完了"],
                 "page": 0
             }
@@ -166,11 +161,11 @@ public class MemberSearchControllerTest {
     }
 
     @Test
-    void searchMembersByTasksAndStatuses_異常系_taskIdsが空() throws Exception {
+    void searchMembersByTasksAndStatuses_異常系_taskNamesが空() throws Exception {
         // When & Then
         String requestJson = """
             {
-                "taskIds": [],
+                "taskNames": [],
                 "statuses": ["レビュー待ち"],
                 "page": 0
             }
@@ -187,7 +182,7 @@ public class MemberSearchControllerTest {
         // When & Then
         String requestJson = """
             {
-                "taskIds": ["task-1"],
+                "taskNames": ["設計原則（SOLID）"],
                 "statuses": [],
                 "page": 0
             }
@@ -204,7 +199,7 @@ public class MemberSearchControllerTest {
         // When & Then
         String requestJson = """
             {
-                "taskIds": ["task-1"],
+                "taskNames": ["設計原則（SOLID）"],
                 "statuses": ["レビュー待ち"],
                 "page": -1
             }
