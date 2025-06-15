@@ -35,7 +35,7 @@ class TeamTest {
             createTestMember("メンバー2", "member2@example.com"),
             createTestMember("メンバー3", "member3@example.com")
         );
-        return new Team(new TeamName("テストチーム"), members);
+        return new Team(new TeamName("TestTeam"), members);
     }
 
     @Test
@@ -68,7 +68,7 @@ class TeamTest {
         assertEquals(TeamComposition.CompositionType.SPLIT, result.getType());
         assertEquals(team, result.getOriginalTeam());
         assertNotNull(result.getNewTeam());
-        assertEquals("テストチーム-分割", result.getNewTeam().getName().value());
+        assertEquals("TestTeamSplit", result.getNewTeam().getName().value());
         assertEquals(2, result.getOriginalTeam().getMembers().size());
         assertEquals(3, result.getNewTeam().getMembers().size());
         assertEquals(3, result.getMovedMembers().size());
@@ -80,7 +80,7 @@ class TeamTest {
         // 1名のチームを作成
         Member singleMember = createTestMember("単独", "single@example.com");
         Member dummyMember = createTestMember("ダミー", "dummy@example.com");
-        Team singleTeam = new Team(new TeamName("単独チーム"), Arrays.asList(singleMember, dummyMember));
+        Team singleTeam = new Team(new TeamName("SingleMemberTeam"), Arrays.asList(singleMember, dummyMember));
         singleTeam.deleteMember(dummyMember);
 
         Team team = createTestTeam();
@@ -105,7 +105,7 @@ class TeamTest {
         // 1名のチームを作成
         Member singleMember = createTestMember("単独", "single@example.com");
         Member dummyMember = createTestMember("ダミー", "dummy@example.com");
-        Team singleTeam = new Team(new TeamName("単独チーム"), Arrays.asList(singleMember, dummyMember));
+        Team singleTeam = new Team(new TeamName("SingleMemberTeam"), Arrays.asList(singleMember, dummyMember));
         singleTeam.deleteMember(dummyMember);
 
         // 4名のフルチームを作成
@@ -115,7 +115,7 @@ class TeamTest {
             createTestMember("フル3", "full3@example.com"),
             createTestMember("フル4", "full4@example.com")
         );
-        Team fullTeam = new Team(new TeamName("フルチーム"), fullMembers);
+        Team fullTeam = new Team(new TeamName("FullTeam"), fullMembers);
 
         List<Team> allTeams = Arrays.asList(singleTeam, fullTeam);
 
@@ -166,7 +166,7 @@ class TeamTest {
         // 準備
         Team team2Members = new Team(
             new TeamId("team-002"),
-            new TeamName("二名チーム"),
+            new TeamName("TwoMemberTeam"),
             Arrays.asList(
                 createTestMember("メンバー1", "member1@example.com"),
                 createTestMember("メンバー2", "member2@example.com")
@@ -189,7 +189,7 @@ class TeamTest {
         // 準備
         Team team1 = new Team(
             new TeamId("team-001"),
-            new TeamName("チーム1"),
+            new TeamName("TeamAlpha"),
             Arrays.asList(
                 createTestMember("メンバー1", "member1@example.com"),
                 createTestMember("メンバー2", "member2@example.com")
@@ -198,7 +198,7 @@ class TeamTest {
 
         Team team2 = new Team(
             new TeamId("team-002"),
-            new TeamName("チーム2"),
+            new TeamName("TeamBeta"),
             Arrays.asList(
                 createTestMember("メンバー3", "member3@example.com"),
                 createTestMember("メンバー4", "member4@example.com")
@@ -236,7 +236,7 @@ class TeamTest {
         // 準備 - 4名のチーム（合流できない）
         Team fullTeam = new Team(
             new TeamId("team-001"),
-            new TeamName("満員チーム"),
+            new TeamName("FullTeam"),
             Arrays.asList(
                 createTestMember("メンバー1", "member1@example.com"),
                 createTestMember("メンバー2", "member2@example.com"),
@@ -260,12 +260,12 @@ class TeamTest {
         // 準備
         Member singleMember = createTestMember("単独", "single@example.com");
         Member dummyMember = createTestMember("ダミー", "dummy@example.com");
-        Team singleTeam = new Team(new TeamName("単独チーム"), Arrays.asList(singleMember, dummyMember));
+        Team singleTeam = new Team(new TeamName("SingleMemberTeam"), Arrays.asList(singleMember, dummyMember));
         singleTeam.deleteMember(dummyMember);
 
         Team team2Members1 = new Team(
             new TeamId("team-001"),
-            new TeamName("二名チーム1"),
+            new TeamName("TwoMemberTeamAlpha"),
             Arrays.asList(
                 createTestMember("メンバー1", "member1@example.com"),
                 createTestMember("メンバー2", "member2@example.com")
@@ -274,7 +274,7 @@ class TeamTest {
 
         Team team2Members2 = new Team(
             new TeamId("team-002"),
-            new TeamName("二名チーム2"),
+            new TeamName("TwoMemberTeamBeta"),
             Arrays.asList(
                 createTestMember("メンバー3", "member3@example.com"),
                 createTestMember("メンバー4", "member4@example.com")
@@ -291,12 +291,12 @@ class TeamTest {
             // 新しいインスタンスを作成（前のテストの状態をリセット）
             Member freshSingleMember = createTestMember("単独", "single@example.com");
             Member freshDummyMember = createTestMember("ダミー", "dummy@example.com");
-            Team freshSingleTeam = new Team(new TeamName("単独チーム"), Arrays.asList(freshSingleMember, freshDummyMember));
+            Team freshSingleTeam = new Team(new TeamName("SingleMemberTeam"), Arrays.asList(freshSingleMember, freshDummyMember));
             freshSingleTeam.deleteMember(freshDummyMember);
 
             Team freshTeam1 = new Team(
                 new TeamId("team-001"),
-                new TeamName("二名チーム1"),
+                new TeamName("TwoMemberTeamAlpha"),
                 Arrays.asList(
                     createTestMember("メンバー1", "member1@example.com"),
                     createTestMember("メンバー2", "member2@example.com")
@@ -305,7 +305,7 @@ class TeamTest {
 
             Team freshTeam2 = new Team(
                 new TeamId("team-002"),
-                new TeamName("二名チーム2"),
+                new TeamName("TwoMemberTeamBeta"),
                 Arrays.asList(
                     createTestMember("メンバー3", "member3@example.com"),
                     createTestMember("メンバー4", "member4@example.com")

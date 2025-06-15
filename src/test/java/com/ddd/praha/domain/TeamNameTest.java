@@ -13,7 +13,7 @@ class TeamNameTest {
   @Test
   @DisplayName("有効なチーム名でインスタンスを作成できる")
   void createValidTeamName() {
-    String validName = "チームA";
+    String validName = "TeamAlpha";
     TeamName teamName = new TeamName(validName);
     assertEquals(validName, teamName.value());
   }

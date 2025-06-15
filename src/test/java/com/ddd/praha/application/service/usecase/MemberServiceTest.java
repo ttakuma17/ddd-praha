@@ -57,7 +57,7 @@ class MemberServiceTest {
 
         testTeam = new Team(
             new TeamId("team-001"),
-            new TeamName("テストチーム"),
+            new TeamName("TestTeam"),
             Arrays.asList(
                 testMember,
                 new Member(

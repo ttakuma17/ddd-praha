@@ -71,7 +71,7 @@ class TeamCompositionDomainServiceTest {
         
         Team singleTeam = new Team(
             new TeamId("team-single"),
-            new TeamName("一名チーム"),
+            new TeamName("SingleMemberTeam"),
             Arrays.asList(singleMember, testMember1)
         );
 
@@ -103,7 +103,7 @@ class TeamCompositionDomainServiceTest {
         
         Team fullTeam = new Team(
             new TeamId("team-full"),
-            new TeamName("満員チーム"),
+            new TeamName("FullTeam"),
             Arrays.asList(fullMember1, fullMember2, fullMember3, fullMember4)
         );
 
@@ -131,13 +131,13 @@ class TeamCompositionDomainServiceTest {
         
         Team singleTeam = new Team(
             new TeamId("team-single"),
-            new TeamName("一名チーム"),
+            new TeamName("SingleMemberTeam"),
             Arrays.asList(singleMember, testMember1)
         );
 
         Team targetTeam = new Team(
             new TeamId("team-target"),
-            new TeamName("合流先チーム"),
+            new TeamName("MergeTargetTeam"),
             Arrays.asList(testMember2, testMember3)
         );
 
@@ -159,7 +159,7 @@ class TeamCompositionDomainServiceTest {
         // 準備
         Team threeTeam = new Team(
             new TeamId("team-three"),
-            new TeamName("三名チーム"),
+            new TeamName("ThreeMemberTeam"),
             Arrays.asList(testMember1, testMember2, testMember3)
         );
 
@@ -194,13 +194,13 @@ class TeamCompositionDomainServiceTest {
         
         Team team2Members = new Team(
             new TeamId("team-002"),
-            new TeamName("二名チーム"),
+            new TeamName("TwoMemberTeam"),
             Arrays.asList(team2Member1, team2Member2)
         );
 
         Team team3Members = new Team(
             new TeamId("team-003"),
-            new TeamName("三名チーム"),
+            new TeamName("ThreeMemberTeam"),
             Arrays.asList(testMember1, testMember2, testMember3)
         );
 
@@ -245,7 +245,7 @@ class TeamCompositionDomainServiceTest {
         
         Team team4Members = new Team(
             new TeamId("team-004"),
-            new TeamName("四名チーム"),
+            new TeamName("FourMemberTeam"),
             Arrays.asList(team4Member1, team4Member2, team4Member3, team4Member4)
         );
         List<Team> allTeams = new ArrayList<>(List.of(team4Members));
@@ -293,7 +293,7 @@ class TeamCompositionDomainServiceTest {
         // 準備 - 4名の満員チーム
         Team fullTeam = new Team(
             new TeamId("team-001"),
-            new TeamName("満員チーム"),
+            new TeamName("FullTeam"),
             Arrays.asList(
                 new Member(new MemberId("member-001"), new MemberName("メンバー1"), new Email("member1@example.com"), EnrollmentStatus.在籍中),
                 new Member(new MemberId("member-002"), new MemberName("メンバー2"), new Email("member2@example.com"), EnrollmentStatus.在籍中),

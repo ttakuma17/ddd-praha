@@ -93,6 +93,9 @@ public interface TeamMapper {
   @Select("SELECT COUNT(*) FROM teams WHERE id = #{id.value}")
   boolean exists(@Param("id") TeamId id);
 
+  @Select("SELECT id, name FROM teams WHERE name = #{name}")
+  TeamRecord findByName(@Param("name") String name);
+
   /**
    * チームを削除する
    *

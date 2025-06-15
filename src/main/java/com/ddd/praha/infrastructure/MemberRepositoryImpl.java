@@ -24,6 +24,12 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public void save(Member member) {
+        // メールアドレスの重複チェック
+        MemberRecord existingMember = memberMapper.findByEmail(member.getEmail().value());
+        if (existingMember != null && !existingMember.id().equals(member.getId().value())) {
+            throw new IllegalArgumentException("このメールアドレスは既に使用されています");
+        }
+        
         memberMapper.insert(member);
     }
 

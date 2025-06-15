@@ -113,7 +113,7 @@ public class Team {
     List<Member> movedMembers = new ArrayList<>(members.subList(half, members.size()));
     
     // 新しいチームを作成
-    TeamName newTeamName = new TeamName(this.name.value() + "-分割");
+    TeamName newTeamName = new TeamName(this.name.value() + "Split");
     Team newTeam = new Team(newTeamName, movedMembers);
     
     // 元のチームから後半のメンバーを削除

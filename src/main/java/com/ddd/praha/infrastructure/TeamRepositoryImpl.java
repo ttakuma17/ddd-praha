@@ -44,6 +44,12 @@ public class TeamRepositoryImpl implements TeamRepository {
             throw new IllegalStateException("チームID " + team.getId().value() + " は既に使用されています");
         }
 
+        // チーム名の重複チェック
+        TeamRecord existingTeam = teamMapper.findByName(team.getName().value());
+        if (existingTeam != null && !existingTeam.id().equals(team.getId().value())) {
+            throw new IllegalArgumentException("このチーム名は既に使用されています");
+        }
+
         teamMapper.insert(team);
 
         // メンバーIDのリストを抽出

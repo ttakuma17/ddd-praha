@@ -70,12 +70,12 @@ class TeamRepositoryImplTest {
     
     Team team1 = new Team(
         new TeamId(teamId1),
-        new TeamName("テストチーム1"),
+        new TeamName("TeamAlpha"),
         Arrays.asList(testMember1, testMember2)
     );
     Team team2 = new Team(
         new TeamId(teamId2),
-        new TeamName("テストチーム2"),
+        new TeamName("TeamBeta"),
         List.of(testMember3)
     );
     
@@ -107,7 +107,7 @@ class TeamRepositoryImplTest {
     // 準備
     Team team = new Team(
         new TeamId("team-001"),
-        new TeamName("テストチーム"),
+        new TeamName("TestTeam"),
         Arrays.asList(testMember1, testMember2)
     );
     teamRepository.create(team);
@@ -118,7 +118,7 @@ class TeamRepositoryImplTest {
     // 検証
     assertAll(
         () -> assertEquals("team-001", result.getId().value()),
-        () -> assertEquals("テストチーム", result.getName().value()),
+        () -> assertEquals("TestTeam", result.getName().value()),
         () -> assertEquals(2, result.getMembers().size()),
         () -> assertTrue(result.getMembers().stream()
             .anyMatch(m -> m.getId().value().equals(testMember1.getId().value()))),
@@ -141,7 +141,7 @@ class TeamRepositoryImplTest {
     // 準備
     Team newTeam = new Team(
         new TeamId("new-team"),
-        new TeamName("新規チーム"),
+        new TeamName("NewTeam"),
         Arrays.asList(testMember1, testMember2)
     );
 
@@ -152,7 +152,7 @@ class TeamRepositoryImplTest {
     Team savedTeam = teamRepository.get(new TeamId("new-team"));
     assertAll(
         () -> assertEquals("new-team", savedTeam.getId().value()),
-        () -> assertEquals("新規チーム", savedTeam.getName().value()),
+        () -> assertEquals("NewTeam", savedTeam.getName().value()),
         () -> assertEquals(2, savedTeam.getMembers().size())
     );
   }
@@ -162,7 +162,7 @@ class TeamRepositoryImplTest {
     // 準備
     Team team = new Team(
         new TeamId("duplicate-team"),
-        new TeamName("重複チーム"),
+        new TeamName("DuplicateTeam"),
         Arrays.asList(testMember1, testMember2)
     );
     teamRepository.create(team);
@@ -170,7 +170,7 @@ class TeamRepositoryImplTest {
     // 同じIDで別のチームを作成
     Team duplicateTeam = new Team(
         new TeamId("duplicate-team"),
-        new TeamName("重複チーム2"),
+        new TeamName("DuplicateTeamTwo"),
         List.of(testMember3)
     );
 
@@ -186,7 +186,7 @@ class TeamRepositoryImplTest {
     // 準備
     Team emptyTeam = new Team(
         new TeamId("empty-team"),
-        new TeamName("空チーム"),
+        new TeamName("EmptyTeam"),
         List.of()
     );
 
@@ -197,7 +197,7 @@ class TeamRepositoryImplTest {
     Team savedTeam = teamRepository.get(new TeamId("empty-team"));
     assertAll(
         () -> assertEquals("empty-team", savedTeam.getId().value()),
-        () -> assertEquals("空チーム", savedTeam.getName().value()),
+        () -> assertEquals("EmptyTeam", savedTeam.getName().value()),
         () -> assertTrue(savedTeam.getMembers().isEmpty())
     );
   }
@@ -207,7 +207,7 @@ class TeamRepositoryImplTest {
     // 準備
     Team team = new Team(
         new TeamId("test-team"),
-        new TeamName("テストチーム"),
+        new TeamName("TestTeam"),
         List.of(testMember1)
     );
     teamRepository.create(team);
@@ -229,7 +229,7 @@ class TeamRepositoryImplTest {
     // 準備
     Team team = new Team(
         new TeamId("test-team"),
-        new TeamName("テストチーム"),
+        new TeamName("TestTeam"),
         Arrays.asList(testMember1, testMember2)
     );
     teamRepository.create(team);
@@ -253,7 +253,7 @@ class TeamRepositoryImplTest {
     // 準備
     Team team = new Team(
         new TeamId("delete-team"),
-        new TeamName("削除予定チーム"),
+        new TeamName("ToBeDeletedTeam"),
         Arrays.asList(testMember1, testMember2)
     );
     teamRepository.create(team);

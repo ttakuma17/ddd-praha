@@ -81,7 +81,7 @@ class TeamOrchestrationServiceTest {
 
         testTeam = new Team(
             new TeamId("team-001"),
-            new TeamName("テストチーム"),
+            new TeamName("TestTeam"),
             Arrays.asList(testMember1, testMember2)
         );
     }
@@ -117,7 +117,7 @@ class TeamOrchestrationServiceTest {
         // 準備
         Team smallestTeam = new Team(
             new TeamId("team-002"),
-            new TeamName("最小チーム"),
+            new TeamName("SmallestTeam"),
             List.of(testMember2)
         );
         
@@ -141,12 +141,12 @@ class TeamOrchestrationServiceTest {
         // 準備
         Team originalTeam = new Team(
             new TeamId("team-001"),
-            new TeamName("元チーム"),
+            new TeamName("OriginalTeam"),
             Arrays.asList(testMember1, testMember2)
         );
         
         Team newTeam = new Team(
-            new TeamName("分割チーム"),
+            new TeamName("SplitTeam"),
             List.of(testMember3, testMember4)
         );
         
@@ -172,7 +172,7 @@ class TeamOrchestrationServiceTest {
         TeamId teamId = testTeam.getId();
         
         Team newTeam = new Team(
-            new TeamName("分割チーム"),
+            new TeamName("SplitTeam"),
             List.of(testMember3,testMember4)
         );
         

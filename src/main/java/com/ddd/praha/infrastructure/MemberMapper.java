@@ -35,6 +35,9 @@ public interface MemberMapper {
     @Select("SELECT id, name, email, status FROM members WHERE id = #{id.value}")
     MemberRecord get(@Param("id") MemberId id);
 
+    @Select("SELECT id, name, email, status FROM members WHERE email = #{email}")
+    MemberRecord findByEmail(@Param("email") String email);
+
     @Select("""
         SELECT DISTINCT m.id, m.name, m.email, m.status
         FROM members m

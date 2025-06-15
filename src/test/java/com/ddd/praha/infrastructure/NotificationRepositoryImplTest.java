@@ -64,7 +64,7 @@ class NotificationRepositoryImplTest {
         // Given
         Member member1 = createTestMember("テスト太郎", "test1@example.com");
         Member member2 = createTestMember("テスト次郎", "test2@example.com");
-        Team team = createTestTeam("テストチーム", Arrays.asList(member1, member2));
+        Team team = createTestTeam("TestTeam", Arrays.asList(member1, member2));
         // 1名まで削除して合流失敗の状況を作る
         team.deleteMember(member2);
         TeamNotificationEvent event = TeamNotificationEvent.mergeFailure(team, member1);
@@ -100,8 +100,8 @@ class NotificationRepositoryImplTest {
         Member member2 = createTestMember("メンバー2", "member2@example.com");
         Member member3 = createTestMember("メンバー3", "member3@example.com");
         Member member4 = createTestMember("メンバー4", "member4@example.com");
-        Team originalTeam = createTestTeam("元チーム", Arrays.asList(member1, member2));
-        Team newTeam = createTestTeam("新チーム", Arrays.asList(member3, member4));
+        Team originalTeam = createTestTeam("OriginalTeam", Arrays.asList(member1, member2));
+        Team newTeam = createTestTeam("NewTeam", Arrays.asList(member3, member4));
         TeamNotificationEvent event = TeamNotificationEvent.teamSplit(originalTeam, newTeam);
 
         // When
@@ -121,7 +121,7 @@ class NotificationRepositoryImplTest {
         // Given
         Member member1 = createTestMember("テスト太郎", "test1@example.com");
         Member member2 = createTestMember("テスト次郎", "test2@example.com");
-        Team team = createTestTeam("テストチーム", Arrays.asList(member1, member2));
+        Team team = createTestTeam("TestTeam", Arrays.asList(member1, member2));
         TeamNotificationEvent event = TeamNotificationEvent.monitoringRequired(team, member1);
 
         // When
