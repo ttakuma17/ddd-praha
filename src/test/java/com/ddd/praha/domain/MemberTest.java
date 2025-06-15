@@ -18,7 +18,7 @@ class MemberTest {
 
     @Test
     @DisplayName("有効な値でメンバーを作成できる")
-    void createMemberWithValidValues() {
+    void 有効な値でメンバーを作成できる() {
       MemberName name = new MemberName("山田太郎");
       Email email = new Email("yamada@example.com");
       EnrollmentStatus status = EnrollmentStatus.在籍中;
@@ -30,7 +30,7 @@ class MemberTest {
 
     @Test
     @DisplayName("名前がnullの場合は例外がスローされる")
-    void throwExceptionWhenNameIsNull() {
+    void 名前がnullの場合は例外がスローされる() {
       Email email = new Email("yamada@example.com");
       EnrollmentStatus status = EnrollmentStatus.在籍中;
 
@@ -42,7 +42,7 @@ class MemberTest {
 
     @Test
     @DisplayName("メールアドレスがnullの場合は例外がスローされる")
-    void throwExceptionWhenEmailIsNull() {
+    void メールアドレスがnullの場合は例外がスローされる() {
       MemberName name = new MemberName("山田太郎");
       EnrollmentStatus status = EnrollmentStatus.在籍中;
 
@@ -54,7 +54,7 @@ class MemberTest {
 
     @Test
     @DisplayName("受講ステータスがnullの場合は例外がスローされる")
-    void throwExceptionWhenStatusIsNull() {
+    void 受講ステータスがnullの場合は例外がスローされる() {
       MemberName name = new MemberName("山田太郎");
       Email email = new Email("yamada@example.com");
 
@@ -71,7 +71,7 @@ class MemberTest {
 
     @Test
     @DisplayName("在籍中のメンバーはチームに参加できる")
-    void activeMembbersCanJoinTeam() {
+    void 在籍中のメンバーはチームに参加できる() {
       Member member = new Member(
           new MemberName("山田太郎"),
           new Email("yamada@example.com"),
@@ -83,7 +83,7 @@ class MemberTest {
 
     @Test
     @DisplayName("休会中のメンバーはチームに参加できない")
-    void inactiveMembersCannotJoinTeam() {
+    void 休会中のメンバーはチームに参加できない() {
       Member member = new Member(
           new MemberName("山田太郎"),
           new Email("yamada@example.com"),
@@ -95,7 +95,7 @@ class MemberTest {
 
     @Test
     @DisplayName("退会済みのメンバーはチームに参加できない")
-    void retiredMembersCannotJoinTeam() {
+    void 退会済みのメンバーはチームに参加できない() {
       Member member = new Member(
           new MemberName("山田太郎"),
           new Email("yamada@example.com"),
@@ -112,7 +112,7 @@ class MemberTest {
 
     @Test
     @DisplayName("有効なステータス遷移の場合は更新できる")
-    void updateStatusWithValidTransition() {
+    void 有効なステータス遷移の場合は更新できる() {
       Member member = new Member(
           new MemberName("山田太郎"),
           new Email("yamada@example.com"),
@@ -128,7 +128,7 @@ class MemberTest {
 
     @Test
     @DisplayName("無効なステータス遷移の場合は例外がスローされる")
-    void throwExceptionForInvalidTransition() {
+    void 無効なステータス遷移の場合は例外がスローされる() {
       // 不正な遷移パターンが判断できないため、例外が出ることだけを確認
       // 実際のテストではEnrollmentStatusTransitionの実装を確認して適切な
       // 無効な遷移パターンを選択する必要があります

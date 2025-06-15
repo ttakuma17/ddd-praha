@@ -88,7 +88,7 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void listAllTeams_ReturnsListOf() throws Exception {
+    public void 全チームの一覧を取得して返す() throws Exception {
         // Arrange
         List<Team> teams = Arrays.asList(team1, team2);
         when(teamQueryService.getAll()).thenReturn(teams);
@@ -107,7 +107,7 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void findTeamById_WhenTeamExists_ReturnsTeam() throws Exception {
+    public void チームが存在する場合にIDでチームを取得して返す() throws Exception {
         // Arrange
         when(teamQueryService.get(new TeamId("team-1"))).thenReturn(team1);
 
@@ -121,7 +121,7 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void findTeamById_WhenTeamDoesNotExist_ReturnsNotFound() throws Exception {
+    public void チームが存在しない場合にNotFoundを返す() throws Exception {
         // Arrange
         when(teamQueryService.get(new TeamId("non-existent"))).thenReturn(null);
 
@@ -131,7 +131,7 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void updateTeamMembers_WhenTeamAndMembersExist_ReturnsUpdatedTeam() throws Exception {
+    public void チームとメンバーが存在する場合にチームメンバーを更新して更新されたチームを返す() throws Exception {
         // Arrange
         TeamMemberUpdateRequest request = new TeamMemberUpdateRequest(
                 Arrays.asList(member1.getId().value(), member3.getId().value())
@@ -170,7 +170,7 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void updateTeamMembers_WhenTeamDoesNotExist_ReturnsNotFound() throws Exception {
+    public void メンバー更新時にチームが存在しない場合にNotFoundを返す() throws Exception {
         // Arrange
         TeamMemberUpdateRequest request = new TeamMemberUpdateRequest(
                 Arrays.asList(member1.getId().value(), member3.getId().value())
@@ -192,7 +192,7 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void updateTeamMembers_WhenMemberDoesNotExist_ReturnsBadRequest() throws Exception {
+    public void メンバーが存在しない場合にBadRequestを返す() throws Exception {
         // Arrange
         TeamMemberUpdateRequest request = new TeamMemberUpdateRequest(
                 Arrays.asList(member1.getId().value(), "non-existent-member")
@@ -216,7 +216,7 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void updateTeamMembers_WhenIllegalArgumentException_ReturnsBadRequest() throws Exception {
+    public void 不正な引数例外の場合にBadRequestを返す() throws Exception {
         // Arrange
         TeamMemberUpdateRequest request = new TeamMemberUpdateRequest(
                 Arrays.asList(member1.getId().value())
@@ -243,7 +243,7 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void updateTeamMembers_WhenIllegalStateException_ReturnsConflict() throws Exception {
+    public void 不正な状態例外の場合にConflictを返す() throws Exception {
         // Arrange
         TeamMemberUpdateRequest request = new TeamMemberUpdateRequest(
             Collections.singletonList(member1.getId().value())

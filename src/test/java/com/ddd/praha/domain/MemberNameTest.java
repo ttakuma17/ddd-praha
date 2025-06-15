@@ -12,7 +12,7 @@ class MemberNameTest {
 
   @Test
   @DisplayName("有効なメンバー名でインスタンスを作成できる")
-  void createValidMemberName() {
+  void 有効なメンバー名でインスタンスを作成できる() {
     String validName = "山田太郎";
     MemberName memberName = new MemberName(validName);
     assertEquals(validName, memberName.value());
@@ -20,7 +20,7 @@ class MemberNameTest {
 
   @Test
   @DisplayName("nullのメンバー名で作成すると例外がスローされる")
-  void throwExceptionForNullMemberName() {
+  void nullのメンバー名で作成すると例外がスローされる() {
     Exception exception = assertThrows(IllegalArgumentException.class, () -> {
       new MemberName(null);
     });
@@ -30,7 +30,7 @@ class MemberNameTest {
   @ParameterizedTest
   @DisplayName("空のメンバー名で作成すると例外がスローされる")
   @ValueSource(strings = {"", " ", "　"})
-  void throwExceptionForEmptyMemberName(String emptyName) {
+  void 空のメンバー名で作成すると例外がスローされる(String emptyName) {
     Exception exception = assertThrows(IllegalArgumentException.class, () -> {
       new MemberName(emptyName);
     });
@@ -39,7 +39,7 @@ class MemberNameTest {
 
   @Test
   @DisplayName("長すぎるメンバー名で作成すると例外がスローされる")
-  void throwExceptionForTooLongMemberName() {
+  void 長すぎるメンバー名で作成すると例外がスローされる() {
     String longName = "a".repeat(31); // 31文字の名前
     Exception exception = assertThrows(IllegalArgumentException.class, () -> {
       new MemberName(longName);

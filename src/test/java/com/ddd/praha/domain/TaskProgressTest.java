@@ -43,7 +43,7 @@ class TaskProgressTest {
 
     @Test
     @DisplayName("有効なメンバーとタスクリストでメンバータスクを作成できる")
-    void createMemberTaskWithValidValues() {
+    void 有効なメンバーとタスクリストでメンバータスクを作成できる() {
       TaskProgress taskProgress = new TaskProgress(owner, tasks);
 
       assertEquals(owner, taskProgress.getOwner());
@@ -65,7 +65,7 @@ class TaskProgressTest {
 
     @Test
     @DisplayName("タスク所有者は進捗ステータスを更新できる")
-    void ownerCanUpdateTaskStatus() {
+    void タスク所有者は進捗ステータスを更新できる() {
       taskProgress.updateTaskStatus(owner, task1, TaskStatus.取組中);
 
       assertEquals(TaskStatus.取組中, taskProgress.getTaskStatus(task1));
@@ -73,7 +73,7 @@ class TaskProgressTest {
 
     @Test
     @DisplayName("タスク所有者以外は進捗ステータスを更新できない")
-    void nonOwnerCannotUpdateTaskStatus() {
+    void タスク所有者以外は進捗ステータスを更新できない() {
       Member otherMember = new Member(
           new MemberName("佐藤花子"),
           new Email("sato@example.com"),
@@ -88,7 +88,7 @@ class TaskProgressTest {
 
     @Test
     @DisplayName("有効なステータス遷移の場合は更新できる")
-    void updateStatusWithValidTransition() {
+    void 有効なステータス遷移の場合は更新できる() {
       // 未着手 -> 取組中 (有効な遷移)
       taskProgress.updateTaskStatus(owner, task1, TaskStatus.取組中);
       assertEquals(TaskStatus.取組中, taskProgress.getTaskStatus(task1));
@@ -100,7 +100,7 @@ class TaskProgressTest {
 
     @Test
     @DisplayName("無効なステータス遷移の場合は例外がスローされる")
-    void throwExceptionForInvalidTransition() {
+    void 無効なステータス遷移の場合は例外がスローされる() {
       // 未着手 -> レビュー待ち (無効な遷移)
       Exception exception = assertThrows(IllegalStateException.class, () -> {
         taskProgress.updateTaskStatus(owner, task1, TaskStatus.レビュー待ち);
@@ -122,7 +122,7 @@ class TaskProgressTest {
 
     @Test
     @DisplayName("タスクのステータスを正しく取得できる")
-    void getCorrectTaskStatus() {
+    void タスクのステータスを正しく取得できる() {
       assertEquals(TaskStatus.未着手, taskProgress.getTaskStatus(task1));
 
       taskProgress.updateTaskStatus(owner, task1, TaskStatus.取組中);

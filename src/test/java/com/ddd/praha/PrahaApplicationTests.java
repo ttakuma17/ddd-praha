@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Import;
 class PrahaApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void コンテキストが正常に読み込まれる() {
 	}
 
 }

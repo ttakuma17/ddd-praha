@@ -13,7 +13,7 @@ class EnrollmentStatusTransitionTest {
 
   @Test
   @DisplayName("EnrollmentStatusTransitionのインスタンスを作成できる")
-  void createEnrollmentStatusTransition() {
+  void 在籍ステータス遷移のインスタンスを作成できる() {
     EnrollmentStatusTransition transition = new EnrollmentStatusTransition();
     assertNotNull(transition);
   }
@@ -27,7 +27,7 @@ class EnrollmentStatusTransitionTest {
       "休会中, 退会済",
       "退会済, 在籍中"
   })
-  void allowValidTransitions(EnrollmentStatus from, EnrollmentStatus to) {
+  void 有効な状態遷移を確認できる(EnrollmentStatus from, EnrollmentStatus to) {
     EnrollmentStatusTransition transition = new EnrollmentStatusTransition();
     assertTrue(transition.canTransit(from, to));
   }
@@ -37,14 +37,14 @@ class EnrollmentStatusTransitionTest {
   @CsvSource({
       "退会済, 休会中"
   })
-  void disallowInvalidTransitions(EnrollmentStatus from, EnrollmentStatus to) {
+  void 無効な状態遷移は許可されない(EnrollmentStatus from, EnrollmentStatus to) {
     EnrollmentStatusTransition transition = new EnrollmentStatusTransition();
     assertFalse(transition.canTransit(from, to));
   }
 
   @Test
   @DisplayName("同じ状態への遷移は許可されない")
-  void allowTransitionToSameStatus() {
+  void 同じ状態への遷移は許可されない() {
     EnrollmentStatusTransition transition = new EnrollmentStatusTransition();
     assertFalse(transition.canTransit(EnrollmentStatus.在籍中, EnrollmentStatus.在籍中));
     assertFalse(transition.canTransit(EnrollmentStatus.休会中, EnrollmentStatus.休会中));

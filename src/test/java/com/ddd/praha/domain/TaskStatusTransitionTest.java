@@ -11,7 +11,7 @@ class TaskStatusTransitionTest {
 
   @Test
   @DisplayName("未着手から取組中への遷移は許可される")
-  void transitionFromNotStartedToInProgress() {
+  void 未着手から取組中への遷移は許可される() {
     TaskStatusTransition transition = new TaskStatusTransition();
     boolean canTransit = transition.canTransit(TaskStatus.未着手, TaskStatus.取組中);
     assertTrue(canTransit);
@@ -19,7 +19,7 @@ class TaskStatusTransitionTest {
 
   @Test
   @DisplayName("未着手からレビュー待ちへの遷移は許可されない")
-  void transitionFromNotStartedToReviewNotAllowed() {
+  void 未着手からレビュー待ちへの遷移は許可されない() {
     TaskStatusTransition transition = new TaskStatusTransition();
     boolean canTransit = transition.canTransit(TaskStatus.未着手, TaskStatus.レビュー待ち);
     assertFalse(canTransit);
@@ -27,7 +27,7 @@ class TaskStatusTransitionTest {
 
   @Test
   @DisplayName("未着手から完了への遷移は許可されない")
-  void transitionFromNotStartedToCompletedNotAllowed() {
+  void 未着手から完了への遷移は許可されない() {
     TaskStatusTransition transition = new TaskStatusTransition();
     boolean canTransit = transition.canTransit(TaskStatus.未着手, TaskStatus.完了);
     assertFalse(canTransit);
@@ -35,7 +35,7 @@ class TaskStatusTransitionTest {
 
   @Test
   @DisplayName("取組中からレビュー待ちへの遷移は許可される")
-  void transitionFromInProgressToReview() {
+  void 取組中からレビュー待ちへの遷移は許可される() {
     TaskStatusTransition transition = new TaskStatusTransition();
     boolean canTransit = transition.canTransit(TaskStatus.取組中, TaskStatus.レビュー待ち);
     assertTrue(canTransit);
@@ -43,7 +43,7 @@ class TaskStatusTransitionTest {
 
   @Test
   @DisplayName("取組中から完了への遷移は許可されない")
-  void transitionFromInProgressToCompletedNotAllowed() {
+  void 取組中から完了への遷移は許可されない() {
     TaskStatusTransition transition = new TaskStatusTransition();
     boolean canTransit = transition.canTransit(TaskStatus.取組中, TaskStatus.完了);
     assertFalse(canTransit);
@@ -51,7 +51,7 @@ class TaskStatusTransitionTest {
 
   @Test
   @DisplayName("レビュー待ちから取組中への遷移は許可される")
-  void transitionFromReviewToInProgress() {
+  void レビュー待ちから取組中への遷移は許可される() {
     TaskStatusTransition transition = new TaskStatusTransition();
     boolean canTransit = transition.canTransit(TaskStatus.レビュー待ち, TaskStatus.取組中);
     assertTrue(canTransit);
@@ -59,7 +59,7 @@ class TaskStatusTransitionTest {
 
   @Test
   @DisplayName("レビュー待ちから完了への遷移は許可される")
-  void transitionFromReviewToCompleted() {
+  void レビュー待ちから完了への遷移は許可される() {
     TaskStatusTransition transition = new TaskStatusTransition();
     boolean canTransit = transition.canTransit(TaskStatus.レビュー待ち, TaskStatus.完了);
     assertTrue(canTransit);

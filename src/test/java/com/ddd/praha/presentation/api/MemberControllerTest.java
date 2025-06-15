@@ -48,7 +48,7 @@ public class MemberControllerTest {
   }
 
   @Test
-  void getAllMembers_ReturnsListOfMembers() throws Exception {
+  void 全メンバーの一覧を取得して返す() throws Exception {
     List<Member> members = Collections.singletonList(testMember);
     when(memberService.getAll()).thenReturn(members);
 
@@ -65,7 +65,7 @@ public class MemberControllerTest {
   }
 
   @Test
-  void findMemberById_WhenMemberExists_ReturnsMember() throws Exception {
+  void メンバーが存在する場合にIDでメンバーを取得して返す() throws Exception {
     when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
 
     mockMvc.perform(get("/api/members/{id}", testMemberId.value()))
@@ -81,7 +81,7 @@ public class MemberControllerTest {
   }
 
   @Test
-  void findMemberById_WhenMemberDoesNotExist_ReturnsNotFound() throws Exception {
+  void メンバーが存在しない場合にNotFoundを返す() throws Exception {
     // モックの設定
     when(memberService.findById(any(MemberId.class))).thenReturn(Optional.empty());
 
@@ -91,7 +91,7 @@ public class MemberControllerTest {
   }
 
   @Test
-  void createMember_ReturnsCreatedMember() throws Exception {
+  void メンバーを作成して作成されたメンバーを返す() throws Exception {
     // リクエストの作成
     MemberCreateRequest request = new MemberCreateRequest(
         testMember.getName().value(),
@@ -119,7 +119,7 @@ public class MemberControllerTest {
   }
 
   @Test
-  void updateMemberStatus_WhenMemberExists_ReturnsUpdatedMember() throws Exception {
+  void メンバーが存在する場合にステータスを更新して更新されたメンバーを返す() throws Exception {
     // リクエストの作成
     MemberStatusUpdateRequest request = new MemberStatusUpdateRequest(
         EnrollmentStatus.休会中.name());
@@ -141,7 +141,7 @@ public class MemberControllerTest {
   }
 
   @Test
-  void updateMemberStatus_WhenMemberDoesNotExist_ReturnsNotFound() throws Exception {
+  void ステータス更新時にメンバーが存在しない場合にNotFoundを返す() throws Exception {
     // リクエストの作成
     MemberStatusUpdateRequest request = new MemberStatusUpdateRequest(
         EnrollmentStatus.休会中.name());
@@ -164,7 +164,7 @@ public class MemberControllerTest {
   }
 
   @Test
-  void updateMemberStatus_WhenStatusTransitionIsInvalid_ReturnsBadRequest() throws Exception {
+  void ステータス遷移が無効な場合にBadRequestを返す() throws Exception {
     // リクエストの作成
     MemberStatusUpdateRequest request = new MemberStatusUpdateRequest(
         EnrollmentStatus.退会済.name());
