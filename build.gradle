@@ -59,7 +59,7 @@ jacocoTestReport {
 		html.required = true
 		csv.required = false
 	}
-	executionData.setFrom(fileTree(dir: "${buildDir}/jacoco", includes: ["**/*.exec"]))
+	executionData.setFrom(fileTree(dir: "${layout.buildDirectory}/jacoco", includes: ["**/*.exec"]))
 }
 
 jacocoTestCoverageVerification {

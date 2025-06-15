@@ -73,10 +73,19 @@ class TeamRepositoryImplTest {
         new TeamName("TeamAlpha"),
         Arrays.asList(testMember1, testMember2)
     );
+    // テスト用メンバー4を新規作成
+    Member testMember4 = new Member(
+        new MemberId("member-" + UUID.randomUUID()),
+        new MemberName("山田次郎"),
+        new Email("yamada-" + UUID.randomUUID() + "@example.com"),
+        EnrollmentStatus.在籍中
+    );
+    memberRepository.save(testMember4);
+    
     Team team2 = new Team(
         new TeamId(teamId2),
         new TeamName("TeamBeta"),
-        List.of(testMember3)
+        Arrays.asList(testMember3, testMember4)
     );
     
     teamRepository.create(team1);
@@ -168,10 +177,19 @@ class TeamRepositoryImplTest {
     teamRepository.create(team);
 
     // 同じIDで別のチームを作成
+    // 新しいテストメンバーを作成
+    Member testMember5 = new Member(
+        new MemberId("member-" + UUID.randomUUID()),
+        new MemberName("高橋五郎"),
+        new Email("takahashi-" + UUID.randomUUID() + "@example.com"),
+        EnrollmentStatus.在籍中
+    );
+    memberRepository.save(testMember5);
+    
     Team duplicateTeam = new Team(
         new TeamId("duplicate-team"),
         new TeamName("DuplicateTeamTwo"),
-        List.of(testMember3)
+        Arrays.asList(testMember3, testMember5)
     );
 
     // 実行・検証
@@ -182,23 +200,23 @@ class TeamRepositoryImplTest {
   }
 
   @Test
-  void メンバーが空のチームを作成できる() {
-    // 準備
-    Team emptyTeam = new Team(
-        new TeamId("empty-team"),
-        new TeamName("EmptyTeam"),
-        List.of()
+  void 最小メンバー数のチームを作成できる() {
+    // 準備：最小メンバー数（2名）のチーム
+    Team minTeam = new Team(
+        new TeamId("min-team"),
+        new TeamName("MinTeam"),
+        Arrays.asList(testMember1, testMember2)
     );
 
     // 実行
-    teamRepository.create(emptyTeam);
+    teamRepository.create(minTeam);
 
     // 検証
-    Team savedTeam = teamRepository.get(new TeamId("empty-team"));
+    Team savedTeam = teamRepository.get(new TeamId("min-team"));
     assertAll(
-        () -> assertEquals("empty-team", savedTeam.getId().value()),
-        () -> assertEquals("EmptyTeam", savedTeam.getName().value()),
-        () -> assertTrue(savedTeam.getMembers().isEmpty())
+        () -> assertEquals("min-team", savedTeam.getId().value()),
+        () -> assertEquals("MinTeam", savedTeam.getName().value()),
+        () -> assertEquals(2, savedTeam.getMembers().size())
     );
   }
 
@@ -208,29 +226,29 @@ class TeamRepositoryImplTest {
     Team team = new Team(
         new TeamId("test-team"),
         new TeamName("TestTeam"),
-        List.of(testMember1)
+        Arrays.asList(testMember1, testMember2)
     );
     teamRepository.create(team);
 
     // 実行
-    teamRepository.addMember(new TeamId("test-team"), testMember2.getId());
+    teamRepository.addMember(new TeamId("test-team"), testMember3.getId());
 
     // 検証
     Team updatedTeam = teamRepository.get(new TeamId("test-team"));
     assertAll(
-        () -> assertEquals(2, updatedTeam.getMembers().size()),
+        () -> assertEquals(3, updatedTeam.getMembers().size()),
         () -> assertTrue(updatedTeam.getMembers().stream()
-            .anyMatch(m -> m.getId().value().equals(testMember2.getId().value())))
+            .anyMatch(m -> m.getId().value().equals(testMember3.getId().value())))
     );
   }
 
   @Test
   void チームからメンバーを外せる() {
-    // 準備
+    // 準備：3名のチームを作成して1名削除後も2名以上を維持
     Team team = new Team(
         new TeamId("test-team"),
         new TeamName("TestTeam"),
-        Arrays.asList(testMember1, testMember2)
+        Arrays.asList(testMember1, testMember2, testMember3)
     );
     teamRepository.create(team);
 
@@ -240,7 +258,7 @@ class TeamRepositoryImplTest {
     // 検証
     Team updatedTeam = teamRepository.get(new TeamId("test-team"));
     assertAll(
-        () -> assertEquals(1, updatedTeam.getMembers().size()),
+        () -> assertEquals(2, updatedTeam.getMembers().size()),
         () -> assertFalse(updatedTeam.getMembers().stream()
             .anyMatch(m -> m.getId().value().equals(testMember1.getId().value()))),
         () -> assertTrue(updatedTeam.getMembers().stream()

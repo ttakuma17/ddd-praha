@@ -4,6 +4,7 @@ import com.ddd.praha.domain.model.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -12,9 +13,9 @@ import java.util.stream.Collectors;
  * チーム集約？
  */
 public class Team {
-  TeamId id;
-  TeamName name;
-  List<Member> list;
+  private final TeamId id;
+  private final TeamName name;
+  private final List<Member> list;
 
   public TeamId getId() {
     return id;
@@ -29,15 +30,16 @@ public class Team {
   }
 
   public Team(TeamId id, TeamName name, List<Member> list) {
-    this.id = id;
-    this.name = name;
+    this.id = Objects.requireNonNull(id, "チームIDは必須です");
+    this.name = Objects.requireNonNull(name, "チーム名は必須です");
+    validateMembers(list);
     this.list = new ArrayList<>(list);
   }
 
   public Team(TeamName name, List<Member> list) {
-    validateMembers(list);
     this.id = TeamId.generate();
-    this.name = name;
+    this.name = Objects.requireNonNull(name, "チーム名は必須です");
+    validateMembers(list);
     this.list = new ArrayList<>(list);
   }
 

@@ -118,7 +118,7 @@ class TeamOrchestrationServiceTest {
         Team smallestTeam = new Team(
             new TeamId("team-002"),
             new TeamName("SmallestTeam"),
-            List.of(testMember2)
+            Arrays.asList(testMember3, testMember4)
         );
         
         List<Team> allTeams = Arrays.asList(testTeam, smallestTeam);
@@ -126,14 +126,22 @@ class TeamOrchestrationServiceTest {
         
         TeamComposition composition = TeamComposition.noChange(smallestTeam);
         TeamCompositionResult result = TeamCompositionResult.normal(composition);
-        when(domainService.assignMemberToTeam(testMember3, allTeams))
+        // 新しいメンバーを作成
+        Member newMember = new Member(
+            new MemberId("member-005"),
+            new MemberName("新規メンバー"),
+            new Email("new@example.com"),
+            EnrollmentStatus.在籍中
+        );
+        
+        when(domainService.assignMemberToTeam(newMember, allTeams))
             .thenReturn(result);
 
         // 実行
-        service.assignMemberToTeam(testMember3);
+        service.assignMemberToTeam(newMember);
 
         // 検証
-        verify(teamRepository).addMember(smallestTeam.getId(), testMember3.getId());
+        verify(teamRepository).addMember(smallestTeam.getId(), newMember.getId());
     }
 
     @Test
