@@ -2,6 +2,9 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.6'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
+	id 'checkstyle'
+	id 'com.github.spotbugs' version '6.0.26'
 }
 
 group = 'com.ddd'
@@ -43,3 +46,70 @@ tasks.named('test') {
 tasks.named('bootTestRun') {
 	args = ['--spring.profiles.active=dev']
 }
+
+// JaCoCo configuration
+jacoco {
+	toolVersion = "0.8.12"
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+		csv.required = false
+	}
+	executionData.setFrom(fileTree(dir: "${buildDir}/jacoco", includes: ["**/*.exec"]))
+}
+
+jacocoTestCoverageVerification {
+	dependsOn jacocoTestReport
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.80
+			}
+		}
+	}
+}
+
+// Checkstyle configuration
+checkstyle {
+	toolVersion = '10.12.4'
+	configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+	ignoreFailures = true
+}
+
+checkstyleMain {
+	source = sourceSets.main.allJava
+}
+
+checkstyleTest {
+	source = sourceSets.test.allJava
+}
+
+// SpotBugs configuration
+spotbugs {
+	toolVersion = '4.8.6'
+	ignoreFailures = true
+	effort = 'max'
+	reportLevel = 'medium'
+}
+
+spotbugsMain {
+	reports {
+		xml.required = true
+		html.required = true
+	}
+}
+
+spotbugsTest {
+	reports {
+		xml.required = true
+		html.required = true
+	}
+}
+
+// Task dependencies
+test.finalizedBy jacocoTestReport
+check.dependsOn jacocoTestCoverageVerification

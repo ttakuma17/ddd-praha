@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+    <!-- Suppress certain checks for test files -->
+    <suppress checks="DesignForExtension" files=".*Test\.java"/>
+    <suppress checks="FinalParameters" files=".*Test\.java"/>
+    <suppress checks="HideUtilityClassConstructor" files=".*Test\.java"/>
+    <suppress checks="VisibilityModifier" files=".*Test\.java"/>
+    
+    <!-- Suppress checks for generated or configuration files -->
+    <suppress checks=".*" files=".*Application\.java"/>
+    <suppress checks="HideUtilityClassConstructor" files=".*Config\.java"/>
+    
+    <!-- Suppress TodoComment check for test files -->
+    <suppress checks="TodoComment" files=".*Test\.java"/>
+    
+    <!-- Suppress certain checks for record classes -->
+    <suppress checks="FinalParameters" files=".*Record\.java"/>
+    <suppress checks="VisibilityModifier" files=".*Record\.java"/>
+</suppressions>

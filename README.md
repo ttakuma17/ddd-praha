@@ -22,6 +22,9 @@
 - **テスト**: JUnit 5, Testcontainers, ArchUnit
 - **メッセージキュー**: RabbitMQ
 - **API文書**: SpringDoc OpenAPI (Swagger UI)
+- **CI/CD**: GitHub Actions
+- **コード品質**: JaCoCo (カバレッジ), Checkstyle, SpotBugs
+- **依存関係管理**: Dependabot
 
 ## 🏗 アーキテクチャ
 
@@ -114,6 +117,12 @@ src/
 # 特定のテストクラス実行
 ./gradlew test --tests "MemberServiceTest"
 
+# カバレッジレポート付きテスト実行
+./gradlew test jacocoTestReport
+
+# コード品質チェック実行
+./gradlew check
+
 # ビルド
 ./gradlew build
 
@@ -172,6 +181,42 @@ src/
 - テスト環境では `application-test.yml` が使用される
 - Testcontainers により PostgreSQL と RabbitMQ が自動起動
 - テストデータは Flyway マイグレーション `R__Insert_test_data.sql` で投入
+
+### コード品質管理
+
+- **JaCoCo**: テストカバレッジ測定（目標: 80%以上）
+- **Checkstyle**: コードスタイルチェック
+- **SpotBugs**: 静的解析によるバグ検出
+
+カバレッジレポートは `build/reports/jacoco/test/html/index.html` で確認できます。
+
+## 🚀 CI/CD
+
+### GitHub Actions
+
+プロジェクトでは以下のGitHub Actionsワークフローが設定されています：
+
+- **CI (`ci.yml`)**: プッシュ・プルリクエスト時の自動テスト実行
+- **Code Quality (`quality.yml`)**: コード品質チェック・カバレッジ測定
+- **PR Check (`pr-check.yml`)**: プルリクエスト時の高速チェック
+
+### Dependabot
+
+依存関係の自動更新が設定されています：
+
+- **Gradle依存関係**: 毎週月曜日 9:00 JST に自動チェック
+- **GitHub Actions**: ワークフローで使用するアクションの自動更新
+- **セキュリティアップデート**: 脆弱性発見時の自動プルリクエスト作成
+
+### バッジ表示
+
+以下のバッジをREADMEに追加することを推奨します：
+
+```markdown
+![CI](https://github.com/ttakuma17/praha/workflows/CI/badge.svg)
+![Code Quality](https://github.com/ttakuma17/praha/workflows/Code%20Quality/badge.svg)
+[![codecov](https://codecov.io/gh/ttakuma17/praha/branch/main/graph/badge.svg)](https://codecov.io/gh/ttakuma17/praha)
+```
 
 ## 📝 開発ガイドライン
 
