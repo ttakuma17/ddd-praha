@@ -13,6 +13,21 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 参加者管理のREST APIコントローラー。
+ * 
+ * <p>参加者に関するCRUD操作を提供するRESTfulなAPIエンドポイントを定義する。
+ * 参加者の一覧取得、詳細取得、新規作成、ステータス更新機能を提供している。</p>
+ * 
+ * <p>提供するエンドポイント：</p>
+ * <ul>
+ *   <li>GET /api/members - 全参加者の一覧取得</li>
+ *   <li>GET /api/members/{id} - 特定参加者の詳細取得</li>
+ *   <li>POST /api/members - 新規参加者の作成</li>
+ *   <li>PUT /api/members/{id}/status - 参加者の在籍ステータス更新</li>
+ * </ul>
+ * 
+ */
 @RestController
 @RequestMapping("/api/members")
 public class MemberController {

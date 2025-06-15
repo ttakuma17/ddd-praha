@@ -2,33 +2,75 @@ package com.ddd.praha.domain.entity;
 
 import com.ddd.praha.domain.model.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 /**
- * チーム集約？
+ * プラハチャレンジにおけるチームを表すエンティティ。
+ * 
+ * <p>チームは2〜4名の在籍中メンバーで構成され、学習活動の基本単位となる。
+ * チームの編成・分割・合流に関する複雑なビジネスルールを実装している。</p>
+ * 
+ * <p>チーム編成のルール：</p>
+ * <ul>
+ *   <li>メンバー数は2〜4名の範囲で維持される</li>
+ *   <li>5名になった場合は自動的に2つのチームに分割される</li>
+ *   <li>1名になった場合は他のチームとの合流が試行される</li>
+ *   <li>2名以下になった場合は管理者への監視通知が送信される</li>
+ * </ul>
+ * 
+ * <p>メンバーの参加資格：</p>
+ * <ul>
+ *   <li>在籍ステータスが「在籍中」のメンバーのみ参加可能</li>
+ *   <li>同一チーム内での重複メンバーは不可</li>
+ * </ul>
+ * 
  */
 public class Team {
   private final TeamId id;
   private final TeamName name;
   private final List<Member> list;
 
+  /**
+   * チームIDを取得する。
+   * 
+   * @return チームID
+   */
   public TeamId getId() {
     return id;
   }
 
+  /**
+   * チーム名を取得する。
+   * 
+   * @return チーム名
+   */
   public TeamName getName() {
     return name;
   }
 
+  /**
+   * チームに所属するメンバーのリストを取得する。
+   * 
+   * <p>返されるリストは防御的コピーで、変更しても元のチーム状態には影響しない。</p>
+   * 
+   * @return メンバーリストのコピー
+   */
   public List<Member> getMembers() {
     return new ArrayList<>(list);
   }
 
+  /**
+   * 既存のIDを指定してチームを復元する（主にリポジトリからの復元用）。
+   * 
+   * @param id チームID（必須）
+   * @param name チーム名（必須）
+   * @param list 初期メンバーリスト（必須、2〜4名）
+   * @throws NullPointerException いずれかの引数がnullの場合
+   * @throws IllegalArgumentException メンバー数が適切でない場合
+   */
   public Team(TeamId id, TeamName name, List<Member> list) {
     this.id = Objects.requireNonNull(id, "チームIDは必須です");
     this.name = Objects.requireNonNull(name, "チーム名は必須です");
@@ -36,6 +78,14 @@ public class Team {
     this.list = new ArrayList<>(list);
   }
 
+  /**
+   * 新しいチームを作成する（IDは自動生成）。
+   * 
+   * @param name チーム名（必須）
+   * @param list 初期メンバーリスト（必須、2〜4名）
+   * @throws NullPointerException いずれかの引数がnullの場合
+   * @throws IllegalArgumentException メンバー数が適切でない場合
+   */
   public Team(TeamName name, List<Member> list) {
     this.id = TeamId.generate();
     this.name = Objects.requireNonNull(name, "チーム名は必須です");
@@ -55,6 +105,18 @@ public class Team {
     }
   }
 
+  /**
+   * チームにメンバーを追加する。
+   * 
+   * <p>追加されるメンバーは以下の条件を満たす必要がある：</p>
+   * <ul>
+   *   <li>在籍ステータスが「在籍中」であること</li>
+   *   <li>既にこのチームに所属していないこと</li>
+   * </ul>
+   * 
+   * @param member 追加するメンバー（必須）
+   * @throws IllegalArgumentException メンバーが参加条件を満たさない場合
+   */
   public void addMember(Member member){
     if (!member.canJoin()){
       throw new IllegalArgumentException("在籍中ではない参加者はチームに追加できません");
@@ -65,6 +127,12 @@ public class Team {
     list.add(member);
   }
 
+  /**
+   * チームからメンバーを削除する。
+   * 
+   * @param member 削除するメンバー（必須、このチームに所属している必要がある）
+   * @throws IllegalArgumentException 指定されたメンバーがチームに所属していない場合
+   */
   public void deleteMember(Member member){
     if (!list.contains(member)) {
       throw new IllegalArgumentException("指定された参加者はチームに所属していません");
@@ -72,14 +140,35 @@ public class Team {
     list.remove(member);
   }
 
+  /**
+   * このチームが監視対象かどうかを判定する。
+   * 
+   * <p>チームメンバーが2名以下の場合、管理者による監視が必要となる。</p>
+   * 
+   * @return 監視が必要な場合はtrue、そうでなければfalse
+   */
   public boolean needsMonitoring(){
     return list.size() <= 2;
   }
 
+  /**
+   * このチームが再編成対象かどうかを判定する。
+   * 
+   * <p>チームメンバーが1名のみの場合、他のチームとの合流が必要となる。</p>
+   * 
+   * @return 再編成が必要な場合はtrue、そうでなければfalse
+   */
   public boolean needsRedistribution(){
     return list.size() == 1;
   }
 
+  /**
+   * このチームが分割対象かどうかを判定する。
+   * 
+   * <p>チームメンバーが5名以上の場合、2つのチームに分割される。</p>
+   * 
+   * @return 分割が必要な場合はtrue、そうでなければfalse
+   */
   public boolean needsSplitting(){
     return list.size() >= 5;
   }

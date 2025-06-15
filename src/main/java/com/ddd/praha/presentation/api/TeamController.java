@@ -15,6 +15,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * チーム管理のREST APIコントローラー。
+ * 
+ * <p>チームに関する照会・更新操作を提供するRESTfulなAPIエンドポイントを定義する。
+ * チーム一覧取得、詳細取得、メンバー編成更新機能を提供している。</p>
+ * 
+ * <p>提供するエンドポイント：</p>
+ * <ul>
+ *   <li>GET /api/teams - 全チームの一覧取得</li>
+ *   <li>GET /api/teams/{id} - 特定チームの詳細取得</li>
+ *   <li>PUT /api/teams/{id}/members - チームメンバーの編成更新</li>
+ * </ul>
+ * 
+ * <p>チームメンバーの更新では、自動的なチーム分割・合流ロジックが適用される。</p>
+ * 
+ */
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {

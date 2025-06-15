@@ -10,7 +10,18 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * 参加者サービス
+ * 参加者に関するアプリケーションサービス。
+ * 
+ * <p>参加者のCRUD操作および在籍ステータス変更に伴うチーム再編成ロジックを担当する。
+ * 参加者の状態変更がチーム構成に与える影響を管理し、必要に応じてチーム編成サービスと連携する。</p>
+ * 
+ * <p>主な責務：</p>
+ * <ul>
+ *   <li>参加者の登録・更新・削除</li>
+ *   <li>在籍ステータス変更とチーム再編成の統合処理</li>
+ *   <li>参加者検索機能の提供</li>
+ * </ul>
+ * 
  */
 @Service
 public class MemberService {
@@ -18,6 +29,13 @@ public class MemberService {
     private final TeamRepository teamRepository;
     private final TeamOrchestrationService teamOrchestrationService;
     
+    /**
+     * MemberServiceのコンストラクタ。
+     * 
+     * @param memberRepository 参加者リポジトリ
+     * @param teamRepository チームリポジトリ
+     * @param teamOrchestrationService チーム編成オーケストレーションサービス
+     */
     public MemberService(MemberRepository memberRepository, 
                         TeamRepository teamRepository,
                         TeamOrchestrationService teamOrchestrationService) {
@@ -26,6 +44,13 @@ public class MemberService {
         this.teamOrchestrationService = teamOrchestrationService;
     }
 
+    /**
+     * 指定されたIDの参加者を取得する。
+     * 
+     * @param memberId 参加者ID
+     * @return 参加者エンティティ
+     * @throws RuntimeException 参加者が見つからない場合
+     */
     public Member get(MemberId memberId) {
         return memberRepository.get(memberId);
     }
