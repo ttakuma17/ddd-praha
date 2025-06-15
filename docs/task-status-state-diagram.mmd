@@ -1,0 +1,36 @@
+stateDiagram-v2
+    [*] --> 未着手: タスク割り当て
+    
+    未着手 --> 取組中: タスク開始
+    
+    取組中 --> レビュー待ち: レビュー申請
+    
+    レビュー待ち --> 取組中: 差し戻し
+    レビュー待ち --> 完了: 承認
+    
+    完了 --> [*]: 終了状態
+
+    note right of 未着手
+        NOT_STARTED
+        - タスクがメンバーに割り当てられた状態
+        - まだ作業を開始していない
+    end note
+
+    note right of 取組中
+        IN_PROGRESS
+        - メンバーが作業中
+        - レビュー申請まで何度でも編集可能
+    end note
+
+    note right of レビュー待ち
+        UNDER_REVIEW
+        - レビュアーによる確認待ち
+        - 承認または差し戻しを待っている状態
+    end note
+
+    note right of 完了
+        COMPLETED
+        - タスクが完了した状態
+        - これ以降の状態変更は不可
+        - 完了日時が記録される
+    end note

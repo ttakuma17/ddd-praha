@@ -1,7 +1,7 @@
 package com.ddd.praha.infrastructure;
 
 import com.ddd.praha.application.repository.NotificationRepository;
-import com.ddd.praha.config.RabbitMQConfig;
+import com.ddd.praha._config.RabbitMQConfig;
 import com.ddd.praha.domain.model.TeamNotificationEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

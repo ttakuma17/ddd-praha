@@ -1,0 +1,111 @@
+classDiagram
+    class Member {
+        -MemberId id
+        -MemberName name
+        -Email email
+        -EnrollmentStatus enrollmentStatus
+        +changeStatus(EnrollmentStatus newStatus)
+        +isActive() boolean
+    }
+
+    class Team {
+        -TeamId id
+        -TeamName name
+        -List members
+        +addMember(Member member)
+        +removeMember(Member member)
+        +getMemberCount() int
+        +needsSplit() boolean
+        +needsMerge() boolean
+        +split() List
+    }
+
+    class Task {
+        -TaskId id
+        -TaskName name
+        -String description
+    }
+
+    class MemberTask {
+        -Member member
+        -Task task
+        -TaskStatus status
+        +changeStatus(TaskStatus newStatus)
+        +canTransitionTo(TaskStatus newStatus) boolean
+    }
+
+    class EnrollmentStatus {
+        <<enumeration>>
+        ACTIVE
+        ON_LEAVE
+        WITHDRAWN
+    }
+
+    class TaskStatus {
+        <<enumeration>>
+        NOT_STARTED
+        IN_PROGRESS
+        UNDER_REVIEW
+        COMPLETED
+    }
+
+    class Email {
+        <<value object>>
+        -String value
+        +validate()
+    }
+
+    class MemberName {
+        <<value object>>
+        -String value
+        +validate()
+    }
+
+    class TeamName {
+        <<value object>>
+        -String value
+        +validate()
+        +isValidFormat() boolean
+    }
+
+    class TeamComposition {
+        <<domain service>>
+        +handleMemberLeaving(Team team, Member member)
+        +handleMemberJoining(Member member)
+        +findTeamWithFewestMembers() Team
+        +mergeTeams(Team from, Team to)
+        +splitTeam(Team team) List
+    }
+
+    class NotificationService {
+        <<domain service>>
+        +notifyTeamBelowMinimum(Team team, Member leftMember)
+        +notifyNoAvailableTeam(Member member)
+    }
+
+    %% Relationships
+    Member "1" --> "1" Email : has
+    Member "1" --> "1" MemberName : has
+    Member "1" --> "1" EnrollmentStatus : has
+    
+    Team "1" --> "1" TeamName : has
+    Team "1" --> "2..4" Member : contains
+    
+    MemberTask "1" --> "1" Member : belongs to
+    MemberTask "1" --> "1" Task : references
+    MemberTask "1" --> "1" TaskStatus : has
+    
+    TeamComposition ..> Team : manages
+    TeamComposition ..> Member : processes
+    TeamComposition ..> NotificationService : uses
+    
+    %% Notes
+    note for Team "チーム人数制約:\n- 最小: 2名\n- 最大: 4名\n- 5名になると自動分割\n- 1名になると他チームに合流"
+    
+    note for EnrollmentStatus "ステータス遷移:\n- 在籍中 (ACTIVE)\n- 休会中 (ON_LEAVE)\n- 退会済 (WITHDRAWN)\n\n非在籍中はチーム所属不可"
+    
+    note for TaskStatus "ステータス遷移ルール:\n- 未着手 → 取組中\n- 取組中 → レビュー待ち\n- レビュー待ち → 取組中 or 完了\n- 完了 → 変更不可"
+    
+    note for TeamName "命名規則:\n- 英文字のみ (a, b, c, d...)\n- 重複不可"
+    
+    note for Email "制約:\n- メールアドレス重複不可"

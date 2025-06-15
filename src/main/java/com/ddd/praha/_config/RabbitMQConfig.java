@@ -1,4 +1,4 @@
-package com.ddd.praha.config;
+package com.ddd.praha._config;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;

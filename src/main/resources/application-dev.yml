@@ -3,16 +3,31 @@ spring:
   config:
     activate:
       on-profile: dev
+  
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    hikari:
+      maximum-pool-size: 2
+  
+  main:
+    allow-bean-definition-overriding: true
+  
+  flyway:
+    enabled: true
+    locations: classpath:db/migration,classpath:db/local
+    baseline-on-migrate: true
+    clean-disabled: false
+    schemas: public
+    repeatable-sql-migration-prefix: R__
+    validate-migration-naming: false
 
 logging:
   level:
-    praha: DEBUG
-    io.micrometer: INFO
-    io.zipkin: INFO
+    root: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   # structured.format.consoleを設定しないことでECS形式を無効化
 
-  flyway:
-    locations: classpath:db/migration,classpath:db/local
-    repeatable-sql-migration-prefix=R:
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

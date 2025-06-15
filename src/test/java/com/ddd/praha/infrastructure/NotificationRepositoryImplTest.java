@@ -1,8 +1,7 @@
 package com.ddd.praha.infrastructure;
 
 import com.ddd.praha.TestcontainersConfiguration;
-import com.ddd.praha.domain.*;
-import com.ddd.praha.config.RabbitMQConfig;
+import com.ddd.praha._config.RabbitMQConfig;
 import com.ddd.praha.domain.entity.Member;
 import com.ddd.praha.domain.entity.Team;
 import com.ddd.praha.domain.model.Email;
