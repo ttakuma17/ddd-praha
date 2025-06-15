@@ -54,10 +54,17 @@ public class TeamController {
    */
   @GetMapping
   public List<TeamResponse> listAll() {
-    List<Team> teams = teamQueryService.getAll();
-    return teams.stream()
-        .map(TeamResponse::from)
-        .collect(Collectors.toList());
+    try {
+      List<Team> teams = teamQueryService.getAll();
+      if (teams == null) {
+        teams = new ArrayList<>();
+      }
+      return teams.stream()
+          .map(TeamResponse::from)
+          .collect(Collectors.toList());
+    } catch (Exception e) {
+      throw new BadRequestException("Failed to retrieve teams: " + e.getMessage());
+    }
   }
 
   @GetMapping("/{id}")

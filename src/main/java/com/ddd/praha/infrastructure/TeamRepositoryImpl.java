@@ -94,13 +94,19 @@ public class TeamRepositoryImpl implements TeamRepository {
                 
                 // メンバーリストを構築（memberId がnullでないもののみ）
                 List<Member> members = records.stream()
-                    .filter(record -> record.memberId() != null)
-                    .map(record -> new Member(
-                        new MemberId(record.memberId()),
-                        new MemberName(record.memberName()),
-                        new Email(record.memberEmail()),
-                        EnrollmentStatus.valueOf(record.memberStatus())
-                    ))
+                    .filter(record -> record.memberId() != null && record.memberStatus() != null)
+                    .map(record -> {
+                        try {
+                            return new Member(
+                                new MemberId(record.memberId()),
+                                new MemberName(record.memberName()),
+                                new Email(record.memberEmail()),
+                                EnrollmentStatus.valueOf(record.memberStatus())
+                            );
+                        } catch (IllegalArgumentException e) {
+                            throw new IllegalStateException("Invalid member status: " + record.memberStatus(), e);
+                        }
+                    })
                     .toList();
 
                 return new Team(
