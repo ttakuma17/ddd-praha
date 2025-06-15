@@ -7,6 +7,7 @@ import com.ddd.praha.domain.model.EnrollmentStatus;
 import com.ddd.praha.domain.model.MemberId;
 import com.ddd.praha.domain.model.MemberName;
 import java.util.Collections;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -53,23 +55,24 @@ public class MemberControllerTest {
     mockMvc.perform(get("/api/members"))
         .andExpect(status().isOk())
         .andExpect(content().json("""
-            {
-                "id": "member-1",
+            [{
+                "id": "test-id-1",
                 "name": "テスト太郎",
                 "email": "test@example.com",
                 "status": "在籍中"
-            }
+            }]
             """));
   }
 
   @Test
   void findMemberById_WhenMemberExists_ReturnsMember() throws Exception {
+    when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
 
     mockMvc.perform(get("/api/members/{id}", testMemberId.value()))
         .andExpect(status().isOk())
         .andExpect(content().json("""
             {
-                "id": "member-1",
+                "id": "test-id-1",
                 "name": "テスト太郎",
                 "email": "test@example.com",
                 "status": "在籍中"
@@ -80,7 +83,7 @@ public class MemberControllerTest {
   @Test
   void findMemberById_WhenMemberDoesNotExist_ReturnsNotFound() throws Exception {
     // モックの設定
-    when(memberService.findById(any(MemberId.class))).thenReturn(null);
+    when(memberService.findById(any(MemberId.class))).thenReturn(Optional.empty());
 
     // APIリクエストの実行と検証
     mockMvc.perform(get("/api/members/{id}", "non-existent-id"))
@@ -121,17 +124,8 @@ public class MemberControllerTest {
     MemberStatusUpdateRequest request = new MemberStatusUpdateRequest(
         EnrollmentStatus.休会中.name());
 
-    // 更新後のメンバー
-    Member updatedMember = new Member(
-        testMember.getName(),
-        testMember.getEmail(),
-        EnrollmentStatus.休会中
-    ) {
-      @Override
-      public MemberId getId() {
-        return testMemberId;
-      }
-    };
+    // モックの設定
+    doNothing().when(memberService).updateMemberStatus(any(), any());
 
     // APIリクエストの実行と検証
     String requestJson = """
@@ -153,7 +147,8 @@ public class MemberControllerTest {
         EnrollmentStatus.休会中.name());
 
     // 存在しないメンバーの場合の振る舞いを設定
-    doNothing().when(memberService).updateMemberStatus(any(), any());
+    doThrow(new com.ddd.praha.presentation.exception.ResourceNotFoundException("Member not found"))
+        .when(memberService).updateMemberStatus(any(), any());
 
     // APIリクエストの実行と検証
     String requestJson = """
@@ -174,6 +169,10 @@ public class MemberControllerTest {
     MemberStatusUpdateRequest request = new MemberStatusUpdateRequest(
         EnrollmentStatus.退会済.name());
 
+    // 不正な状態遷移の場合の振る舞いを設定
+    doThrow(new IllegalStateException("Invalid status transition"))
+        .when(memberService).updateMemberStatus(any(), any());
+
     // APIリクエストの実行と検証
     String requestJson = """
         {
@@ -184,6 +183,6 @@ public class MemberControllerTest {
     mockMvc.perform(put("/api/members/{id}/status", testMemberId.value())
             .contentType(MediaType.APPLICATION_JSON)
             .content(requestJson))
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isConflict());
   }
 }

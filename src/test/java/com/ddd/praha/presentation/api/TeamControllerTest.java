@@ -96,11 +96,11 @@ public class TeamControllerTest {
         // Act & Assert
         mockMvc.perform(get("/api/teams"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value("team-1"))
+                .andExpect(jsonPath("$[0].id").value(team1.getId().value()))
                 .andExpect(jsonPath("$[0].name").value("TeamA"))
                 .andExpect(jsonPath("$[0].members[0].id").value(member1.getId().value()))
                 .andExpect(jsonPath("$[0].members[1].id").value(member2.getId().value()))
-                .andExpect(jsonPath("$[1].id").value("team-2"))
+                .andExpect(jsonPath("$[1].id").value(team2.getId().value()))
                 .andExpect(jsonPath("$[1].name").value("TeamB"))
                 .andExpect(jsonPath("$[1].members[0].id").value(member2.getId().value()))
                 .andExpect(jsonPath("$[1].members[1].id").value(member3.getId().value()));
@@ -114,7 +114,7 @@ public class TeamControllerTest {
         // Act & Assert
         mockMvc.perform(get("/api/teams/team-1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("team-1"))
+                .andExpect(jsonPath("$.id").value(team1.getId().value()))
                 .andExpect(jsonPath("$.name").value("TeamA"))
                 .andExpect(jsonPath("$.members[0].id").value(member1.getId().value()))
                 .andExpect(jsonPath("$.members[1].id").value(member2.getId().value()));
@@ -123,7 +123,7 @@ public class TeamControllerTest {
     @Test
     public void findTeamById_WhenTeamDoesNotExist_ReturnsNotFound() throws Exception {
         // Arrange
-        doNothing().when(teamQueryService.get(new TeamId("non-existent")));
+        when(teamQueryService.get(new TeamId("non-existent"))).thenReturn(null);
 
         // Act & Assert
         mockMvc.perform(get("/api/teams/non-existent"))
@@ -138,8 +138,8 @@ public class TeamControllerTest {
         );
 
         when(teamQueryService.get(new TeamId("team-1"))).thenReturn(team1);
-        when(memberService.findById(member1.getId()));
-        when(memberService.findById(member3.getId()));
+        when(memberService.get(member1.getId())).thenReturn(member1);
+        when(memberService.get(member3.getId())).thenReturn(member3);
 
         // Mock the team after removing member2
         Team updatedTeam1 = new Team(new TeamName("TeamA"), Arrays.asList(member1, member3)) {
@@ -163,7 +163,7 @@ public class TeamControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("team-1"))
+                .andExpect(jsonPath("$.id").value(updatedTeam1.getId().value()))
                 .andExpect(jsonPath("$.name").value("TeamA"))
                 .andExpect(jsonPath("$.members[0].id").value(member1.getId().value()))
                 .andExpect(jsonPath("$.members[1].id").value(member3.getId().value()));
@@ -176,7 +176,7 @@ public class TeamControllerTest {
                 Arrays.asList(member1.getId().value(), member3.getId().value())
         );
 
-        doNothing().when(teamQueryService.get(new TeamId("non-existent")));
+        when(teamQueryService.get(new TeamId("non-existent"))).thenReturn(null);
 
         // Act & Assert
         String requestJson = """
@@ -199,8 +199,8 @@ public class TeamControllerTest {
         );
 
         when(teamQueryService.get(new TeamId("team-1"))).thenReturn(team1);
-        when(memberService.findById(member1.getId())).thenReturn(Optional.of(member1));
-        when(memberService.findById(new MemberId("non-existent-member"))).thenReturn(null);
+        when(memberService.get(member1.getId())).thenReturn(member1);
+        when(memberService.get(new MemberId("non-existent-member"))).thenThrow(new RuntimeException("Member not found"));
 
         // Act & Assert
         String requestJson = """
@@ -223,7 +223,7 @@ public class TeamControllerTest {
         );
 
         when(teamQueryService.get(new TeamId("team-1"))).thenReturn(team1);
-        when(memberService.findById(member1.getId())).thenReturn(Optional.of(member1));
+        when(memberService.get(member1.getId())).thenReturn(member1);
 
         // Use doThrow instead of when().thenThrow()
         Mockito.doThrow(new IllegalArgumentException("Error"))
@@ -250,7 +250,7 @@ public class TeamControllerTest {
         );
 
         when(teamQueryService.get(new TeamId("team-1"))).thenReturn(team1);
-        when(memberService.findById(member1.getId())).thenReturn(Optional.of(member1));
+        when(memberService.get(member1.getId())).thenReturn(member1);
         when(teamOrchestrationService.removeMemberFromTeam(any(), any())).thenThrow(new IllegalStateException("Error"));
 
         // Act & Assert

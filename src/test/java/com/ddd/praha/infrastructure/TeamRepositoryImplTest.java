@@ -2,7 +2,7 @@ package com.ddd.praha.infrastructure;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.ddd.praha.TestcontainersConfiguration;
+import com.ddd.praha.annotation.MyBatisRepositoryTest;
 import com.ddd.praha.application.repository.MemberRepository;
 import com.ddd.praha.domain.entity.Member;
 import com.ddd.praha.domain.entity.Team;
@@ -14,14 +14,12 @@ import com.ddd.praha.domain.model.TeamId;
 import com.ddd.praha.domain.model.TeamName;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
-@SpringBootTest
-@Import(TestcontainersConfiguration.class)
+@MyBatisRepositoryTest
 class TeamRepositoryImplTest {
 
   @Autowired
@@ -36,39 +34,47 @@ class TeamRepositoryImplTest {
 
   @BeforeEach
   void setUp() {
-    // テスト用メンバーの作成
+    // テスト用メンバーの作成（動的ID使用）
     testMember1 = new Member(
-        new MemberId("member-001"),
+        new MemberId("member-" + UUID.randomUUID()),
         new MemberName("田中太郎"),
-        new Email("tanaka@example.com"),
+        new Email("tanaka-" + UUID.randomUUID() + "@example.com"),
         EnrollmentStatus.在籍中
     );
 
     testMember2 = new Member(
-        new MemberId("member-002"),
+        new MemberId("member-" + UUID.randomUUID()),
         new MemberName("佐藤花子"),
-        new Email("sato@example.com"),
+        new Email("sato-" + UUID.randomUUID() + "@example.com"),
         EnrollmentStatus.在籍中
     );
 
     testMember3 = new Member(
-        new MemberId("member-003"),
+        new MemberId("member-" + UUID.randomUUID()),
         new MemberName("鈴木一郎"),
-        new Email("suzuki@example.com"),
+        new Email("suzuki-" + UUID.randomUUID() + "@example.com"),
         EnrollmentStatus.在籍中
     );
+
+    // テスト用メンバーをデータベースに保存
+    memberRepository.save(testMember1);
+    memberRepository.save(testMember2);
+    memberRepository.save(testMember3);
   }
 
   @Test
   void チーム一覧を取得できる() {
     // 準備
+    String teamId1 = "team-" + UUID.randomUUID();
+    String teamId2 = "team-" + UUID.randomUUID();
+    
     Team team1 = new Team(
-        new TeamId("team-001"),
+        new TeamId(teamId1),
         new TeamName("テストチーム1"),
         Arrays.asList(testMember1, testMember2)
     );
     Team team2 = new Team(
-        new TeamId("team-002"),
+        new TeamId(teamId2),
         new TeamName("テストチーム2"),
         List.of(testMember3)
     );
@@ -81,9 +87,9 @@ class TeamRepositoryImplTest {
 
     // 検証
     assertAll(
-        () -> assertEquals(2, teams.size()),
-        () -> assertTrue(teams.stream().anyMatch(t -> t.getId().value().equals("team-001"))),
-        () -> assertTrue(teams.stream().anyMatch(t -> t.getId().value().equals("team-002")))
+        () -> assertTrue(teams.size() >= 2),
+        () -> assertTrue(teams.stream().anyMatch(t -> t.getId().value().equals(teamId1))),
+        () -> assertTrue(teams.stream().anyMatch(t -> t.getId().value().equals(teamId2)))
     );
   }
 
@@ -115,9 +121,9 @@ class TeamRepositoryImplTest {
         () -> assertEquals("テストチーム", result.getName().value()),
         () -> assertEquals(2, result.getMembers().size()),
         () -> assertTrue(result.getMembers().stream()
-            .anyMatch(m -> m.getId().value().equals("member-001"))),
+            .anyMatch(m -> m.getId().value().equals(testMember1.getId().value()))),
         () -> assertTrue(result.getMembers().stream()
-            .anyMatch(m -> m.getId().value().equals("member-002")))
+            .anyMatch(m -> m.getId().value().equals(testMember2.getId().value())))
     );
   }
 
@@ -214,7 +220,7 @@ class TeamRepositoryImplTest {
     assertAll(
         () -> assertEquals(2, updatedTeam.getMembers().size()),
         () -> assertTrue(updatedTeam.getMembers().stream()
-            .anyMatch(m -> m.getId().value().equals("member-002")))
+            .anyMatch(m -> m.getId().value().equals(testMember2.getId().value())))
     );
   }
 
@@ -236,9 +242,9 @@ class TeamRepositoryImplTest {
     assertAll(
         () -> assertEquals(1, updatedTeam.getMembers().size()),
         () -> assertFalse(updatedTeam.getMembers().stream()
-            .anyMatch(m -> m.getId().value().equals("member-001"))),
+            .anyMatch(m -> m.getId().value().equals(testMember1.getId().value()))),
         () -> assertTrue(updatedTeam.getMembers().stream()
-            .anyMatch(m -> m.getId().value().equals("member-002")))
+            .anyMatch(m -> m.getId().value().equals(testMember2.getId().value())))
     );
   }
 

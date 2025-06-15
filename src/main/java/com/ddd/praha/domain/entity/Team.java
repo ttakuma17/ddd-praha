@@ -171,19 +171,19 @@ public class Team {
    * @param teams チームのリスト
    * @return 最も人数が少ないチーム（同数の場合はランダム）
    */
-  public static Optional<Team> findSmallestTeam(List<Team> teams) {
-    // まず4名未満のチームを探す
+  public static Team findSmallestTeam(List<Team> teams) {
+    if (teams == null || teams.isEmpty()) {
+      throw new IllegalArgumentException("チームリストは必須です");
+    }
+    
+    // 4名未満のチーム（合流可能なチーム）を探す
     List<Team> candidateTeams = teams.stream()
         .filter(Team::canAcceptNewMember)
         .toList();
     
-    // 4名未満のチームがない場合は、全チームから選択（分割が発生する）
+    // 合流可能なチームがない場合は最も人数が少ないチームを返す（分割前提）
     if (candidateTeams.isEmpty()) {
-      candidateTeams = new ArrayList<>(teams);
-    }
-    
-    if (candidateTeams.isEmpty()) {
-      return Optional.empty();
+      candidateTeams = teams;
     }
     
     // 最小人数を見つける
@@ -199,6 +199,6 @@ public class Team {
     
     // 同じ人数の場合はランダムに選択
     Random random = new Random();
-    return Optional.of(smallestTeams.get(random.nextInt(smallestTeams.size())));
+    return smallestTeams.get(random.nextInt(smallestTeams.size()));
   }
 }

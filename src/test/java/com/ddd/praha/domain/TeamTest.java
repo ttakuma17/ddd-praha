@@ -177,12 +177,11 @@ class TeamTest {
         List<Team> teams = Arrays.asList(team, team2Members);
 
         // 実行
-        Optional<Team> result = Team.findSmallestTeam(teams);
+        Team result = Team.findSmallestTeam(teams);
 
         // 検証
-        assertTrue(result.isPresent());
-        assertEquals("team-002", result.get().getId().value());
-        assertEquals(2, result.get().getMembers().size());
+        assertEquals("team-002", result.getId().value());
+        assertEquals(2, result.getMembers().size());
     }
 
     @Test
@@ -213,10 +212,9 @@ class TeamTest {
         boolean foundTeam2 = false;
 
         for (int i = 0; i < 50; i++) {
-            Optional<Team> result = Team.findSmallestTeam(teams);
-            assertTrue(result.isPresent());
+            Team result = Team.findSmallestTeam(teams);
             
-            String teamId = result.get().getId().value();
+            String teamId = result.getId().value();
             if (teamId.equals("team-001")) {
                 foundTeam1 = true;
             } else if (teamId.equals("team-002")) {
@@ -234,7 +232,7 @@ class TeamTest {
     }
 
     @Test
-    void findSmallestTeam_合流可能なチームがない場合は空のOptionalを返す() {
+    void findSmallestTeam_合流可能なチームがない場合は最小人数のチームを返す() {
         // 準備 - 4名のチーム（合流できない）
         Team fullTeam = new Team(
             new TeamId("team-001"),
@@ -250,10 +248,11 @@ class TeamTest {
         List<Team> teams = List.of(fullTeam);
 
         // 実行
-        Optional<Team> result = Team.findSmallestTeam(teams);
+        Team result = Team.findSmallestTeam(teams);
 
         // 検証
-        assertTrue(result.isEmpty());
+        assertEquals(fullTeam.getId(), result.getId());
+        assertEquals(4, result.getMembers().size());
     }
 
     @Test

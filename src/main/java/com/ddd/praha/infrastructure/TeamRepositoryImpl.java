@@ -4,11 +4,12 @@ package com.ddd.praha.infrastructure;
 import com.ddd.praha.application.repository.TeamRepository;
 import com.ddd.praha.domain.entity.Member;
 import com.ddd.praha.domain.entity.Team;
-import com.ddd.praha.domain.model.MemberId;
-import com.ddd.praha.domain.model.TeamId;
+import com.ddd.praha.domain.model.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * チームリポジトリのMyBatis実装
@@ -23,17 +24,18 @@ public class TeamRepositoryImpl implements TeamRepository {
 
     @Override
     public List<Team> getAll() {
-        List<TeamRecord> all = teamMapper.getAll();
-        return all.stream().map(TeamRecord::toTeam).toList();
+        List<TeamMemberJoinRecord> joinRecords = teamMapper.getAllWithMembers();
+        return convertJoinRecordsToTeams(joinRecords);
     }
 
     @Override
     public Team get(TeamId id) {
-        TeamRecord team = teamMapper.get(id);
-        if (team == null) {
+        List<TeamMemberJoinRecord> joinRecords = teamMapper.getWithMembers(id);
+        if (joinRecords.isEmpty()) {
             throw new IllegalStateException("Team record is null.");
         }
-        return team.toTeam();
+        List<Team> teams = convertJoinRecordsToTeams(joinRecords);
+        return teams.get(0);
     }
 
     @Override
@@ -70,5 +72,37 @@ public class TeamRepositoryImpl implements TeamRepository {
         teamMapper.removeAllMembers(team.getId());
         // チーム自体を削除
         teamMapper.delete(team.getId());
+    }
+
+    private List<Team> convertJoinRecordsToTeams(List<TeamMemberJoinRecord> joinRecords) {
+        Map<String, List<TeamMemberJoinRecord>> teamGroups = joinRecords.stream()
+            .collect(Collectors.groupingBy(TeamMemberJoinRecord::teamId));
+
+        return teamGroups.entrySet().stream()
+            .map(entry -> {
+                String teamId = entry.getKey();
+                List<TeamMemberJoinRecord> records = entry.getValue();
+                
+                // チーム情報は全レコードで同じなので最初のレコードから取得
+                TeamMemberJoinRecord firstRecord = records.get(0);
+                
+                // メンバーリストを構築（memberId がnullでないもののみ）
+                List<Member> members = records.stream()
+                    .filter(record -> record.memberId() != null)
+                    .map(record -> new Member(
+                        new MemberId(record.memberId()),
+                        new MemberName(record.memberName()),
+                        new Email(record.memberEmail()),
+                        EnrollmentStatus.valueOf(record.memberStatus())
+                    ))
+                    .toList();
+
+                return new Team(
+                    new TeamId(teamId),
+                    new TeamName(firstRecord.teamName()),
+                    members
+                );
+            })
+            .toList();
     }
 }

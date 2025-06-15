@@ -248,8 +248,7 @@ class TeamCompositionDomainServiceTest {
             new TeamName("四名チーム"),
             Arrays.asList(team4Member1, team4Member2, team4Member3, team4Member4)
         );
-
-        List<Team> allTeams = new ArrayList<>(Arrays.asList(team4Members));
+        List<Team> allTeams = new ArrayList<>(List.of(team4Members));
 
         Member newMember = new Member(
             new MemberId("member-005"),
@@ -269,7 +268,7 @@ class TeamCompositionDomainServiceTest {
     }
 
     @Test
-    void assignMemberToTeam_割り当て可能なチームがない場合は例外をスローする() {
+    void assignMemberToTeam_空のチームリストの場合は例外をスローする() {
         // 準備 - 空のチームリスト
         List<Team> allTeams = new ArrayList<>();
 
@@ -281,11 +280,42 @@ class TeamCompositionDomainServiceTest {
         );
 
         // 実行・検証
-        IllegalStateException exception = assertThrows(
-            IllegalStateException.class,
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
             () -> service.assignMemberToTeam(newMember, allTeams)
         );
 
-        assertEquals("メンバーを割り当て可能なチームが見つかりません", exception.getMessage());
+        assertEquals("チームリストは必須です", exception.getMessage());
+    }
+
+    @Test
+    void assignMemberToTeam_満員チームしかない場合は分割処理される() {
+        // 準備 - 4名の満員チーム
+        Team fullTeam = new Team(
+            new TeamId("team-001"),
+            new TeamName("満員チーム"),
+            Arrays.asList(
+                new Member(new MemberId("member-001"), new MemberName("メンバー1"), new Email("member1@example.com"), EnrollmentStatus.在籍中),
+                new Member(new MemberId("member-002"), new MemberName("メンバー2"), new Email("member2@example.com"), EnrollmentStatus.在籍中),
+                new Member(new MemberId("member-003"), new MemberName("メンバー3"), new Email("member3@example.com"), EnrollmentStatus.在籍中),
+                new Member(new MemberId("member-004"), new MemberName("メンバー4"), new Email("member4@example.com"), EnrollmentStatus.在籍中)
+            )
+        );
+
+        List<Team> allTeams = List.of(fullTeam);
+
+        Member newMember = new Member(
+            new MemberId("member-005"),
+            new MemberName("伊藤三郎"),
+            new Email("ito@example.com"),
+            EnrollmentStatus.在籍中
+        );
+
+        // 実行
+        TeamCompositionResult result = service.assignMemberToTeam(newMember, allTeams);
+
+        // 検証 - チーム分割が発生することを確認
+        assertTrue(result.requiresSplit());
+        assertNotNull(result.composition().getNewTeam());
     }
 }

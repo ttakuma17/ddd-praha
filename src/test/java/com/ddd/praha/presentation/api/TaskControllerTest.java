@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -59,7 +60,7 @@ public class TaskControllerTest {
         // テスト用のタスクを作成
         testTaskId = new TaskId("test-task-id-1");
         TaskName taskName = new TaskName("テスト課題");
-        testTask = new Task(taskName);
+        testTask = new Task(testTaskId, taskName);
 
         // テスト用のメンバーを作成
         testMemberId = new MemberId("test-member-id-1");
@@ -67,7 +68,7 @@ public class TaskControllerTest {
         Email email = new Email("test@example.com");
         EnrollmentStatus status = EnrollmentStatus.在籍中;
 
-        testMember = new Member(name, email, status);
+        testMember = new Member(testMemberId, name, email, status);
     }
 
     @Test
@@ -97,12 +98,7 @@ public class TaskControllerTest {
         // テスト用の追加タスクを作成
         TaskId task2Id = new TaskId("test-task-id-2");
         TaskName task2Name = new TaskName("テスト課題2");
-        Task testTask2 = new Task(task2Name) {
-            @Override
-            public TaskId getId() {
-                return task2Id;
-            }
-        };
+        Task testTask2 = new Task(task2Id, task2Name);
 
         // モックの設定
         List<Task> tasks = Arrays.asList(testTask, testTask2);
@@ -138,13 +134,9 @@ public class TaskControllerTest {
         TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(testMemberId.value(),
             TaskStatus.取組中.name());
 
-        // 更新後のメンバータスク
-        MemberTask updatedMemberTask = new MemberTask(testMember, Collections.singletonList(testTask));
-        updatedMemberTask.updateTaskStatus(testMember, testTask, TaskStatus.取組中);
-
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
-        when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
+        when(memberService.get(any(MemberId.class))).thenReturn(testMember);
         doNothing().when(taskService).updateTaskStatus(
                 any(Member.class),
                 any(Member.class),
@@ -152,39 +144,18 @@ public class TaskControllerTest {
                 any(TaskStatus.class)
         );
 
-        // タスクステータスマップの作成
-        Map<Task, TaskStatus> taskStatusMap = new HashMap<>();
-        taskStatusMap.put(testTask, TaskStatus.取組中);
-
         // APIリクエストの実行と検証
         String requestJson = """
                 {
+                    "memberId": "%s",
                     "status": "%s"
                 }
-                """.formatted(request.status());
+                """.formatted(request.memberId(), request.status());
 
-        String expectedJson = """
-            {
-                "owner": {
-                    "id": "%s"
-                },
-                "tasks": {
-                    "%s": {
-                        "status": "%s"
-                    }
-                }
-            }
-            """.formatted(
-            testMember.getId().value(),
-            testTaskId.value(),
-            TaskStatus.取組中.name()
-        );
-
-
-        mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), testMemberId.value())
+        mockMvc.perform(put("/api/tasks/{taskId}/status", testTaskId.value())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
-                .andExpect(status().isOk()).andExpect(content().json(expectedJson));
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -193,16 +164,17 @@ public class TaskControllerTest {
         TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(testMemberId.value(),TaskStatus.取組中.name());
 
         // モックの設定
-        when(taskService.get(any(TaskId.class))).thenReturn(null);
+        when(taskService.get(any(TaskId.class))).thenThrow(new com.ddd.praha.presentation.exception.ResourceNotFoundException("Task not found"));
 
         // APIリクエストの実行と検証
         String requestJson = """
                 {
+                    "memberId": "%s",
                     "status": "%s"
                 }
-                """.formatted(request.status());
+                """.formatted(request.memberId(), request.status());
 
-        mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", "non-existent-task-id", testMemberId.value())
+        mockMvc.perform(put("/api/tasks/{taskId}/status", "non-existent-task-id")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isNotFound());
@@ -211,20 +183,21 @@ public class TaskControllerTest {
     @Test
     void updateTaskStatus_WhenMemberNotFound_ReturnsNotFound() throws Exception {
         // リクエストの作成
-        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest(testMemberId.value(),TaskStatus.取組中.name());
+        TaskStatusUpdateRequest request = new TaskStatusUpdateRequest("non-existent-member-id",TaskStatus.取組中.name());
 
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
-        when(memberService.findById(any(MemberId.class))).thenReturn(Optional.empty());
+        when(memberService.get(any(MemberId.class))).thenThrow(new com.ddd.praha.presentation.exception.ResourceNotFoundException("Member not found"));
 
         // APIリクエストの実行と検証
         String requestJson = """
                 {
+                    "memberId": "%s",
                     "status": "%s"
                 }
-                """.formatted(request.status());
+                """.formatted(request.memberId(), request.status());
 
-        mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), "non-existent-member-id")
+        mockMvc.perform(put("/api/tasks/{taskId}/status", testTaskId.value())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isNotFound());
@@ -237,16 +210,19 @@ public class TaskControllerTest {
 
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
-        when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
+        when(memberService.get(any(MemberId.class))).thenReturn(testMember);
+        doThrow(new com.ddd.praha.presentation.exception.ResourceNotFoundException("MemberTask not found"))
+            .when(taskService).updateTaskStatus(any(), any(), any(), any());
 
         // APIリクエストの実行と検証
         String requestJson = """
                 {
+                    "memberId": "%s",
                     "status": "%s"
                 }
-                """.formatted(request.status());
+                """.formatted(request.memberId(), request.status());
 
-        mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), testMemberId.value())
+        mockMvc.perform(put("/api/tasks/{taskId}/status", testTaskId.value())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isNotFound());
@@ -259,8 +235,9 @@ public class TaskControllerTest {
 
         // モックの設定
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
-        when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
-        doNothing().when(taskService).updateTaskStatus(
+        when(memberService.get(any(MemberId.class))).thenReturn(testMember);
+        doThrow(new IllegalStateException("Invalid status transition"))
+            .when(taskService).updateTaskStatus(
                 any(Member.class),
                 any(Member.class),
                 any(Task.class),
@@ -270,14 +247,15 @@ public class TaskControllerTest {
         // APIリクエストの実行と検証
         String requestJson = """
                 {
+                    "memberId": "%s",
                     "status": "%s"
                 }
-                """.formatted(request.status());
+                """.formatted(request.memberId(), request.status());
 
-        mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), testMemberId.value())
+        mockMvc.perform(put("/api/tasks/{taskId}/status", testTaskId.value())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -287,16 +265,19 @@ public class TaskControllerTest {
 
         // モックの設定 - タスクとメンバーは存在するが、ステータスが無効
         when(taskService.get(any(TaskId.class))).thenReturn(testTask);
-        when(memberService.findById(any(MemberId.class))).thenReturn(Optional.of(testMember));
+        when(memberService.get(any(MemberId.class))).thenReturn(testMember);
+        doThrow(new IllegalArgumentException("Invalid argument"))
+            .when(taskService).updateTaskStatus(any(), any(), any(), any());
 
         // APIリクエストの実行と検証
         String requestJson = """
                 {
+                    "memberId": "%s",
                     "status": "%s"
                 }
-                """.formatted(request.status());
+                """.formatted(request.memberId(), request.status());
 
-        mockMvc.perform(put("/api/tasks/{taskId}/members/{memberId}/status", testTaskId.value(), testMemberId.value())
+        mockMvc.perform(put("/api/tasks/{taskId}/status", testTaskId.value())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isBadRequest());

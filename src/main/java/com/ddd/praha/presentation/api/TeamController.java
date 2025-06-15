@@ -8,6 +8,8 @@ import com.ddd.praha.domain.model.MemberId;
 import com.ddd.praha.domain.entity.Team;
 import com.ddd.praha.domain.model.TeamId;
 import org.springframework.web.bind.annotation.*;
+import com.ddd.praha.presentation.exception.ResourceNotFoundException;
+import com.ddd.praha.presentation.exception.BadRequestException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +47,9 @@ public class TeamController {
   @GetMapping("/{id}")
   public TeamResponse get(@PathVariable String id) {
     Team team = teamQueryService.get(new TeamId(id));
+    if (team == null) {
+      throw new ResourceNotFoundException("Team not found with id: " + id);
+    }
     return TeamResponse.from(team);
   }
 
@@ -62,33 +67,46 @@ public class TeamController {
 
     // チームを取得
     Team team = teamQueryService.get(new TeamId(id));
+    if (team == null) {
+      throw new ResourceNotFoundException("Team not found with id: " + id);
+    }
     TeamId teamId = team.getId();
 
-    // 現在のメンバーと新しいメンバーを取得
-    List<Member> currentMembers = new ArrayList<>(team.getMembers());
-    List<Member> newMembers = request.getMemberIds().stream()
-        .map(memberId -> memberService.get(new MemberId(memberId)))
-        .toList();
+    try {
+      // 現在のメンバーと新しいメンバーを取得
+      List<Member> currentMembers = new ArrayList<>(team.getMembers());
+      List<Member> newMembers = request.getMemberIds().stream()
+          .map(memberId -> {
+            try {
+              return memberService.get(new MemberId(memberId));
+            } catch (Exception e) {
+              throw new BadRequestException("Member not found with id: " + memberId);
+            }
+          })
+          .toList();
 
-    // 削除するメンバーを特定
-    List<Member> membersToRemove = currentMembers.stream()
-        .filter(member -> !newMembers.contains(member))
-        .toList();
+      // 削除するメンバーを特定
+      List<Member> membersToRemove = currentMembers.stream()
+          .filter(member -> !newMembers.contains(member))
+          .toList();
 
-    // 追加するメンバーを特定
-    List<Member> membersToAdd = newMembers.stream()
-        .filter(member -> !currentMembers.contains(member))
-        .toList();
+      // 追加するメンバーを特定
+      List<Member> membersToAdd = newMembers.stream()
+          .filter(member -> !currentMembers.contains(member))
+          .toList();
 
-    // メンバーの更新を実行
-    Team updatedTeam = team;
-    for (Member member : membersToRemove) {
-      updatedTeam = teamOrchestrationService.removeMemberFromTeam(teamId, member);
+      // メンバーの更新を実行
+      Team updatedTeam = team;
+      for (Member member : membersToRemove) {
+        updatedTeam = teamOrchestrationService.removeMemberFromTeam(teamId, member);
+      }
+      for (Member member : membersToAdd) {
+        updatedTeam = teamOrchestrationService.addMemberToTeam(teamId, member);
+      }
+
+      return TeamResponse.from(updatedTeam);
+    } catch (BadRequestException e) {
+      throw e;
     }
-    for (Member member : membersToAdd) {
-      updatedTeam = teamOrchestrationService.addMemberToTeam(teamId, member);
-    }
-
-    return TeamResponse.from(updatedTeam);
   }
 }

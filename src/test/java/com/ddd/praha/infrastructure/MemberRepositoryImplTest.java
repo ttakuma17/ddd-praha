@@ -2,7 +2,7 @@ package com.ddd.praha.infrastructure;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.ddd.praha.TestcontainersConfiguration;
+import com.ddd.praha.annotation.MyBatisRepositoryTest;
 import com.ddd.praha.application.repository.MemberRepository;
 import com.ddd.praha.domain.entity.Member;
 import com.ddd.praha.domain.model.Email;
@@ -11,13 +11,12 @@ import com.ddd.praha.domain.model.MemberId;
 import com.ddd.praha.domain.model.MemberName;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
-@SpringBootTest
-@Import(TestcontainersConfiguration.class)
+@MyBatisRepositoryTest
 class MemberRepositoryImplTest {
 
   @Autowired
@@ -107,6 +106,7 @@ class MemberRepositoryImplTest {
 
     memberRepository.save(initialMember1);
     memberRepository.save(initialMember2);
+    memberRepository.save(initialMember3);
 
     List<Member> all = memberRepository.getAll();
     assertEquals(3, all.size());

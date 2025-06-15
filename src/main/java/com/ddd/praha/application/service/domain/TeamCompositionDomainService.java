@@ -54,13 +54,9 @@ public class TeamCompositionDomainService {
    * メンバーを最適なチームに割り当てる（復帰時）
    */
   public TeamCompositionResult assignMemberToTeam(Member member, List<Team> allTeams) {
-    Optional<Team> targetTeam = Team.findSmallestTeam(allTeams);
+    Team targetTeam = Team.findSmallestTeam(allTeams);
     
-    if (targetTeam.isEmpty()) {
-      throw new IllegalStateException("メンバーを割り当て可能なチームが見つかりません");
-    }
-    
-    TeamComposition composition = targetTeam.get().addMemberWithComposition(member);
+    TeamComposition composition = targetTeam.addMemberWithComposition(member);
     
     // チーム分割が発生したかどうかを確認
     if (composition.getType() == TeamComposition.CompositionType.SPLIT) {

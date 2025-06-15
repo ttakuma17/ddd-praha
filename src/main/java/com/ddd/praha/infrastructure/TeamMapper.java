@@ -16,18 +16,18 @@ public interface TeamMapper {
 
   @Select("""
           SELECT
-             t.id,
-             t.name,
+             t.id as team_id,
+             t.name as team_name,
              m.id as member_id,
              m.name as member_name,
              m.email as member_email,
              m.status as member_status
           FROM
               teams t
-              JOIN team_members tm ON t.id = tm.team_id
-              JOIN members m ON tm.member_id = m.id
+              LEFT JOIN team_members tm ON t.id = tm.team_id
+              LEFT JOIN members m ON tm.member_id = m.id
       """)
-  List<TeamRecord> getAll();
+  List<TeamMemberJoinRecord> getAllWithMembers();
 
   /**
    * IDでチームの基本情報を検索する
@@ -37,25 +37,25 @@ public interface TeamMapper {
    */
   @Select("""
           SELECT
-             t.id,
-             t.name,
+             t.id as team_id,
+             t.name as team_name,
              m.id as member_id,
              m.name as member_name,
              m.email as member_email,
              m.status as member_status
           FROM
               teams t
-              JOIN team_members tm ON t.id = tm.team_id
-              JOIN members m ON tm.member_id = m.id
+              LEFT JOIN team_members tm ON t.id = tm.team_id
+              LEFT JOIN members m ON tm.member_id = m.id
           WHERE
               t.id = #{id.value}
       """)
-  TeamRecord get(@Param("id") TeamId id);
+  List<TeamMemberJoinRecord> getWithMembers(@Param("id") TeamId id);
 
   /**
    * チームを保存する（新規追加）
    */
-  @Insert("INSERT INTO teams (id, name) VALUES (#{team.id}, #{team.name})")
+  @Insert("INSERT INTO teams (id, name) VALUES (#{team.id.value}, #{team.name.value})")
   void insert(@Param("team") Team team);
 
   /**
@@ -81,7 +81,7 @@ public interface TeamMapper {
    *
    * @param teamId チームID
    */
-  @Delete("DELETE FROM team_members WHERE team_id = #{teamId}")
+  @Delete("DELETE FROM team_members WHERE team_id = #{teamId.value}")
   void removeAllMembers(@Param("teamId") TeamId teamId);
 
   /**
@@ -102,7 +102,7 @@ public interface TeamMapper {
   void delete(@Param("id") TeamId id);
 
   @Delete("DELETE FROM team_members WHERE team_id = #{teamId.value} AND member_id = #{memberId.value}")
-  void removeMember(TeamId teamId, MemberId memberId);
+  void removeMember(@Param("teamId") TeamId teamId, @Param("memberId") MemberId memberId);
 
   @Insert("""
           <script>
