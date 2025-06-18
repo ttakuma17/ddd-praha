@@ -1,0 +1,22 @@
+logging:
+  level:
+    com.ddd.praha.processor: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [PROCESSOR] [%thread] %-5level %logger{36} - %msg%n"
+
+spring:
+  application:
+    name: praha-processor
+
+  
+  jackson:
+    visibility:
+      field: any
+      getter: none
+      setter: none
+      creator: any
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: 8081

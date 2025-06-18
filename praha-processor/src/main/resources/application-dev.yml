@@ -1,0 +1,28 @@
+# 開発環境用の設定
+spring:
+  config:
+    activate:
+      on-profile: dev
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        acknowledge-mode: auto
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 3
+          max-interval: 10000
+          multiplier: 2
+
+logging:
+  level:
+    root: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [PROCESSOR-DEV] [%thread] %-5level %logger{36} - %msg%n"
+
+server:
+  port: 8081

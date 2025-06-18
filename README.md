@@ -100,12 +100,30 @@ src/
 
 ### 開発環境での実行
 
-```bash
-# Testcontainersを使用してアプリケーションを起動（推奨）
-./gradlew bootTestRun
+両アプリケーションが共有RabbitMQを使用するため、以下の手順で起動します：
 
-# 本番環境同様の起動（PostgreSQLが必要）
-./gradlew bootRun
+```bash
+# 1. RabbitMQを起動（最初に実行）
+docker-compose up -d rabbitmq
+
+# 2. Webアプリケーションを起動（ターミナル1）
+./gradlew :praha-web:bootTestRun
+
+# 3. Processorアプリケーションを起動（ターミナル2）
+./gradlew :praha-processor:bootTestRun
+```
+
+#### RabbitMQ管理コンソール
+
+RabbitMQの管理コンソールは http://localhost:15672 でアクセスできます。
+- ユーザー名: `guest`
+- パスワード: `guest`
+
+#### 停止手順
+
+```bash
+# アプリケーションを停止後、RabbitMQを停止
+docker-compose down
 ```
 
 ### テスト実行
@@ -207,6 +225,37 @@ src/
 - **Gradle依存関係**: 毎週月曜日 9:00 JST に自動チェック
 - **GitHub Actions**: ワークフローで使用するアクションの自動更新
 - **セキュリティアップデート**: 脆弱性発見時の自動プルリクエスト作成
+
+## 🎯 アプリケーション構成
+
+このプロジェクトは2つのSpring Bootアプリケーションで構成されています：
+
+### praha-web
+- **ポート**: 8080
+- **役割**: Web APIとビジネスロジック
+- **機能**: 
+  - REST APIエンドポイント
+  - ドメインイベントのRabbitMQへの送信
+  - PostgreSQLデータベース管理
+
+### praha-processor
+- **ポート**: 8081
+- **役割**: メッセージ処理サーバー
+- **機能**:
+  - RabbitMQからのメッセージ受信
+  - 通知処理（メール、Slack等）
+  - インシデント管理
+
+## 📨 メッセージングフロー
+
+1. praha-webがチーム関連イベントを検知
+2. `NotificationMessage`としてRabbitMQの`team.notification.queue`に送信
+3. praha-processorが`@RabbitListener`でメッセージを受信
+4. イベントタイプに応じて処理：
+   - `TEAM_SPLIT`: チーム分割通知
+   - `TEAM_MERGED`: チーム合流通知
+   - `MONITORING_REQUIRED`: 管理者への緊急通知
+   - `MERGE_FAILURE`: 合流失敗エラー処理
 
 ## 📝 開発ガイドライン
 

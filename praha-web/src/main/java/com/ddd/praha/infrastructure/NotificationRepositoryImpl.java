@@ -27,12 +27,15 @@ public class NotificationRepositoryImpl implements NotificationRepository {
         switch (event.getType()) {
             case TEAM_SPLIT:
                 logger.info("チーム分割通知: {}", event.getMessage());
+                sendNotificationEventToQueue(event);
                 break;
             case TEAM_MERGED:
                 logger.info("チーム合流通知: {}", event.getMessage());
+                sendNotificationEventToQueue(event);
                 break;
             case MONITORING_REQUIRED:
                 logger.warn("管理者メール通知: {}", event.getMessage());
+                sendNotificationEventToQueue(event);
                 break;
             case MERGE_FAILURE:
                 logger.error("管理者通知: {}", event.getMessage());

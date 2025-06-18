@@ -21,13 +21,5 @@ public class TestContainerLocalConfiguration {
     return container;
   }
 
-  @Bean
-  @ServiceConnection
-  RabbitMQContainer rabbitMQContainer() {
-    RabbitMQContainer container = new RabbitMQContainer(DockerImageName.parse("rabbitmq:3.13-management-alpine"));
-    container.withReuse(true);
-    container.start();
-
-    return container;
-  }
+  // RabbitMQはdocker-composeで管理するため、Testcontainersの設定を削除
 }

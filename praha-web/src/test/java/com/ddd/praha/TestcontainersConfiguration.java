@@ -16,10 +16,6 @@ public class TestcontainersConfiguration {
 		return new PostgreSQLContainer<>(DockerImageName.parse("postgres:16-alpine3.21"));
 	}
 
-	@Bean
-	@ServiceConnection
-	RabbitMQContainer rabbitMQContainer() {
-		return new RabbitMQContainer(DockerImageName.parse("rabbitmq:3.13-management-alpine"));
-	}
+	// RabbitMQはdocker-composeで管理するため、Testcontainersの設定を削除
 
 }

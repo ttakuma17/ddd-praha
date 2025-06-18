@@ -1,6 +1,5 @@
 package com.ddd.praha.infrastructure;
 
-
 /**
  * キューに送信する通知メッセージの構造化レコード
  */

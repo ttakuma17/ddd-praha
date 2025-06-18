@@ -1,116 +1,38 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.4.6'
-	id 'io.spring.dependency-management' version '1.1.7'
-	id 'jacoco'
-	id 'checkstyle'
-	id 'com.github.spotbugs' version '6.0.26'
-	id "org.dddjava.jig-gradle-plugin" version '2025.5.1'
+	id 'org.springframework.boot' version '3.4.6' apply false
+	id 'io.spring.dependency-management' version '1.1.7' apply false
 }
 
-group = 'com.ddd'
-version = '0.0.1-SNAPSHOT'
+allprojects {
+	group = 'com.ddd'
+	version = '0.0.1-SNAPSHOT'
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+	repositories {
+		mavenCentral()
 	}
 }
 
-repositories {
-	mavenCentral()
-}
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'io.spring.dependency-management'
 
-dependencies 	{
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-amqp'
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-database-postgresql'
-	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
-	runtimeOnly 'org.postgresql:postgresql'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-	testImplementation 'org.springframework.amqp:spring-rabbit-test'
-	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.4'
-	testImplementation 'org.testcontainers:junit-jupiter'
-	testImplementation 'org.testcontainers:postgresql'
-	testImplementation 'org.testcontainers:rabbitmq'
-	testImplementation 'com.tngtech.archunit:archunit-junit5:1.2.1'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
-tasks.named('bootTestRun') {
-	args = ['--spring.profiles.active=dev']
-}
-
-// JaCoCo configuration
-jacoco {
-	toolVersion = "0.8.12"
-}
-
-jacocoTestReport {
-	dependsOn test
-	reports {
-		xml.required = true
-		html.required = true
-		csv.required = false
-	}
-	executionData.setFrom(fileTree(dir: "${layout.buildDirectory}/jacoco", includes: ["**/*.exec"]))
-}
-
-jacocoTestCoverageVerification {
-	dependsOn jacocoTestReport
-	violationRules {
-		rule {
-			limit {
-				minimum = 0.80
-			}
+	java {
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(21)
 		}
 	}
-}
 
-// Checkstyle configuration
-checkstyle {
-	toolVersion = '10.12.4'
-	configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
-	ignoreFailures = true
-}
+	dependencyManagement {
+		imports {
+			mavenBom SpringBootPlugin.BOM_COORDINATES
+		}
+	}
 
-checkstyleMain {
-	source = sourceSets.main.allJava
-}
-
-checkstyleTest {
-	source = sourceSets.test.allJava
-}
-
-// SpotBugs configuration
-spotbugs {
-	toolVersion = '4.8.6'
-	ignoreFailures = true
-	effort = 'max'
-	reportLevel = 'medium'
-}
-
-spotbugsMain {
-	reports {
-		xml.required = true
-		html.required = true
+	tasks.named('test') {
+		useJUnitPlatform()
 	}
 }
 
-spotbugsTest {
-	reports {
-		xml.required = true
-		html.required = true
-	}
-}
-
-// Task dependencies
-test.finalizedBy jacocoTestReport
-check.dependsOn jacocoTestCoverageVerification
