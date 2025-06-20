@@ -1,17 +1,20 @@
 package com.ddd.praha.processor.integration;
 
+import com.ddd.praha.processor.TestcontainersConfiguration;
 import com.ddd.praha.processor.dto.NotificationMessage;
 import com.ddd.praha.processor.service.NotificationProcessorService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Import(TestcontainersConfiguration.class)
 @DisplayName("通知処理の統合テスト")
 class NotificationProcessingIntegrationTest {
 
