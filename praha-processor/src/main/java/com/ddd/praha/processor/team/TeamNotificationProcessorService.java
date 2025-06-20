@@ -1,6 +1,5 @@
-package com.ddd.praha.processor.service;
+package com.ddd.praha.processor.team;
 
-import com.ddd.praha.processor.dto.NotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -9,15 +8,15 @@ import org.springframework.stereotype.Service;
  * 通知メッセージ処理サービス
  */
 @Service
-public class NotificationProcessorService {
+public class TeamNotificationProcessorService {
     
-    private static final Logger logger = LoggerFactory.getLogger(NotificationProcessorService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TeamNotificationProcessorService.class);
     
     /**
      * 通知メッセージを処理
      * @param message 通知メッセージ
      */
-    public void processNotification(NotificationMessage message) {
+    public void processNotification(TeamNotificationMessage message) {
         if (message.message() == null || message.message().isBlank()) {
             throw new IllegalArgumentException("通知メッセージが空になっています");
         }
@@ -46,7 +45,7 @@ public class NotificationProcessorService {
     /**
      * チーム分割通知を処理
      */
-    private void processTeamSplit(NotificationMessage message) {
+    private void processTeamSplit(TeamNotificationMessage message) {
         logger.info("チーム分割を処理中: {}", message.message());
         // TODO: チーム分割に関する処理を実装
         // 例: 関連するチームメンバーにメール通知
@@ -58,7 +57,7 @@ public class NotificationProcessorService {
     /**
      * チーム合流通知を処理
      */
-    private void processTeamMerged(NotificationMessage message) {
+    private void processTeamMerged(TeamNotificationMessage message) {
         logger.info("チーム合流を処理中: {}", message.message());
         // TODO: チーム合流に関する処理を実装
         // 例: 新しいチームメンバーへのウェルカムメール
@@ -70,7 +69,7 @@ public class NotificationProcessorService {
     /**
      * 監視必要通知を処理
      */
-    private void processMonitoringRequired(NotificationMessage message) {
+    private void processMonitoringRequired(TeamNotificationMessage message) {
         logger.warn("監視必要通知を処理中: {}", message.message());
         // TODO: 管理者への緊急通知処理を実装
         // 例: 管理者へのアラートメール、Slackへの通知
@@ -86,7 +85,7 @@ public class NotificationProcessorService {
     /**
      * 合流失敗通知を処理
      */
-    private void processMergeFailure(NotificationMessage message) {
+    private void processMergeFailure(TeamNotificationMessage message) {
         logger.error("合流失敗通知を処理中: {}", message.message());
         // TODO: 管理者への緊急対応通知を実装
         sendUrgentAlert("admin@example.com", 

@@ -1,8 +1,5 @@
-package com.ddd.praha.processor.listener;
+package com.ddd.praha.processor.team;
 
-import com.ddd.praha.processor.dto.NotificationMessage;
-import com.ddd.praha.processor.service.NotificationProcessorService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,13 +15,13 @@ import static org.mockito.Mockito.*;
 class TeamNotificationListenerTest {
 
     @Mock
-    private NotificationProcessorService processorService;
+    private TeamNotificationProcessorService processorService;
 
     @InjectMocks
     private TeamNotificationListener listener;
 
-    private NotificationMessage createTestMessage(String type, String message) {
-        return new NotificationMessage(
+    private TeamNotificationMessage createTestMessage(String type, String message) {
+        return new TeamNotificationMessage(
             type,
             message,
             "team-001",
@@ -39,7 +36,7 @@ class TeamNotificationListenerTest {
     @DisplayName("チーム通知メッセージを正常に処理できる")
     void testHandleTeamNotificationSuccess() {
         // Given
-        NotificationMessage message = createTestMessage("TEAM_SPLIT", "チーム分割メッセージ");
+        TeamNotificationMessage message = createTestMessage("TEAM_SPLIT", "チーム分割メッセージ");
         doNothing().when(processorService).processNotification(message);
 
         // When & Then
@@ -51,7 +48,7 @@ class TeamNotificationListenerTest {
     @DisplayName("プロセッサーでエラーが発生した場合、例外が再スローされる")
     void testHandleTeamNotificationWithProcessorError() {
         // Given
-        NotificationMessage message = createTestMessage("TEAM_SPLIT", "チーム分割メッセージ");
+        TeamNotificationMessage message = createTestMessage("TEAM_SPLIT", "チーム分割メッセージ");
         RuntimeException processorException = new RuntimeException("プロセッサーエラー");
         doThrow(processorException).when(processorService).processNotification(message);
 
@@ -68,12 +65,12 @@ class TeamNotificationListenerTest {
     @DisplayName("異なるタイプのメッセージも正常に処理される")
     void testHandleDifferentMessageTypes() {
         // Given
-        NotificationMessage teamSplitMessage = createTestMessage("TEAM_SPLIT", "チーム分割");
-        NotificationMessage teamMergedMessage = createTestMessage("TEAM_MERGED", "チーム合流");
-        NotificationMessage monitoringMessage = createTestMessage("MONITORING_REQUIRED", "監視必要");
-        NotificationMessage mergeFailureMessage = createTestMessage("MERGE_FAILURE", "合流失敗");
+        TeamNotificationMessage teamSplitMessage = createTestMessage("TEAM_SPLIT", "チーム分割");
+        TeamNotificationMessage teamMergedMessage = createTestMessage("TEAM_MERGED", "チーム合流");
+        TeamNotificationMessage monitoringMessage = createTestMessage("MONITORING_REQUIRED", "監視必要");
+        TeamNotificationMessage mergeFailureMessage = createTestMessage("MERGE_FAILURE", "合流失敗");
 
-        doNothing().when(processorService).processNotification(any(NotificationMessage.class));
+        doNothing().when(processorService).processNotification(any(TeamNotificationMessage.class));
 
         // When & Then
         assertDoesNotThrow(() -> {
@@ -83,14 +80,14 @@ class TeamNotificationListenerTest {
             listener.handleTeamNotification(mergeFailureMessage);
         });
 
-        verify(processorService, times(4)).processNotification(any(NotificationMessage.class));
+        verify(processorService, times(4)).processNotification(any(TeamNotificationMessage.class));
     }
 
     @Test
     @DisplayName("nullメッセージでも適切に処理される")
     void testHandleNullMessage() {
         // Given
-        NotificationMessage nullMessage = new NotificationMessage(
+        TeamNotificationMessage nullMessage = new TeamNotificationMessage(
             null, null, null, null, null, null, 0L
         );
         doNothing().when(processorService).processNotification(nullMessage);
@@ -104,11 +101,11 @@ class TeamNotificationListenerTest {
     @DisplayName("複数回の呼び出しが正常に処理される")
     void testMultipleMessageHandling() {
         // Given
-        NotificationMessage message1 = createTestMessage("TEAM_SPLIT", "メッセージ1");
-        NotificationMessage message2 = createTestMessage("TEAM_MERGED", "メッセージ2");
-        NotificationMessage message3 = createTestMessage("MONITORING_REQUIRED", "メッセージ3");
+        TeamNotificationMessage message1 = createTestMessage("TEAM_SPLIT", "メッセージ1");
+        TeamNotificationMessage message2 = createTestMessage("TEAM_MERGED", "メッセージ2");
+        TeamNotificationMessage message3 = createTestMessage("MONITORING_REQUIRED", "メッセージ3");
 
-        doNothing().when(processorService).processNotification(any(NotificationMessage.class));
+        doNothing().when(processorService).processNotification(any(TeamNotificationMessage.class));
 
         // When
         listener.handleTeamNotification(message1);
@@ -119,7 +116,7 @@ class TeamNotificationListenerTest {
         verify(processorService, times(1)).processNotification(message1);
         verify(processorService, times(1)).processNotification(message2);
         verify(processorService, times(1)).processNotification(message3);
-        verify(processorService, times(3)).processNotification(any(NotificationMessage.class));
+        verify(processorService, times(3)).processNotification(any(TeamNotificationMessage.class));
     }
 
     @Test

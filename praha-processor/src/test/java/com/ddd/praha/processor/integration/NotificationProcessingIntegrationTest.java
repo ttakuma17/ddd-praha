@@ -1,8 +1,8 @@
 package com.ddd.praha.processor.integration;
 
 import com.ddd.praha.processor.TestcontainersConfiguration;
-import com.ddd.praha.processor.dto.NotificationMessage;
-import com.ddd.praha.processor.service.NotificationProcessorService;
+import com.ddd.praha.processor.team.TeamNotificationMessage;
+import com.ddd.praha.processor.team.TeamNotificationProcessorService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +19,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class NotificationProcessingIntegrationTest {
 
     @Autowired
-    private NotificationProcessorService processorService;
+    private TeamNotificationProcessorService processorService;
 
     @Test
     @DisplayName("Spring Contextで通知処理サービスが正常に動作する")
     void testNotificationProcessingInSpringContext() {
         // Given
-        NotificationMessage message = new NotificationMessage(
+        TeamNotificationMessage message = new TeamNotificationMessage(
             "TEAM_SPLIT",
             "統合テスト用メッセージ",
             "team-test-001",
@@ -46,7 +46,7 @@ class NotificationProcessingIntegrationTest {
         String[] messageTypes = {"TEAM_SPLIT", "TEAM_MERGED", "MONITORING_REQUIRED", "MERGE_FAILURE"};
         
         for (String type : messageTypes) {
-            NotificationMessage message = new NotificationMessage(
+            TeamNotificationMessage message = new TeamNotificationMessage(
                 type,
                 "統合テスト用メッセージ: " + type,
                 "team-test-001",

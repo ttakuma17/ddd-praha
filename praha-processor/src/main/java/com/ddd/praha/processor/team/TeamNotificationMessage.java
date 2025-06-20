@@ -1,9 +1,9 @@
-package com.ddd.praha.processor.dto;
+package com.ddd.praha.processor.team;
 
 /**
  * キューから受信する通知メッセージの構造化レコード
  */
-public record NotificationMessage(
+public record TeamNotificationMessage(
     String type,
     String message,
     String teamId,

@@ -1,8 +1,6 @@
-package com.ddd.praha.processor.listener;
+package com.ddd.praha.processor.team;
 
-import com.ddd.praha.processor.dto.NotificationMessage;
 import com.ddd.praha.processor.config.RabbitMQListenerConfig;
-import com.ddd.praha.processor.service.NotificationProcessorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -15,9 +13,9 @@ import org.springframework.stereotype.Component;
 public class TeamNotificationListener {
     
     private static final Logger logger = LoggerFactory.getLogger(TeamNotificationListener.class);
-    private final NotificationProcessorService processorService;
+    private final TeamNotificationProcessorService processorService;
     
-    public TeamNotificationListener(NotificationProcessorService processorService) {
+    public TeamNotificationListener(TeamNotificationProcessorService processorService) {
         this.processorService = processorService;
     }
     
@@ -26,7 +24,7 @@ public class TeamNotificationListener {
      * @param message 受信した通知メッセージ
      */
     @RabbitListener(queues = RabbitMQListenerConfig.TEAM_NOTIFICATION_QUEUE)
-    public void handleTeamNotification(NotificationMessage message) {
+    public void handleTeamNotification(TeamNotificationMessage message) {
         logger.info("チーム通知メッセージを受信しました: Type={}, Timestamp={}", 
             message.type(), message.timestamp());
         
