@@ -18,6 +18,10 @@ public class NotificationProcessorService {
      * @param message 通知メッセージ
      */
     public void processNotification(NotificationMessage message) {
+        if (message.message() == null || message.message().isBlank()) {
+            throw new IllegalArgumentException("通知メッセージが空になっています");
+        }
+
         logger.info("通知メッセージを受信しました: Type={}, TeamId={}, MemberId={}", 
             message.type(), message.teamId(), message.memberId());
         

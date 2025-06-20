@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: praha-processor-test
+  
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        acknowledge-mode: auto
+        auto-startup: false  # テスト時はリスナーを自動起動しない
+
+logging:
+  level:
+    com.ddd.praha.processor: DEBUG
+    org.springframework.amqp: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [TEST] [%thread] %-5level %logger{36} - %msg%n"
+
+server:
+  port: 0  # テスト時はランダムポートを使用
