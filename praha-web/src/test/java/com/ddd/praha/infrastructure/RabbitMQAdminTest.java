@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 import com.ddd.praha.TestcontainersConfiguration;
+import com.ddd.praha.RabbitMQTestConfiguration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * RabbitMQ Admin機能のテスト
  */
 @SpringBootTest
-@Import(TestcontainersConfiguration.class)
+@Import({TestcontainersConfiguration.class, RabbitMQTestConfiguration.class})
 class RabbitMQAdminTest {
 
     @Autowired

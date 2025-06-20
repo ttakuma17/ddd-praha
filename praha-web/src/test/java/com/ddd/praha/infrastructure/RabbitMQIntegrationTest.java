@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
 import com.ddd.praha.TestcontainersConfiguration;
+import com.ddd.praha.RabbitMQTestConfiguration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * TestcontainersでRabbitMQコンテナを起動してテストを実行
  */
 @SpringBootTest
-@Import(TestcontainersConfiguration.class)
+@Import({TestcontainersConfiguration.class, RabbitMQTestConfiguration.class})
 @TestPropertySource(properties = {
     "spring.rabbitmq.test.enabled=true"
 })

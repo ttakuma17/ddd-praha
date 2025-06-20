@@ -1,6 +1,7 @@
 package com.ddd.praha.infrastructure;
 
 import com.ddd.praha.TestcontainersConfiguration;
+import com.ddd.praha.RabbitMQTestConfiguration;
 import com.ddd.praha._config.RabbitMQConfig;
 import com.ddd.praha.domain.entity.Member;
 import com.ddd.praha.domain.entity.Team;
@@ -25,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * NotificationRepositoryImplのRabbitMQ機能テスト
  */
 @SpringBootTest
-@Import(TestcontainersConfiguration.class)
+@Import({TestcontainersConfiguration.class, RabbitMQTestConfiguration.class})
 class NotificationRepositoryImplTest {
 
     @Autowired
@@ -94,7 +95,7 @@ class NotificationRepositoryImplTest {
     }
 
     @Test
-    void sendNotification_TeamSplit_DoesNotSendToQueue() throws InterruptedException {
+    void sendNotification_TeamSplit_SendsStructuredMessage() throws InterruptedException {
         // Given
         Member member1 = createTestMember("メンバー1", "member1@example.com");
         Member member2 = createTestMember("メンバー2", "member2@example.com");
@@ -111,13 +112,20 @@ class NotificationRepositoryImplTest {
         // 短時間待機
         TimeUnit.MILLISECONDS.sleep(100);
         
-        // TEAM_SPLITはキューに送信されないことを確認
+        // TEAM_SPLITがキューに送信されることを確認
         Object receivedMessage = rabbitTemplate.receiveAndConvert(RabbitMQConfig.TEAM_NOTIFICATION_QUEUE);
-        assertNull(receivedMessage);
+        assertNotNull(receivedMessage);
+        assertInstanceOf(NotificationMessage.class, receivedMessage);
+        
+        NotificationMessage notification = (NotificationMessage) receivedMessage;
+        assertEquals("TEAM_SPLIT", notification.type());
+        assertNotNull(notification.message());
+        assertEquals(originalTeam.getId().value(), notification.teamId());
+        assertEquals(originalTeam.getName().value(), notification.teamName());
     }
 
     @Test
-    void sendNotification_MonitoringRequired_DoesNotSendToQueue() throws InterruptedException {
+    void sendNotification_MonitoringRequired_SendsStructuredMessage() throws InterruptedException {
         // Given
         Member member1 = createTestMember("テスト太郎", "test1@example.com");
         Member member2 = createTestMember("テスト次郎", "test2@example.com");
@@ -131,9 +139,18 @@ class NotificationRepositoryImplTest {
         // 短時間待機
         TimeUnit.MILLISECONDS.sleep(100);
         
-        // MONITORING_REQUIREDはキューに送信されないことを確認
+        // MONITORING_REQUIREDがキューに送信されることを確認
         Object receivedMessage = rabbitTemplate.receiveAndConvert(RabbitMQConfig.TEAM_NOTIFICATION_QUEUE);
-        assertNull(receivedMessage);
+        assertNotNull(receivedMessage);
+        assertInstanceOf(NotificationMessage.class, receivedMessage);
+        
+        NotificationMessage notification = (NotificationMessage) receivedMessage;
+        assertEquals("MONITORING_REQUIRED", notification.type());
+        assertNotNull(notification.message());
+        assertEquals(team.getId().value(), notification.teamId());
+        assertEquals(team.getName().value(), notification.teamName());
+        assertEquals(member1.getId().value(), notification.memberId());
+        assertEquals(member1.getName().value(), notification.memberName());
     }
 
     @Test

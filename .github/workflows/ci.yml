@@ -2,16 +2,20 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main]
     paths:
-      - 'src/**'
+      - 'praha-web/**'
+      - 'praha-processor/**'
       - 'build.gradle'
+      - 'settings.gradle'
       - 'gradle/**'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
     paths:
-      - 'src/**'
+      - 'praha-web/**'
+      - 'praha-processor/**'
       - 'build.gradle'
+      - 'settings.gradle'
       - 'gradle/**'
 
 jobs:
@@ -53,11 +57,13 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: test-reports-java-${{ matrix.java-version }}
-        path: build/reports/tests/test/
+        path: |
+          **/build/reports/tests/test/
     
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: test-results-java-${{ matrix.java-version }}
-        path: build/test-results/test/
+        path: |
+          **/build/test-results/test/
