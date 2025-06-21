@@ -5,6 +5,21 @@ logging:
 #    format:
 #      console: ecs
 
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
+
+management:
+  otlp:
+    metrics:
+      export:
+        url: "http://localhost:4318/v1/metrics"
+    tracing:
+      endpoint: "http://localhost:4318/v1/tracing"
+    logging:
+      endpoint: "http://localhost:4318/v1/logs"
+
 spring:
   application:
     name: praha
